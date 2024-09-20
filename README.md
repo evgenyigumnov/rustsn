@@ -158,7 +158,7 @@ I would love to see contributions from the community. If you experience bugs, fe
 ![Logic](logic.png)
 
 
-## Version history
+## Versions
 
 ### 0.5.0 - Support only Rust code generation 20 September 2024
 - Make decision to support only Rust code generation
