@@ -1,6 +1,6 @@
 # rustsn
 
-A Rust-based tool that automates the generation, compilation, and testing of Rust code using Language Model Models (LLMs). It interacts with LLMs to generate code based on user-provided explanations, compiles the code, resolves dependencies, and runs tests to ensure functionality.
+A Rust-based tool that automates the generation, compilation, and testing of Rust code using  Large Language Models (LLMs). It interacts with LLMs to generate code based on user-provided explanations, compiles the code, resolves dependencies, and runs tests to ensure functionality.
 
 ## Project name explanation
 
