@@ -48,7 +48,7 @@ TestsPass --> [*]
    ```bash
    ollama run gemma2:27b
    ```
-   Afret downloading the model, you can say "hello" to the model to check if it is working correctly. 
+   After downloading the model, you can say "hello" to the model to check if it is working correctly. 
    After that, you can use type "Ctrl+D" to exit the model.
 - **OpenAI API Key (Optional)**: Create file "token.txt" in the root folder and put your OpenAI API key there.
 
