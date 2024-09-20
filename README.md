@@ -43,15 +43,15 @@ TestsPass --> [*]
 ### Prerequisites
 
 - **Rust**: Ensure you have Rust installed. You can install it from [here](https://www.rust-lang.org/tools/install).
-- **OpenAI API Key**: Create file "token.txt" in the root folder and put your OpenAI API key there.
 - **Ollama (Optional)**: Required for LLM interactions. Install from [Ollama's official site](https://ollama.ai/).
+  - Download Ollam model (Optional) 
+   ```bash
+   ollama run gemma2:27b
+   ```
+   Afret downloading the model, you can say "hello" to the model to check if it is working correctly. 
+   After that, you can use type "Ctrl+D" to exit the model.
+- **OpenAI API Key (Optional)**: Create file "token.txt" in the root folder and put your OpenAI API key there.
 
-### Download Ollam model (Optional) 
-```bash
-ollama run gemma2:27b
-```
-Afret downloading the model, you can say "hello" to the model to check if it is working correctly. 
-After that, you can use type "Ctrl+D" to exit the model.
 ### Clone the Repository
 
 ```bash
