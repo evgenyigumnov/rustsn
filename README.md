@@ -18,9 +18,16 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 
 ## Supported languages
 - Rust
-- TODO: JavaScript https://github.com/evgenyigumnov/rustsn/issues/2
-- TODO: TypeScript https://github.com/evgenyigumnov/rustsn/issues/3
 - TODO: Python https://github.com/evgenyigumnov/rustsn/issues/4
+- TODO: C https://github.com/evgenyigumnov/rustsn/issues/8
+- TODO: JavaScript https://github.com/evgenyigumnov/rustsn/issues/2
+- TODO: Java https://github.com/evgenyigumnov/rustsn/issues/5
+- TODO: TypeScript https://github.com/evgenyigumnov/rustsn/issues/3
+- TODO: CPP https://github.com/evgenyigumnov/rustsn/issues/9
+- TODO: Scala https://github.com/evgenyigumnov/rustsn/issues/6
+- TODO: Kotlin https://github.com/evgenyigumnov/rustsn/issues/7
+- TODO: Swift https://github.com/evgenyigumnov/rustsn/issues/9
+
 
 ## How it works
 
