@@ -10,6 +10,7 @@ mod llm_api;
 mod state_machine;
 
 mod rust;
+mod java;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
@@ -40,6 +41,7 @@ fn main() {
     // Optionally, handle the selected language
     match lang {
         Lang::Rust => println!("Selected language: Rust"),
+        Lang::Java => println!("Selected language: Java"),
         _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
     }
 

@@ -75,6 +75,25 @@ pub fn create_project(lang: &Lang, project: &Project) {
         _ => panic!("Unsupported language: {:?}", lang),
     }
 }
+pub fn create_project_java(project: &crate::java::Project) {
+        // println!("Create sandbox project with");
+        // println!("{}\n{}", project.cargo_toml, project.lib_rs);
+        // let sandbox_path = "sandbox";
+        // let src_path = format!("{}/src", sandbox_path);
+        // let main_path = format!("{}/src/lib.rs", sandbox_path);
+        // let cargo_path = format!("{}/Cargo.toml", sandbox_path);
+        // if !std::path::Path::new(sandbox_path).exists() {
+        //     std::fs::create_dir(sandbox_path).unwrap();
+        // } else {
+        //     std::fs::remove_dir_all(sandbox_path).unwrap();
+        //     std::fs::create_dir(sandbox_path).unwrap();
+        // }
+        // if !std::path::Path::new(&src_path).exists() {
+        //     std::fs::create_dir(&src_path).unwrap();
+        // }
+        // std::fs::write(&main_path, &project.lib_rs).unwrap();
+        // std::fs::write(&cargo_path, &project.cargo_toml ).unwrap();
+}
 
 
 fn only_error_message(output: &str, exit_code: i32) -> String {
