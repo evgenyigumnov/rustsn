@@ -37,6 +37,7 @@ impl LLMApi {
                 let request = OllamaRequest {
                     model: "gemma2:27b".to_string(),
                    // model: "gemma2:2b".to_string(), // fast but very stupid model - excellent for testing
+                   //  model: "gemma2".to_string(), // medium model
                     prompt: prompt.to_string(),
                     stream: false,
                     options: OllamaOptions {
@@ -53,7 +54,7 @@ impl LLMApi {
                 let response = match response_opt {
                     None => {
                         let client = Client::builder()
-                            .timeout(Duration::from_secs(60 * 5))
+                            .timeout(Duration::from_secs(60 * 10))
                             .build()
                             .unwrap();
 
