@@ -26,7 +26,7 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - TODO: CPP https://github.com/evgenyigumnov/rustsn/issues/9
 - TODO: Scala https://github.com/evgenyigumnov/rustsn/issues/6
 - TODO: Kotlin https://github.com/evgenyigumnov/rustsn/issues/7
-- TODO: Swift https://github.com/evgenyigumnov/rustsn/issues/9
+- TODO: Swift https://github.com/evgenyigumnov/rustsn/issues/10
 
 
 ## How it works
