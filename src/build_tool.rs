@@ -65,43 +65,45 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
 
 }
 
-pub fn create_project(code: &str, dependencies: &str, tests: &str) {
-    let code_str = if code == "" {
-        ""
-    } else {
-        "'code'"
-    };
-    let test_str = if tests == "" {
-        ""
-    } else {
-        "'test'"
-    };
+pub fn create_project(lang: &Lang,code: &str, dependencies: &str, tests: &str) {
+    match lang {
+        Lang::Rust => {
+            let code_str = if code == "" {
+                ""
+            } else {
+                "'code'"
+            };
+            let test_str = if tests == "" {
+                ""
+            } else {
+                "'test'"
+            };
 
-    let dependencies_str = if dependencies == "" {
-        ""
-    } else {
-        "'dependencies'"
-    };
+            let dependencies_str = if dependencies == "" {
+                ""
+            } else {
+                "'dependencies'"
+            };
 
-    println!("Create sandbox project with: {} {} {}", code_str,  dependencies_str, test_str);
-    println!("{}\n{}\n{}", dependencies, code, tests);
-    let sandbox_path = "sandbox";
-    let src_path = format!("{}/src", sandbox_path);
-    let main_path = format!("{}/src/main.rs", sandbox_path);
-    let cargo_path = format!("{}/Cargo.toml", sandbox_path);
-    if !std::path::Path::new(sandbox_path).exists() {
-        std::fs::create_dir(sandbox_path).unwrap();
-    } else {
-        std::fs::remove_dir_all(sandbox_path).unwrap();
-        std::fs::create_dir(sandbox_path).unwrap();
-    }
-    if !std::path::Path::new(&src_path).exists() {
-        std::fs::create_dir(&src_path).unwrap();
-    }
-    let main_rs = r#"fn main() {}"#;
-    std::fs::write(&main_path, format!("{}\n{}\n{}", main_rs, code, tests)).unwrap();
+            println!("Create sandbox project with: {} {} {}", code_str,  dependencies_str, test_str);
+            println!("{}\n{}\n{}", dependencies, code, tests);
+            let sandbox_path = "sandbox";
+            let src_path = format!("{}/src", sandbox_path);
+            let main_path = format!("{}/src/main.rs", sandbox_path);
+            let cargo_path = format!("{}/Cargo.toml", sandbox_path);
+            if !std::path::Path::new(sandbox_path).exists() {
+                std::fs::create_dir(sandbox_path).unwrap();
+            } else {
+                std::fs::remove_dir_all(sandbox_path).unwrap();
+                std::fs::create_dir(sandbox_path).unwrap();
+            }
+            if !std::path::Path::new(&src_path).exists() {
+                std::fs::create_dir(&src_path).unwrap();
+            }
+            let main_rs = r#"fn main() {}"#;
+            std::fs::write(&main_path, format!("{}\n{}\n{}", main_rs, code, tests)).unwrap();
 
-    std::fs::write(&cargo_path, format!(r#"
+            std::fs::write(&cargo_path, format!(r#"
 [package]
 name = "sandbox"
 version = "0.1.0"
@@ -109,7 +111,9 @@ edition = "2018"
 
 {}
 "#, dependencies )).unwrap();
-
+        }
+        _ => panic!("Unsupported language: {:?}", lang),
+    }
 }
 
 

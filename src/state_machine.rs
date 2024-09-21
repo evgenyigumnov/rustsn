@@ -106,7 +106,7 @@ pub fn run_state_machine(
                     }
                 }
 
-                create_project(code, dependencies, tests);
+                create_project(lang, code, dependencies, tests);
                 let next_state_name = current_state.transitions.keys().next().unwrap().to_string();
                 current_state_name = next_state_name;
                 current_state_params = HashMap::new();
