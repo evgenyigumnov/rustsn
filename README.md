@@ -1,4 +1,4 @@
-# rustsn
+# rustsn - Rust Snippets Generator
 
 A Rust-based tool that automates the generation, compilation, and testing of code using  Large Language Models (LLMs). It interacts with LLMs to generate code based on user-provided explanations, compiles the code, resolves dependencies, and runs tests to ensure functionality.
 
