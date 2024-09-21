@@ -70,7 +70,7 @@ cd rustsn
 1. **Start the Program**
 
    ```bash
-   cargo run
+   cargo run -- --lang=RUST
    ```
 
 2. **Provide an Explanation**
