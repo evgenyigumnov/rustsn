@@ -172,8 +172,8 @@ I would love to see contributions from the community. If you experience bugs, fe
 
 ## Versions
 
-### 0.5.0 - Support only Rust code generation 20 September 2024
-- Make decision to support only Rust code generation
+### 0.5.0 - Support multi-language code generation 21 September 2024
+- Make decision to support multi-language code generation: Python, C, JavaScript, Java, TypeScript, CPP, Scala, Kotlin, Swift
 
 ### 0.4.0 - LLM Generate Result Extraction - 20 September 2024
 - Extract_code function replaced by extract_code, extract_dep, extract_test functions
