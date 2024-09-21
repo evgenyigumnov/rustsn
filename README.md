@@ -11,7 +11,7 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 
 - **Code Generation**: Generates Rust functions based on user explanations using LLMs.
 - **Automated Compilation**: Compiles the generated code and handles compilation errors.
-- **Dependency Resolution**: Determines and adds necessary dependencies to `Cargo.toml`.
+- **Dependency Resolution**: Determines and adds necessary dependencies.
 - **Test Generation**: Creates tests for the generated code using LLMs.
 - **Error Correction**: Iteratively rewrites code or tests to fix errors until successful compilation and testing.
 - **Caching Mechanism**: Implements caching to store and retrieve previous computations for efficiency.
