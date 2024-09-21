@@ -12,9 +12,9 @@ pub fn run_state_machine(
     cache:  &mut Cache,
     llm: &LLMApi,
 ) {
-    let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
     match lang {
         Lang::Rust => {
+            let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = crate::rust::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
@@ -25,7 +25,7 @@ pub fn run_state_machine(
             println!("================");
             let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
-            if build_res.0 || test_res.0 {
+            if build_res.0 && test_res.0 {
                 return;
             } else {
                 let mut number_of_attempts = 0;
@@ -55,7 +55,7 @@ pub fn run_state_machine(
                     println!("================");
                     test_res = build_tool(lang, &project.test, cache);
                     println!("================");
-                    if build_res.0 || test_res.0 {
+                    if build_res.0 && test_res.0 {
                         return;
                     }
                 }

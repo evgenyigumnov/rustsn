@@ -51,11 +51,63 @@ pub fn parse_llm_response(response: &str) -> Project {
         }
     }
 
-    Project {
-        cargo_toml,
-        lib_rs,
-        build: remove_comments(&build),
-        test: remove_comments(&test),
+    if cargo_toml == "" {
+        let mut cargo_toml = String::new();
+        let mut lib_rs = String::new();
+        let mut build = String::new();
+        let mut test = String::new();
+
+        let mut lines = response.lines().peekable();
+
+        while let Some(line) = lines.next() {
+            if line.starts_with("## ") {
+                let section_title = line[3..].trim();
+
+                // Skip lines until the start of the code block
+                while let Some(line) = lines.next() {
+                    if line.starts_with("```") {
+                        // Capture the code block content
+                        let mut code_content = String::new();
+                        while let Some(line) = lines.next() {
+                            if line.starts_with("```") {
+                                // End of code block
+                                break;
+                            } else {
+                                code_content.push_str(line);
+                                code_content.push('\n');
+                            }
+                        }
+
+                        // Assign the captured content to the appropriate field
+                        match section_title {
+                            "Cargo.toml" => cargo_toml = code_content.trim_end().to_string(),
+                            "src/lib.rs" => lib_rs = code_content.trim_end().to_string(),
+                            "Build" => build = code_content.trim_end().to_string(),
+                            "Test" => test = code_content.trim_end().to_string(),
+                            _ => (),
+                        }
+
+                        // Break out of the inner loop to process the next section
+                        break;
+                    }
+                }
+            }
+        }
+
+        Project {
+            cargo_toml,
+            lib_rs,
+            build,
+            test,
+        }
+    }
+    else {
+        Project {
+            cargo_toml,
+            lib_rs,
+            build: remove_comments(&build),
+            test: remove_comments(&test),
+        }
     }
 }
 
@@ -75,10 +127,10 @@ mod tests {
             project.test = crate::rust::remove_comments(&project.test);
 
             println!("{:#?}", project);
-            // assert!(!project.cargo_toml.is_empty());
-            // assert!(!project.lib_rs.is_empty());
-            // assert!(!project.build.is_empty());
-            // assert!(!project.test.is_empty());
+            assert!(!project.cargo_toml.is_empty());
+            assert!(!project.lib_rs.is_empty());
+            assert!(!project.build.is_empty());
+            assert!(!project.test.is_empty());
         }
 
     }

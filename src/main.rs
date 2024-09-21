@@ -15,7 +15,7 @@ const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
 fn main() {
     let matches = Command::new("rustsn - Rust Snippets Generator")
-        .version("0.6.0")
+        .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
         .about("Generation, compilation, and testing of code using LLMs")
         .arg(
