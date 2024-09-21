@@ -69,8 +69,8 @@ TestsPass --> [*]
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/evgenyigumnov/LLM-Logic-Exec-Verify.git
-cd LLM-Logic-Exec-Verify
+git clone https://github.com/evgenyigumnov/rustsn.git
+cd rustsn
 ```
 
 ## Usage
