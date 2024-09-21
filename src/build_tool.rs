@@ -1,43 +1,29 @@
 use crate::cache::Cache;
 use crate::{DEBUG, Lang};
+use crate::rust::Project;
 
 pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, String) {
     match lang {
         Lang::Rust => {
-            let command = if command_str == "build_tests" {
-                "test --no-run"
-            } else {
-                command_str
-            };
-            println!("Exec: cargo {}", command);
-            let code = if std::path::Path::new("sandbox/src/main.rs").exists() {
-                std::fs::read_to_string("sandbox/src/main.rs").unwrap()
-            } else {
-                "".to_string()
-            };
-            let dependencies = if std::path::Path::new("sandbox/Cargo.toml").exists() {
-                std::fs::read_to_string("sandbox/Cargo.toml").unwrap()
-            } else {
-                "".to_string()
-            };
+            println!("Launch: {}", command_str);
+            let code = std::fs::read_to_string("sandbox/src/lib.rs").unwrap();
+            let dependencies = std::fs::read_to_string("sandbox/Cargo.toml").unwrap();
             let src= format!("{}\n{}", dependencies, code);
-
-            let key = format!("{}{}", command, src);
+            let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    // split by ' '
-                    let args= command.split(" ").collect::<Vec<&str>>();
-                    let output = std::process::Command::new("cargo")
+                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let args = command_parts[1..].to_vec();
+                    let output = std::process::Command::new(command_parts[0])
                         .args(args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    let std_out = String::from_utf8(output.stdout).unwrap();
+                    // let std_out = String::from_utf8(output.stdout).unwrap();
                     let std_err = String::from_utf8(output.stderr).unwrap();
-                    let output = std_err + &std_out;
-                    let tuple: (i32, String) = (exit_code, output);
+                    let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
                     json_str
@@ -55,9 +41,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             if DEBUG {
                 println!("Output: {}", output);
             }
-
             let exit_code_bool = exit_code == 0;
-            (exit_code_bool,extract_error_message(&output, exit_code))
+            (exit_code_bool, only_error_message(&output, exit_code))
         }
         _ => panic!("Unsupported language: {:?}", lang),
 
@@ -65,31 +50,15 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
 
 }
 
-pub fn create_project(lang: &Lang,code: &str, dependencies: &str, tests: &str) {
+pub fn create_project(lang: &Lang, project: &Project) {
     match lang {
         Lang::Rust => {
-            let code_str = if code == "" {
-                ""
-            } else {
-                "'code'"
-            };
-            let test_str = if tests == "" {
-                ""
-            } else {
-                "'test'"
-            };
 
-            let dependencies_str = if dependencies == "" {
-                ""
-            } else {
-                "'dependencies'"
-            };
-
-            println!("Create sandbox project with: {} {} {}", code_str,  dependencies_str, test_str);
-            println!("{}\n{}\n{}", dependencies, code, tests);
+            println!("Create sandbox project with");
+            println!("{}\n{}", project.cargo_toml, project.lib_rs);
             let sandbox_path = "sandbox";
             let src_path = format!("{}/src", sandbox_path);
-            let main_path = format!("{}/src/main.rs", sandbox_path);
+            let main_path = format!("{}/src/lib.rs", sandbox_path);
             let cargo_path = format!("{}/Cargo.toml", sandbox_path);
             if !std::path::Path::new(sandbox_path).exists() {
                 std::fs::create_dir(sandbox_path).unwrap();
@@ -100,52 +69,18 @@ pub fn create_project(lang: &Lang,code: &str, dependencies: &str, tests: &str) {
             if !std::path::Path::new(&src_path).exists() {
                 std::fs::create_dir(&src_path).unwrap();
             }
-            let main_rs = r#"fn main() {}"#;
-            std::fs::write(&main_path, format!("{}\n{}\n{}", main_rs, code, tests)).unwrap();
-
-            std::fs::write(&cargo_path, format!(r#"
-[package]
-name = "sandbox"
-version = "0.1.0"
-edition = "2018"
-
-{}
-"#, dependencies )).unwrap();
+            std::fs::write(&main_path, &project.lib_rs).unwrap();
+            std::fs::write(&cargo_path, &project.cargo_toml ).unwrap();
         }
         _ => panic!("Unsupported language: {:?}", lang),
     }
 }
 
 
-fn extract_error_message(output: &str, exit_code: i32) -> String {
-    let mut error_lines = Vec::new();
-    let mut in_error_section = false;
-
-    for line in output.lines() {
-        if line.starts_with("error[") {
-            in_error_section = true;
-        }
-
-        if in_error_section {
-            error_lines.push(line);
-
-            if line.starts_with("For more information about this error") {
-                in_error_section = false;
-            }
-        }
-    }
-
-    let r = error_lines.join("\n");
-    let ret = if r == "" && exit_code != 0 {
+fn only_error_message(output: &str, exit_code: i32) -> String {
+    if exit_code == 0 {
+        return "".to_string()
+    } else {
         output.to_string()
-    } else  {
-        r
-    };
-
-    if DEBUG {
-        println!("=========Errors=========:");
-        println!("{}", ret);
-        println!("===================");
     }
-    ret
 }

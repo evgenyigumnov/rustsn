@@ -1,0 +1,59 @@
+**1. Cargo.toml:**
+
+```toml
+[package]
+name = "multiply_params"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Add any dependencies your function may require
+```
+
+**2. src/lib.rs:**
+
+```rust
+pub fn solution(a: i32, b: i32) -> i32 {
+    a * b
+}
+```
+
+**3. Build:**
+
+```bash
+cargo build
+```
+
+**4. Test:**
+
+```bash
+cargo test
+```
+
+
+## Detailed Explanation:
+
+* **Cargo.toml:** This file defines the project metadata, including its name, version, and dependencies. We don't
+need any specific dependencies for the `multiply_params` function. You can customize this based on your
+requirements.
+
+* **src/lib.rs:**  This file holds our `solution()` function implementation.
+    * It takes two integer parameters (`a` and `b`).
+    * It uses the multiplication operator `*`.
+    * The function returns an integer representing the product of `a` and `b`.
+
+* **Build:** This command builds the project, preparing it for execution.
+  * You'll likely need to install Rust (e.g., using `rustup`) if you don't already have it.
+
+
+* **Test:**  Running this command tests your code to ensure that it functions as intended.
+
+**Additional Notes:**
+
+* This solution is minimal; consider adding more functionality or complex testing in a real-world project.
+* The `solution()` function can be extended to handle different data types (e.g., floats, strings) by changing the
+input and output types accordingly.
+
+
+
+Let me know if you'd like help with any specific aspect of this solution!

@@ -1,0 +1,63 @@
+Вот решение задачи с необходимыми файлами, командами для сборки и тестирования.
+
+**Cargo.toml**
+```toml
+[package]
+name = "multiply"
+version = "0.1.0"
+edition = "2021"
+
+# Dependencies section, no external dependencies needed for this task
+[dependencies]
+```
+
+**src/lib.rs**
+```rust
+// Function that multiplies two parameters and returns the result
+pub fn solution(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+// Test module for testing the solution function
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_positive_numbers() {
+        assert_eq!(solution(3, 4), 12);
+    }
+
+    #[test]
+    fn test_negative_numbers() {
+        assert_eq!(solution(-3, -4), 12);
+    }
+
+    #[test]
+    fn test_mixed_sign_numbers() {
+        assert_eq!(solution(-3, 4), -12);
+    }
+
+    #[test]
+    fn test_zero() {
+        assert_eq!(solution(0, 4), 0);
+    }
+}
+```
+
+**Build**
+```bash
+cargo build
+```
+
+**Test**
+```bash
+cargo test
+```
+
+Сначала создайте проект с помощью команды:
+```bash
+cargo new multiply --lib
+```
+
+Далее замените содержимое файлов `Cargo.toml` и `src/lib.rs` с тем, что указано выше. Затем выполните сборку и тестирование с помощью команд `cargo build` и `cargo test`.

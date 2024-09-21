@@ -7,15 +7,15 @@ mod llm_prompt;
 mod build_tool;
 
 mod llm_api;
-mod llm_parser;
 mod state_machine;
 
+mod rust;
 
 const DEBUG: bool = false;
-const MAX_NUMBER_OF_ATTEMPTS:i32 = 30;
+const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
 fn main() {
     let matches = Command::new("rustsn - Rust Snippets Generator")
-        .version("0.6.0")
+        .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
         .about("Generation, compilation, and testing of code using LLMs")
         .arg(
@@ -43,7 +43,6 @@ fn main() {
         _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
     }
 
-    let states_str = std::fs::read_to_string(format!("{}/logic.md", lang)).unwrap();
     let mut cache = cache::Cache::new();
     let prompt = llm_prompt::Prompt::new(format!("{}/prompt.txt", lang).as_str());
     // if file token.txt exists
@@ -106,15 +105,9 @@ fn main() {
     question.push('\n');
 
 
-    let mut code = "".to_string();
-    let mut dependencies = "".to_string();
-    let mut tests = "".to_string();
-    let mut output = "".to_string();
 
     println!("====================");
-    state_machine::run_state_machine(&lang, &states_str, &question, &mut code, &mut dependencies, &mut tests, &mut output, &prompt, &mut cache, &llm);
-    println!("++++++++ Finished ++++++++++++");
-    println!("\n{}\n{}\n{}", code, dependencies, tests);
+    state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
     println!("++++++++ Finished ++++++++++++");
 
 

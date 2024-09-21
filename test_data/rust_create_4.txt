@@ -1,0 +1,52 @@
+## **Cargo.toml**
+
+```toml
+[package]
+name = "multiply"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+```
+
+## **src/lib.rs**
+
+```rust
+pub fn solution(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_solution() {
+        assert_eq!(solution(2, 3), 6);
+        assert_eq!(solution(-2, 3), -6);
+        assert_eq!(solution(0, 5), 0);
+    }
+}
+```
+
+## **Build**
+
+```bash
+cargo build
+```
+
+## **Test**
+
+```bash
+cargo test
+```
+
+This code defines a function `solution` that takes two integers (`a` and `b`) as parameters and returns their
+product. The `tests` module contains three test cases to verify the functionality of the function:
+
+
+*  `test_solution()`: This test case checks if multiplying 2 by 3 results in 6, -2 by 3 results in -6, and 0 by 5
+results in 0.
+
+To build and run the tests, execute the commands mentioned in the "Build" and "Test" sections respectively.
+

@@ -1,0 +1,46 @@
+**Cargo.toml**
+```toml
+[package]
+name = "multiplier"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+```
+
+**src/lib.rs**
+```rust
+pub fn solution(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_positive_numbers() {
+        assert_eq!(solution(4, 5), 20);
+    }
+
+    #[test]
+    fn test_negative_numbers() {
+        assert_eq!(solution(-3, 6), -18);
+    }
+
+    #[test]
+    fn test_zero() {
+        assert_eq!(solution(0, 10), 0);
+    }
+}
+```
+
+**Build**
+```bash
+cargo build
+```
+
+**Test**
+```bash
+cargo test
+```

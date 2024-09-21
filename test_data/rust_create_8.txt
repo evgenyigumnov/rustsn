@@ -1,0 +1,59 @@
+## Cargo.toml
+```toml
+[package]
+name = "json_parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+```
+
+## src/lib.rs
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize)]
+struct User {
+    name: String,
+    age: u32,
+}
+
+fn solution(json_string: &str) -> Option<User> {
+    match serde_json::from_str::<User>(json_string) {
+        Ok(user) => Some(user),
+        Err(_) => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_valid_json() {
+        let json = r#"{"name": "John Doe", "age": 30}"#;
+        assert_eq!(solution(json), Some(User { name: "John Doe".to_string(), age: 30 }));
+    }
+
+    #[test]
+    fn test_parse_invalid_json() {
+        let json = r#"{"name": "John Doe"}"#; // Missing "age" field
+        assert_eq!(solution(json), None);
+    }
+}
+```
+
+## Build
+```bash
+cargo build --tests
+```
+
+## Test
+```bash
+cargo test
+```
+
+

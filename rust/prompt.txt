@@ -1,181 +1,100 @@
-[[[generate_code]]]
+[[[generate]]]
 
 {{{0}}}
 
-Write on Rust language code of this function (without example of usage like main function):
-```rust
-fn solution(
+Write Rust code that implements this function and name it `solution`. Also, write tests for this function.
 
-[[[rewrite_code]]]
+Finally, create 2 files:
 
-{{{0}}}
-Rust language code of this function:
-```rust
-{{{1}}}
-```
-Try to compile this code:
-'''bash
-cargo build
-'''
-Result of compilation:
-'''console
-{{{2}}}
-'''
+1. `src/lib.rs` (contains the implementation of the function and tests)
+2. `Cargo.toml` (contains information about the project and dependencies)
 
-Rewrite code for fixing errors of this function (without example of usage like main function):
-```rust
+You need to build this code and run the tests.
 
+Formulate the solution in the following format:
 
-[[[build_dependencies_req]]]
-
-{{{0}}}
-Rust language code of this function:
-```rust
-{{{1}}}
-```
-
-Cargo.toml file:
+**Cargo.toml**
 ```toml
-{{{2}}}
+Contents of Cargo.toml file
 ```
 
+**src/lib.rs**
+```rust
+Contents of src/lib.rs file
+```
+
+**Build**
+```bash
+Commands for building code with tests (compiling all code and tests, add "--tests" parameter)
+```
+
+**Test**
+```bash
+Commands for running tests
+```
+
+In the end, there will be 4 blocks: Cargo.toml, src/lib.rs, Build, Test
+
+
+[[[rewrite]]]
+
+**Cargo.toml**
+```toml
+{{{0}}}
+```
+
+**src/lib.rs**
+```rust
+{{{1}}}
+```
 
 ```bash
-cargo build
-```
-
-Result of compilation:
-```console
-{{{3}}}
-```
-
-For this function is required some dependencies in Cargo.toml file?
-1. Some dependencies are required to add in Cargo.toml file
-2. All dependencies are already included or placed in standard library
-Answer(just number):
-
-
-[[[build_dependencies]]]
-
-{{{0}}}
-Rust language code of this function:
-```rust
-{{{1}}}
-```
-
-Write dependencies to Cargo.toml file (only dependencies section without Rust language code):
-```toml
-[package]
-name = "sandbox"
-version = "0.1.0"
-edition = "2018"
-
-[dependencies]
-
-[[[rewrite_dependencies]]]
-
-{{{0}}}
-Rust language code of this function:
-```rust
-{{{1}}}
-```
-
-Cargo.toml file
-```toml
-[package]
-name = "sandbox"
-version = "0.1.0"
-edition = "2018"
-
 {{{2}}}
 ```
-
-cargo build
-
-Result of compilation:
 
 ```console
 {{{3}}}
 ```
 
-Rewrite dependencies for fixing error to Cargo.toml file (only dependencies section without Rust language code without comments):
+```bash
+{{{4}}}
+```
+
+```console
+{{{5}}}
+```
+
+{{{6}}}
+
+Rewrite Rust code that implements this function and name it `solution`. Also, rewrite tests for this function.
+
+Finally, create 2 files:
+
+1. `src/lib.rs` (contains the implementation of the function and tests)
+2. `Cargo.toml` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**Cargo.toml**
 ```toml
-[dependencies]
-
-
-[[[generate_test]]]
-
-{{{0}}}
-Rust language code of this function:
-```rust
-{{{1}}}
+Contents of Cargo.toml file
 ```
 
-Write on Rust language code of test for this function (only test code without function implementation):
+**src/lib.rs**
 ```rust
-#[cfg(test)]
-mod tests {
-use super::*;
-
-#[test]
-fn test_solution(
-
-[[[rewrite_test]]]
-
-{{{0}}}
-Rust language code of this function:
-```rust
-{{{1}}}
+Contents of src/lib.rs file
 ```
 
-Test code for this function:
-```rust
-{{{2}}}
+**Build**
+```bash
+Commands for building code with tests (compiling all code and tests, add "--tests" parameter)
 ```
 
-'''bash
-cargo test
-'''
-
-Result of testing:
-'''console
-{{{3}}}
-'''
-
-Rewrite test code for fixing error (only test code without function implementation):
-```rust
-#[cfg(test)]
-mod tests {
-use super::*;
-
-#[test]
-fn test_solution(
-
-
-
-[[[rewrite_code_req]]]
-
-{{{0}}}
-Rust language code of this function:
-```rust
-{{{1}}}
+**Test**
+```bash
+Commands for running tests
 ```
 
-Test code for this function:
-```rust
-{{{2}}}
-```
-
-'''bash
-cargo test
-'''
-
-Result of testing:
-'''console
-{{{3}}}
-'''
-
-Where are current errors placed ?
-1. In code. In 'solution' function
-2. In test. In 'test_solution' function
-Answer(just number):
+In the end, there will be 4 blocks: Cargo.toml, src/lib.rs, Build, Test

@@ -158,12 +158,10 @@ I would love to see contributions from the community. If you experience bugs, fe
 2. Do fork 
 3. Create pull request
 
-## For contributors
-
-![Logic](logic.png)
-
-
 ## Versions
+### 0.7.0 - Simplification 22 September 2024
+- Simplify state machine logic and remove logic.md file
+- Simplify prompt.txt file
 
 ### 0.6.0 - Add "clap" crate 21 September 2024
 - Add --lang parameter to specify the language of the generated code (Rust, Python, C, JavaScript, Java, TypeScript, CPP, Scala, Kotlin, Swift)
