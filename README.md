@@ -151,13 +151,13 @@ Finished
 ```
 
 
-## Example of queries for code generation
+## Examples of queries for code generation
 
-```take 2 params and multiply and return result```
+1. ```take 2 params and multiply and return result```
 
-```take 1 parameter multiply by random number and return tuple with  result and random number```
+2. ```take 1 parameter multiply by random number and return tuple with  result and random number```
 
-```parse json string and return struct User (age, name)```
+3. ```parse json string and return struct User (age, name)```
 
 ## Contributing
 
