@@ -3,6 +3,12 @@ use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use crate::cache::Cache;
 use crate::llm_prompt::Prompt;
+const STOP_WORDS: &[&str] = &[
+    "**Explanation",
+    "**Notes",
+    "### Explanation",
+    "**Additional Notes",
+];
 
 pub struct LLMApi {
     model_type: ModelType,
@@ -27,14 +33,14 @@ impl LLMApi {
         match &self.model_type {
             ModelType::Ollama => {
                 let prompt = prompt.create(prompt_template, params);
-                let stop = vec!["**Explanation".to_string(),"**Notes:".to_string()];
+                let stop = STOP_WORDS;
                 let request = OllamaRequest {
                     model: "gemma2:27b".to_string(),
                     prompt: prompt.to_string(),
                     stream: false,
                     options: OllamaOptions {
                         num_predict: 500,
-                        stop: stop,
+                        stop: stop.iter().map(|s| s.to_string()).collect(),
                     },
                 };
 
@@ -82,7 +88,7 @@ impl LLMApi {
                     messages,
                     max_tokens: 500,
                     temperature: 0.7,
-                    stop: Some(vec!["**Explanation".to_string(), "**Notes:".to_string()]),
+                    stop: Some(STOP_WORDS.iter().map(|s| s.to_string()).collect()),
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();
