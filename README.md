@@ -16,6 +16,12 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - **Error Correction**: Iteratively rewrites code or tests to fix errors until successful compilation and testing.
 - **Caching Mechanism**: Implements caching to store and retrieve previous computations for efficiency.
 
+## Supported languages
+- Rust
+- TODO: JavaScript https://github.com/evgenyigumnov/rustsn/issues/2
+- TODO: TypeScript https://github.com/evgenyigumnov/rustsn/issues/3
+- TODO: Python https://github.com/evgenyigumnov/rustsn/issues/4
+
 ## How it works
 
 ```mermaid
