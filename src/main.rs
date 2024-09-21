@@ -14,7 +14,7 @@ mod rust;
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
 fn main() {
-    let matches = Command::new("rustsn - Rust Snippets Generator")
+        let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
         .about("Generation, compilation, and testing of code using LLMs")
@@ -24,7 +24,7 @@ fn main() {
                 .value_name("LANG")
                 .help("Sets the programming language")
                 .default_value("RUST")
-                .value_names(&["RUST", "JAVA", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "SWIFT"]),
+                .value_parser(*&["RUST", "JAVA", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "SWIFT"]),
         )
         .get_matches();
 

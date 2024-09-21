@@ -1,0 +1,111 @@
+[[[generate]]]
+
+{{{0}}}
+
+Write Java code that implements this function and name it `solution`. Also, write tests for this function.
+
+Finally, create 3 files:
+
+1. `src/main/java/com/example/solution/Solution.java` (contains the implementation of the function)
+2. `src/test/java/com/example/solution/SolutionTest.java` (contains the implementation of the tests)
+2. `pom.xml` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**pom.xml**
+```xml
+Contents of pom.xml file
+```
+**src/main/java/com/example/solution/Solution.java**
+```rust
+Contents of src/main/java/com/example/solution/Solution.java file
+```
+**src/test/java/com/example/solution/SolutionTest.java**
+```rust
+Contents of src/test/java/com/example/solution/SolutionTest.java file
+```
+
+**Compile**
+```bash
+Commands for compile code with tests
+```
+
+**Test**
+```bash
+Commands for running tests
+```
+
+In the end, there will be 4 blocks: pom.xml, "src/main/java/com/example/solution/Solution.java",src/test/java/com/example/solution/SolutionTest.java, Compile, Test
+
+
+[[[rewrite]]]
+
+**pom.xml**
+```xml
+{{{0}}}
+```
+**src/main/java/com/example/solution/Solution.java**
+```rust
+{{{1}}}
+```
+**src/test/java/com/example/solution/SolutionTest.java**
+```rust
+{{{2}}}
+```
+
+```bash
+{{{3}}}
+```
+
+```console
+{{{4}}}
+```
+
+```bash
+{{{5}}}
+```
+
+```console
+{{{6}}}
+```
+
+{{{7}}}
+
+Rewrite Java code that implements this function and name it `solution`. Also, rewrite tests for this function.
+
+Finally, create 3 files:
+
+1. `src/main/java/com/example/solution/Solution.java` (contains the implementation of the function)
+2. `src/test/java/com/example/solution/SolutionTest.java` (contains the implementation of the tests)
+2. `pom.xml` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**pom.xml**
+```xml
+Contents of pom.xml file
+```
+**src/main/java/com/example/solution/Solution.java**
+```rust
+Contents of src/main/java/com/example/solution/Solution.java file
+```
+**src/test/java/com/example/solution/SolutionTest.java**
+```rust
+Contents of src/test/java/com/example/solution/SolutionTest.java file
+```
+
+**Compile**
+```bash
+Commands for compile code with tests
+```
+
+**Test**
+```bash
+Commands for running tests
+```
+
+In the end, there will be 4 blocks: pom.xml, "src/main/java/com/example/solution/Solution.java",src/test/java/com/example/solution/SolutionTest.java, Compile, Test
