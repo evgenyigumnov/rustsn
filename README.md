@@ -1,6 +1,6 @@
 # rustsn
 
-A Rust-based tool that automates the generation, compilation, and testing of Rust code using  Large Language Models (LLMs). It interacts with LLMs to generate code based on user-provided explanations, compiles the code, resolves dependencies, and runs tests to ensure functionality.
+A Rust-based tool that automates the generation, compilation, and testing of code using  Large Language Models (LLMs). It interacts with LLMs to generate code based on user-provided explanations, compiles the code, resolves dependencies, and runs tests to ensure functionality.
 
 ## Project name explanation
 
@@ -172,6 +172,9 @@ I would love to see contributions from the community. If you experience bugs, fe
 
 
 ## Versions
+
+### 0.6.0 - Add "clap" crate 21 September 2024
+- Add --lang parameter to specify the language of the generated code (Rust, Python, C, JavaScript, Java, TypeScript, CPP, Scala, Kotlin, Swift)
 
 ### 0.5.0 - Support multi-language code generation 21 September 2024
 - Make decision to support multi-language code generation: Python, C, JavaScript, Java, TypeScript, CPP, Scala, Kotlin, Swift

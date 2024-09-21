@@ -1,3 +1,6 @@
+use clap::{Arg, Command};
+use std::str::FromStr;
+
 mod cache;
 mod llm_prompt;
 mod build_tool;
@@ -10,6 +13,34 @@ mod state_machine;
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 30;
 fn main() {
+    let matches = Command::new("rustsn - Rust Snippets")
+        .version("0.6.0")
+        .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
+        .about("Generation, compilation, and testing of code using LLMs")
+        .arg(
+            Arg::new("lang")
+                .long("lang")
+                .value_name("LANG")
+                .help("Sets the programming language")
+                .default_value("RUST")
+                .value_names(&["RUST", "JAVA", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "SWIFT"]),
+        )
+        .get_matches();
+
+    let lang: Lang = matches
+        .get_one::<String>("lang")
+        .unwrap()
+        .parse()
+        .unwrap_or_else(|err| {
+            eprintln!("{}", err);
+            std::process::exit(1);
+        });
+
+    // Optionally, handle the selected language
+    match lang {
+        Lang::Rust => println!("Selected language: Rust"),
+        _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
+    }
 
     let states_str = std::fs::read_to_string("logic.md").unwrap();
     let mut cache = cache::Cache::new();
@@ -89,6 +120,35 @@ fn main() {
 }
 
 
+#[derive(Debug, Clone)]
+enum Lang {
+    Rust,
+    Java,
+    Scala,
+    Python,
+    C,
+    Cpp,
+    Kotlin,
+    Swift,
+}
+
+impl FromStr for Lang {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "rust" => Ok(Lang::Rust),
+            "java" => Ok(Lang::Java),
+            "scala" => Ok(Lang::Scala),
+            "python" => Ok(Lang::Python),
+            "c" => Ok(Lang::C),
+            "cpp" => Ok(Lang::Cpp),
+            "kotlin" => Ok(Lang::Kotlin),
+            "swift" => Ok(Lang::Swift),
+            _ => Err(format!("Unsupported language: {}", s)),
+        }
+    }
+}
 
 
 
