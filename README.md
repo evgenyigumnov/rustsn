@@ -58,13 +58,13 @@ TestsPass --> [*]
 - **Rust**: Ensure you have Rust installed. You can install it from [here](https://www.rust-lang.org/tools/install).
 - **Make a decision**: Use Ollama (free and launched on your machine) or the OpenAI API (paid and launched on OpenAI servers).
 - **If you choose Ollama**: Required for LLM interactions. Install from [Ollama's official site](https://ollama.ai/).
-  - Download Ollam model (Optional) 
+  - Download Ollam model  
    ```bash
    ollama run gemma2:27b
    ```
    After downloading the model, you can say "hello" to the model to check if it is working correctly. 
    After that, you can use type "Ctrl+D" to exit the model.
-- **If you choose OpenAI API Key (Optional)**: Create file "token.txt" in the root folder and put your OpenAI API key there.
+- **If you choose OpenAI API Key**: Create file "token.txt" in the root folder and put your OpenAI API key there.
 
 ### Clone the Repository
 
