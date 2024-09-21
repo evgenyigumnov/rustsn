@@ -25,7 +25,7 @@ Contents of src/lib.rs file
 
 **Build**
 ```bash
-Commands for building code with tests (compiling all code and tests, add "--tests" parameter)
+Commands for building
 ```
 
 **Test**
@@ -89,7 +89,7 @@ Contents of src/lib.rs file
 
 **Build**
 ```bash
-Commands for building code with tests (compiling all code and tests, add "--tests" parameter)
+Commands for building
 ```
 
 **Test**

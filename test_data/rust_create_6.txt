@@ -1,0 +1,56 @@
+## **Cargo.toml**
+```toml
+[package]
+name = "multiply_function"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+```
+
+## **src/lib.rs**
+```rust
+fn solution(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_solution() {
+        assert_eq!(solution(2, 3), 6);
+        assert_eq!(solution(-1, 5), -5);
+        assert_eq!(solution(0, 10), 0);
+    }
+}
+```
+
+## **Build**
+```bash
+cargo build
+```
+
+## **Test**
+```bash
+cargo test
+```
+
+
+
+**Explanation:**
+
+* **Cargo.toml:** This file defines the project's metadata, including its name, version, and dependencies.
+* **src/lib.rs:**
+    * `solution` function: Takes two integers (`a` and `b`) as input and returns their product.
+    * `tests` module: Contains a test suite using the `#[cfg(test)]` attribute to ensure it only runs during
+testing.
+    * `test_solution`: A single test case that verifies the `solution` function's output for three different
+inputs.
+
+* **Build:**  The `cargo build` command compiles the Rust code into an executable file.
+* **Test:** The `cargo test` command runs all tests defined in the project and reports the results (success or
+failure).
+

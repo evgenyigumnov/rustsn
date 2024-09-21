@@ -1,0 +1,53 @@
+**Cargo.toml**
+```toml
+[package]
+name = "multiply_parameters"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+```
+
+**src/lib.rs**
+```rust
+/// Умножает два целых числа и возвращает результат.
+pub fn solution(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_positive_numbers() {
+        assert_eq!(solution(2, 3), 6);
+    }
+
+    #[test]
+    fn test_negative_numbers() {
+        assert_eq!(solution(-2, -3), 6);
+    }
+
+    #[test]
+    fn test_mixed_sign_numbers() {
+        assert_eq!(solution(-2, 3), -6);
+    }
+
+    #[test]
+    fn test_with_zero() {
+        assert_eq!(solution(0, 5), 0);
+        assert_eq!(solution(5, 0), 0);
+    }
+}
+```
+
+**Build**
+```bash
+cargo build
+```
+
+**Test**
+```bash
+cargo test
+```

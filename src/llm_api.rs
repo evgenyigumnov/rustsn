@@ -9,7 +9,7 @@ const STOP_WORDS: &[&str] = &[
     "### Explanation",
     "**Additional Notes",
 ];
-
+// const STOP_WORDS: &[&str] = &[];
 pub struct LLMApi {
     model_type: ModelType,
 }
@@ -36,6 +36,7 @@ impl LLMApi {
                 let stop = STOP_WORDS;
                 let request = OllamaRequest {
                     model: "gemma2:27b".to_string(),
+                   // model: "gemma2:2b".to_string(), // fast but very stupid model - excellent for testing
                     prompt: prompt.to_string(),
                     stream: false,
                     options: OllamaOptions {

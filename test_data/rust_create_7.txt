@@ -1,0 +1,45 @@
+Вот пример реализации простой функции на Rust, которая принимает два параметра, перемножает их и возвращает результат, включая необходимые файлы и команды для сборки и тестирования.
+
+**Cargo.toml**
+```toml
+[package]
+name = "rust_multiplication"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+```
+
+**src/lib.rs**
+```rust
+pub fn solution(a: i32, b: i32) -> i32 {
+    a * b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_multiplication() {
+        assert_eq!(solution(2, 3), 6);
+        assert_eq!(solution(-2, 3), -6);
+        assert_eq!(solution(0, 100), 0);
+        assert_eq!(solution(-2, -3), 6);
+    }
+}
+```
+
+**Build**
+```bash
+# Сборка проекта
+cargo build
+```
+
+**Test**
+```bash
+# Запуск тестов
+cargo test
+```
+
+Это решение создает минимальный проект Rust, который включает функцию `solution`, умножающую два целых числа. Также включены базовые тесты для проверки различных случаев умножения. Вы можете использовать команды `cargo build` для сборки проекта и `cargo test` для запуска тестов и проверки корректности функции.
