@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 use crate::build_tool::{build_tool, create_project};
 use crate::cache::Cache;
-use crate::{DEBUG, MAX_NUMBER_OF_ATTEMPTS};
+use crate::{DEBUG, Lang, MAX_NUMBER_OF_ATTEMPTS};
 use crate::llm_parser::{extract, extract_number};
 use crate::llm_prompt::Prompt;
 use crate::llm_api::LLMApi;
 
 
 pub fn run_state_machine(
+    lang: &Lang,
     states_str_var: &str,
     question: &str,
     code: &mut String,
@@ -66,7 +67,7 @@ pub fn run_state_machine(
                     "extract_test" => "tests",
                     &_ => panic!("Unknown extract type: {}", state_type),
                 };
-                let result = extract(current_state_params.get(state_params[0]).unwrap(), extract_type);
+                let result = extract(lang, current_state_params.get(state_params[0]).unwrap(), extract_type);
                 let next_state_name = current_state.transitions.keys().next().unwrap().to_string();
                 let param = current_state.transitions.get(&next_state_name).unwrap().to_string();
                 let mut next_state_params = HashMap::new();
@@ -113,7 +114,7 @@ pub fn run_state_machine(
                 continue;
             }
             "build_tool" => {
-                let result:(bool, String) = build_tool(&state_params[0].replace("\"",""), cache);
+                let result:(bool, String) = build_tool(lang, &state_params[0].replace("\"",""), cache);
                 let param_first_name = result.0.to_string();
                 let param_first_name_value = result.0.to_string();
                 let param_second_name = "output".to_string();

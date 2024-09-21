@@ -1,28 +1,34 @@
-use crate::DEBUG;
+use crate::{DEBUG, Lang};
 
-pub fn extract(input: &str, extract_type: &str) -> String {
-    let extract = extract_impl(input);
-    let res = match extract_type {
-        "code" => {
-            extract.code.unwrap_or("Error: extract_code()".to_string())
-        },
-        "dependencies" => {
-            extract.dependencies.unwrap_or("Error: extract_dependencies()".to_string())
-        },
-        "tests" => {
-            extract.tests.unwrap_or("Error: extract_tests()".to_string())
-        },
-        _ => {
-            panic!("Unknown extract type: {}", extract_type);
+pub fn extract(lang: &Lang, input: &str, extract_type: &str) -> String {
+    match lang {
+        Lang::Rust => {
+            let extract = extract_impl(input);
+            let res = match extract_type {
+                "code" => {
+                    extract.code.unwrap_or("Error: extract_code()".to_string())
+                },
+                "dependencies" => {
+                    extract.dependencies.unwrap_or("Error: extract_dependencies()".to_string())
+                },
+                "tests" => {
+                    extract.tests.unwrap_or("Error: extract_tests()".to_string())
+                },
+                _ => {
+                    panic!("Unknown extract type: {}", extract_type);
+                }
+            };
+
+            if DEBUG {
+                println!("{}",res);
+                println!("============");
+            }
+
+            res
         }
-    };
-
-    if DEBUG {
-        println!("{}",res);
-        println!("============");
+        _ => panic!("Unsupported language: {:?}", lang),
     }
 
-    res
 }
 
 #[derive(PartialEq, Debug)]

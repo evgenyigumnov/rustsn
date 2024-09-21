@@ -1,61 +1,68 @@
 use crate::cache::Cache;
-use crate::{DEBUG};
+use crate::{DEBUG, Lang};
 
-pub fn build_tool(command_str: &str, cache: &mut Cache) -> (bool, String) {
-    let command = if command_str == "build_tests" {
-        "test --no-run"
-    } else {
-        command_str
-    };
-    println!("Exec: cargo {}", command);
-    let code = if std::path::Path::new("sandbox/src/main.rs").exists() {
-        std::fs::read_to_string("sandbox/src/main.rs").unwrap()
-    } else {
-        "".to_string()
-    };
-    let dependencies = if std::path::Path::new("sandbox/Cargo.toml").exists() {
-        std::fs::read_to_string("sandbox/Cargo.toml").unwrap()
-    } else {
-        "".to_string()
-    };
-    let src= format!("{}\n{}", dependencies, code);
+pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, String) {
+    match lang {
+        Lang::Rust => {
+            let command = if command_str == "build_tests" {
+                "test --no-run"
+            } else {
+                command_str
+            };
+            println!("Exec: cargo {}", command);
+            let code = if std::path::Path::new("sandbox/src/main.rs").exists() {
+                std::fs::read_to_string("sandbox/src/main.rs").unwrap()
+            } else {
+                "".to_string()
+            };
+            let dependencies = if std::path::Path::new("sandbox/Cargo.toml").exists() {
+                std::fs::read_to_string("sandbox/Cargo.toml").unwrap()
+            } else {
+                "".to_string()
+            };
+            let src= format!("{}\n{}", dependencies, code);
 
-    let key = format!("{}{}", command, src);
-    let result_str_opt = cache.get(&key);
-    let result_str = match result_str_opt {
-        None => {
-            // split by ' '
-            let args= command.split(" ").collect::<Vec<&str>>();
-            let output = std::process::Command::new("cargo")
-                .args(args)
-                .current_dir("sandbox")
-                .output()
-                .unwrap();
-            let exit_code = output.status.code().unwrap();
-            let std_out = String::from_utf8(output.stdout).unwrap();
-            let std_err = String::from_utf8(output.stderr).unwrap();
-            let output = std_err + &std_out;
-            let tuple: (i32, String) = (exit_code, output);
-            let json_str = serde_json::to_string(&tuple).unwrap();
-            cache.set(key, json_str.clone());
-            json_str
+            let key = format!("{}{}", command, src);
+            let result_str_opt = cache.get(&key);
+            let result_str = match result_str_opt {
+                None => {
+                    // split by ' '
+                    let args= command.split(" ").collect::<Vec<&str>>();
+                    let output = std::process::Command::new("cargo")
+                        .args(args)
+                        .current_dir("sandbox")
+                        .output()
+                        .unwrap();
+                    let exit_code = output.status.code().unwrap();
+                    let std_out = String::from_utf8(output.stdout).unwrap();
+                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    let output = std_err + &std_out;
+                    let tuple: (i32, String) = (exit_code, output);
+                    let json_str = serde_json::to_string(&tuple).unwrap();
+                    cache.set(key, json_str.clone());
+                    json_str
+                }
+                Some(result) => {
+                    result.to_string()
+                }
+            };
+            let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
+
+            let exit_code = parsed.0;
+            let output = parsed.1;
+
+            println!("Exit result: {}", exit_code == 0);
+            if DEBUG {
+                println!("Output: {}", output);
+            }
+
+            let exit_code_bool = exit_code == 0;
+            (exit_code_bool,extract_error_message(&output, exit_code))
         }
-        Some(result) => {
-            result.to_string()
-        }
-    };
-    let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
+        _ => panic!("Unsupported language: {:?}", lang),
 
-    let exit_code = parsed.0;
-    let output = parsed.1;
-
-    println!("Exit result: {}", exit_code == 0);
-    if DEBUG {
-        println!("Output: {}", output);
     }
 
-    let exit_code_bool = exit_code == 0;
-    (exit_code_bool,extract_error_message(&output, exit_code))
 }
 
 pub fn create_project(code: &str, dependencies: &str, tests: &str) {

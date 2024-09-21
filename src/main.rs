@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use clap::{Arg, Command};
 use std::str::FromStr;
 
@@ -42,9 +43,9 @@ fn main() {
         _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
     }
 
-    let states_str = std::fs::read_to_string("logic.md").unwrap();
+    let states_str = std::fs::read_to_string(format!("{}/logic.md", lang)).unwrap();
     let mut cache = cache::Cache::new();
-    let prompt = llm_prompt::Prompt::new("prompt.txt");
+    let prompt = llm_prompt::Prompt::new(format!("{}/prompt.txt", lang).as_str());
     // if file token.txt exists
     let llm= if std::path::Path::new("token.txt").exists() {
         println!("Use OpenAI API");
@@ -111,7 +112,7 @@ fn main() {
     let mut output = "".to_string();
 
     println!("====================");
-    state_machine::run_state_machine(&states_str, &question, &mut code, &mut dependencies, &mut tests, &mut output, &prompt, &mut cache, &llm);
+    state_machine::run_state_machine(&lang, &states_str, &question, &mut code, &mut dependencies, &mut tests, &mut output, &prompt, &mut cache, &llm);
     println!("++++++++ Finished ++++++++++++");
     println!("\n{}\n{}\n{}", code, dependencies, tests);
     println!("++++++++ Finished ++++++++++++");
@@ -130,6 +131,21 @@ enum Lang {
     Cpp,
     Kotlin,
     Swift,
+}
+
+impl  Display for Lang {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Lang::Rust => write!(f, "rust"),
+            Lang::Java => write!(f, "java"),
+            Lang::Scala => write!(f, "scala"),
+            Lang::Python => write!(f, "python"),
+            Lang::C => write!(f, "c"),
+            Lang::Cpp => write!(f, "cpp"),
+            Lang::Kotlin => write!(f, "kotlin"),
+            Lang::Swift => write!(f, "swift"),
+        }
+    }
 }
 
 impl FromStr for Lang {
