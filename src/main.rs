@@ -13,6 +13,7 @@ mod rust;
 mod java;
 mod scala;
 mod javascript;
+mod php;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
@@ -27,7 +28,7 @@ fn main() {
                 .value_name("LANG")
                 .help("Sets the programming language")
                 .default_value("RUST")
-                .value_parser(*&["RUST", "JAVA", "JAVASCRIPT", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "SWIFT"]),
+                .value_parser(*&["RUST", "JAVA", "JAVASCRIPT", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "PHP", "SWIFT"]),
         )
         .get_matches();
 
@@ -46,6 +47,7 @@ fn main() {
         Lang::Java => println!("Selected language: Java"),
         Lang::Scala => println!("Selected language: Scala"),
         Lang::JavaScript => println!("Selected language: JavaScript"),
+        Lang::Php => println!("Selected language: PHP"),
         _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
     }
 
@@ -130,6 +132,7 @@ enum Lang {
     C,
     Cpp,
     Kotlin,
+    Php,
     Swift,
 }
 
@@ -144,6 +147,7 @@ impl  Display for Lang {
             Lang::C => write!(f, "c"),
             Lang::Cpp => write!(f, "cpp"),
             Lang::Kotlin => write!(f, "kotlin"),
+            Lang::Php => write!(f, "php"),
             Lang::Swift => write!(f, "swift"),
         }
     }
@@ -162,13 +166,9 @@ impl FromStr for Lang {
             "c" => Ok(Lang::C),
             "cpp" => Ok(Lang::Cpp),
             "kotlin" => Ok(Lang::Kotlin),
+            "php" => Ok(Lang::Php),
             "swift" => Ok(Lang::Swift),
             _ => Err(format!("Unsupported language: {}", s)),
         }
     }
 }
-
-
-
-
-
