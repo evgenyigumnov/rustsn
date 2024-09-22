@@ -11,6 +11,7 @@ mod state_machine;
 
 mod rust;
 mod java;
+mod scala;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
@@ -42,6 +43,7 @@ fn main() {
     match lang {
         Lang::Rust => println!("Selected language: Rust"),
         Lang::Java => println!("Selected language: Java"),
+        Lang::Scala => println!("Selected language: Scala"),
         _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
     }
 

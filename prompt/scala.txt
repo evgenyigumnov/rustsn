@@ -1,0 +1,111 @@
+[[[generate]]]
+
+{{{0}}}
+
+Write Scala code that implements this function and name it `solution`. Also, write tests for this function.
+
+Finally, create 3 files:
+
+1. `src/main/scala/Solution.scala` (contains the implementation of the function)
+2. `src/test/scala/SolutionTest.scala` (contains the implementation of the tests)
+2. `build.sbt` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+*build.sbt**
+```xml
+Contents of pom.xml file
+```
+**src/main/scala/Solution.scala**
+```rust
+Contents of src/main/scala/Solution.scala file
+```
+**src/test/scala/SolutionTest.scala**
+```rust
+Contents of src/test/scala/SolutionTest.scala file
+```
+
+**Compile**
+```bash
+Commands for compile code with tests
+```
+
+**Test**
+```bash
+Commands for running tests
+```
+
+In the end, there will be 4 blocks: build.sbt, "src/main/scala/Solution.scala","src/test/scala/SolutionTest.scala", Compile, Test
+
+
+[[[rewrite]]]
+
+**pom.xml**
+```xml
+{{{0}}}
+```
+**src/main/java/com/example/solution/Solution.java**
+```rust
+{{{1}}}
+```
+**src/test/java/com/example/solution/SolutionTest.java**
+```rust
+{{{2}}}
+```
+
+```bash
+{{{3}}}
+```
+
+```console
+{{{4}}}
+```
+
+```bash
+{{{5}}}
+```
+
+```console
+{{{6}}}
+```
+
+{{{7}}}
+
+Rewrite Scala code that implements this function and name it `solution`. Also, rewrite tests for this function.
+
+Finally, create 3 files:
+
+1. `src/main/scala/Solution.scala` (contains the implementation of the function)
+2. `src/test/scala/SolutionTest.scala` (contains the implementation of the tests)
+2. `build.sbt` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+*build.sbt**
+```xml
+Contents of pom.xml file
+```
+**src/main/scala/Solution.scala**
+```rust
+Contents of src/main/scala/Solution.scala file
+```
+**src/test/scala/SolutionTest.scala**
+```rust
+Contents of src/test/scala/SolutionTest.scala file
+```
+
+**Compile**
+```bash
+Commands for compile code with tests
+```
+
+**Test**
+```bash
+Commands for running tests
+```
+
+In the end, there will be 4 blocks: build.sbt, "src/main/scala/Solution.scala","src/test/scala/SolutionTest.scala", Compile, Test
