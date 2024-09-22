@@ -49,11 +49,6 @@ pub fn parse_llm_response(response: &str) -> Project {
     }
 
     if pom_xml == "" {
-        let mut pom_xml = String::new();
-        let mut solution_java = String::new();
-        let mut build = String::new();
-        let mut test = String::new();
-
         let mut lines = response.lines().peekable();
 
         while let Some(line) = lines.next() {

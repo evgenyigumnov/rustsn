@@ -52,10 +52,7 @@ pub fn parse_llm_response(response: &str) -> Project {
     }
 
     if cargo_toml == "" {
-        let mut cargo_toml = String::new();
-        let mut lib_rs = String::new();
-        let mut build = String::new();
-        let mut test = String::new();
+
 
         let mut lines = response.lines().peekable();
 
