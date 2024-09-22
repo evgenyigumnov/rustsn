@@ -14,7 +14,7 @@ You need to build this code and run the tests.
 
 Formulate the solution in the following format:
 
-*build.sbt**
+**build.sbt**
 ```scala
 Contents of build.sbt file
 ```
@@ -85,7 +85,7 @@ You need to build this code and run the tests.
 
 Formulate the solution in the following format:
 
-*build.sbt**
+**build.sbt**
 ```scala
 Contents of pom.xml file
 ```

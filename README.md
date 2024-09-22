@@ -1,6 +1,6 @@
 # rustsn - Rust Snippets Generator
 
-A Rust-based tool that automates the generation, compilation, and testing of code using  Large Language Models (LLMs). It interacts with LLMs to generate code based on user-provided explanations, compiles the code, resolves dependencies, and runs tests to ensure functionality.
+A Rust-based tool that automates the generation, compilation, and testing of code using Large Language Models (LLMs). It interacts with LLMs to generate code based on user-provided explanations, compiles the code, resolves dependencies, and runs tests to ensure functionality.
 
 ## Project name explanation
 
@@ -17,6 +17,7 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - **Caching Mechanism**: Implements caching to store and retrieve previous computations for efficiency.
 
 ## Supported languages
+- Python
 - JavaScript
 - Java
 - PHP
@@ -162,9 +163,12 @@ I would love to see contributions from the community. If you experience bugs, fe
 4. Create pull request
 
 ## Versions
+### 0.12.0 - Python 22 September 2024
+- Add Python language support
+
 ### 0.11.0 - PHP 22 September 2024
 - Add PHP language support
-- 
+ 
 ### 0.10.0 - JavaScript 22 September 2024
 - Add JavaScript language support
 

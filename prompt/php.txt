@@ -24,9 +24,6 @@ Contents of composer.json file # name the project -> name: "sandbox/solution", a
 ```php
 Contents of src/Solution.php file # "<?php" at the beginning of the file and under the namespace `Solution`
 ```
-```
-
-
 
 **tests/SolutionTest.php**
 ```php

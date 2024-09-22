@@ -14,6 +14,7 @@ mod java;
 mod scala;
 mod javascript;
 mod php;
+mod python;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
@@ -48,7 +49,10 @@ fn main() {
         Lang::Scala => println!("Selected language: Scala"),
         Lang::JavaScript => println!("Selected language: JavaScript"),
         Lang::Php => println!("Selected language: PHP"),
-        _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
+        Lang::Python => println!("Selected language: Python"),
+        _ => {
+            println!("Unimplemented language: {:?}", lang); std::process::exit(1);
+        }
     }
 
     let mut cache = cache::Cache::new();
