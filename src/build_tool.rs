@@ -1,5 +1,3 @@
-use std::env;
-
 use crate::cache::Cache;
 use crate::{DEBUG, Lang};
 use crate::rust::Project;
@@ -212,12 +210,10 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         command_parts[0].to_string()
                     };
                     println!("ARGS - {:?}", args);
-                    let sandbox_dir = format!("{}/sandbox", env::current_dir().unwrap().display());
-                    println!("SANDBOX DIR - {:?} - {}", sandbox_dir, command);
 
                     let output = std::process::Command::new(&command)
                         .args(&args)
-                        .current_dir(sandbox_dir)
+                        .current_dir("sandbox")
                         .output()
                         .unwrap();
 
