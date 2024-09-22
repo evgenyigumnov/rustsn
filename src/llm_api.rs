@@ -3,13 +3,13 @@ use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use crate::cache::Cache;
 use crate::llm_prompt::Prompt;
-const STOP_WORDS: &[&str] = &[
-    "**Explanation",
-    "**Notes",
-    "### Explanation",
-    "**Additional Notes",
-];
-// const STOP_WORDS: &[&str] = &[];
+// const STOP_WORDS: &[&str] = &[
+//     "**Explanation",
+//     "**Notes",
+//     "### Explanation",
+//     "**Additional Notes",
+// ];
+const STOP_WORDS: &[&str] = &[];
 const MAX_TOKENS: i32 = 1000;
 pub struct LLMApi {
     model_type: ModelType,
