@@ -127,7 +127,7 @@ mod tests {
         for i in 1..=5 {
             let file = format!("./test_data/java_create_{}.txt", i);
             let response = std::fs::read_to_string(file).unwrap();
-            let mut project = crate::java::parse_llm_response(&response);
+            let project = crate::java::parse_llm_response(&response);
 
             println!("{:#?}", project);
             assert!(!project.pom_xml.is_empty());
