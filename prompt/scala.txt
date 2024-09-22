@@ -15,15 +15,15 @@ You need to build this code and run the tests.
 Formulate the solution in the following format:
 
 *build.sbt**
-```xml
-Contents of pom.xml file
+```scala
+Contents of build.sbt file
 ```
 **src/main/scala/Solution.scala**
-```rust
+```scala
 Contents of src/main/scala/Solution.scala file
 ```
 **src/test/scala/SolutionTest.scala**
-```rust
+```scala
 Contents of src/test/scala/SolutionTest.scala file
 ```
 
@@ -37,20 +37,20 @@ Commands for compile code with tests
 Commands for running tests
 ```
 
-In the end, there will be 4 blocks: build.sbt, "src/main/scala/Solution.scala","src/test/scala/SolutionTest.scala", Compile, Test
+In the end, there will be 5 blocks: build.sbt, "src/main/scala/Solution.scala","src/test/scala/SolutionTest.scala", Compile, Test
 
 
 [[[rewrite]]]
 
-**pom.xml**
-```xml
+**build.sbt**
+```scala
 {{{0}}}
 ```
-**src/main/java/com/example/solution/Solution.java**
+**src/main/scala/Solution.scala**
 ```rust
 {{{1}}}
 ```
-**src/test/java/com/example/solution/SolutionTest.java**
+**src/test/scala/SolutionTest.scala**
 ```rust
 {{{2}}}
 ```
@@ -86,15 +86,15 @@ You need to build this code and run the tests.
 Formulate the solution in the following format:
 
 *build.sbt**
-```xml
+```scala
 Contents of pom.xml file
 ```
 **src/main/scala/Solution.scala**
-```rust
+```scala
 Contents of src/main/scala/Solution.scala file
 ```
 **src/test/scala/SolutionTest.scala**
-```rust
+```scala
 Contents of src/test/scala/SolutionTest.scala file
 ```
 
@@ -108,4 +108,4 @@ Commands for compile code with tests
 Commands for running tests
 ```
 
-In the end, there will be 4 blocks: build.sbt, "src/main/scala/Solution.scala","src/test/scala/SolutionTest.scala", Compile, Test
+In the end, there will be 5 blocks: build.sbt, "src/main/scala/Solution.scala","src/test/scala/SolutionTest.scala", Compile, Test
