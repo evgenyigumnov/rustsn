@@ -97,8 +97,8 @@ pub fn parse_llm_response(response: &str) -> Project {
         Project {
             cargo_toml,
             lib_rs,
-            build,
-            test,
+            build: remove_comments(&build),
+            test: remove_comments(&test),
         }
     }
     else {

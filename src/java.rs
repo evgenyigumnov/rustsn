@@ -43,13 +43,11 @@ pub fn parse_llm_response(response: &str) -> Project {
 
             if section_name.contains("pom.xml") {
                 pom_xml = content;
-            } else if section_name.contains("src/lib.rs") {
+            } else if section_name.contains("src/main/java/com/example/solution/Solution.java") {
                 solution_java = content;
-            } else if section_name.contains("Build") {
+            } else if section_name.contains("src/test/java/com/example/solution/SolutionTest.java") {
                 test_java = content;
-            } else if section_name.contains("src/lib.rs") {
-                solution_java = content;
-            } else if section_name.contains("Build") {
+            } else if section_name.contains("Compile") {
                 build = content;
             } else if section_name.contains("Test") {
                 test = content;
@@ -86,9 +84,10 @@ pub fn parse_llm_response(response: &str) -> Project {
 
                         // Assign the captured content to the appropriate field
                         match section_title {
-                            "Cargo.toml" => pom_xml = code_content.trim_end().to_string(),
-                            "src/lib.rs" => solution_java = code_content.trim_end().to_string(),
-                            "Build" => build = code_content.trim_end().to_string(),
+                            "pom.xml" => pom_xml = code_content.trim_end().to_string(),
+                            "src/main/java/com/example/solution/Solution.java" => solution_java = code_content.trim_end().to_string(),
+                            "src/test/java/com/example/solution/SolutionTest.java" => test_java = code_content.trim_end().to_string(),
+                            "Compile" => build = code_content.trim_end().to_string(),
                             "Test" => test = code_content.trim_end().to_string(),
                             _ => (),
                         }
@@ -104,14 +103,14 @@ pub fn parse_llm_response(response: &str) -> Project {
             pom_xml,
             solution_java,
             test_java,
-            build,
-            test,
+            build: remove_comments(&build),
+            test: remove_comments(&test),
         }
     }
     else {
         Project {
-            pom_xml: pom_xml,
-            solution_java: solution_java,
+            pom_xml,
+            solution_java,
             test_java,
             build: remove_comments(&build),
             test: remove_comments(&test),
