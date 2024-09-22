@@ -164,7 +164,7 @@ I would love to see contributions from the community. If you experience bugs, fe
 ## Versions
 ### 0.10.0 - JavaScript 22 September 2024
 - Add JavaScript language support
-- 
+
 ### 0.9.0 - Scala 22 September 2024
 - Add Scala language support
 
