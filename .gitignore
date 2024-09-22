@@ -16,3 +16,6 @@ cargo.log
 Cargo.lock
 
 token.txt
+
+cache.json
+sandbox

@@ -1,0 +1,124 @@
+[[[generate]]]
+
+{{{0}}}
+
+Write PHP code that implements this function and name it `solution`.
+Also, write tests for this function inside .
+
+Finally, create 3 files:
+
+1. `src/Solution` (contains the implementation of the function)
+2. `tests/SolutionTest.php` (contains the implementation of tests) under the namespace `Tests`
+3. `composer.json` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**composer.json**
+```json
+Contents of composer.json file # name the project -> name: "sandbox/solution", add a test script -> "test": "vendor/bin/phpunit tests/*.php"
+```
+
+**src/Solution.php**
+```php
+Contents of src/Solution.php file # "<?php" at the beginning of the file and under the namespace `Solution`
+```
+```
+
+
+
+**tests/SolutionTest.php**
+```php
+Contents of tests/SolutionTest.php file  # "<?php" at the beginning of the file
+```
+
+
+**Install**
+```bash
+Commands for installing dependencies # composer require --dev phpunit/phpunit --no-interaction
+```
+
+**Test**
+```bash
+Commands for running tests # composer test
+```
+
+In the end, there will be 5 blocks: composer.json, src/Solution.php, tests/SolutionTest.php, Install, Test.
+
+---
+
+[[[rewrite]]]
+
+**composer.json**
+```json
+{{{0}}}
+```
+
+**src/Solution.php**
+```php
+{{{1}}}
+```
+
+**tests/SolutionTest.php**
+```php
+{{{2}}}
+```
+
+```bash
+{{{3}}}
+```
+
+```console
+{{{4}}}
+```
+
+```bash
+{{{5}}}
+```
+
+```console
+{{{6}}}
+```
+
+{{{7}}}
+
+Rewrite PHP code that implements this function and name it `solution`. Also, rewrite tests for this function.
+
+Finally, create 3 files:
+
+1. `src/Solution.php` (contains the implementation of the function)
+1. `tests/SolutionTest.php` (contains the implementation of tests)
+2. `composer.json` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**composer.json**
+```json
+Contents of composer.json file # name the project name: "sandbox/solution"
+```
+
+**src/Solution.php**
+```php
+Contents of src/Solution.php file  # "<?php" at the beginning of the file and under the namespace `Solution`
+```
+
+**tests/SolutionTest.php**
+```php
+Contents of tests/SolutionTest.php file  # "<?php" at the beginning of the file
+```
+
+
+**Install**
+```bash
+Commands for installing dependencies # composer require --dev phpunit/phpunit --no-interaction
+```
+
+**Test**
+```bash
+Commands for running tests # composer test
+```
+
+In the end, there will be 5 blocks: composer.json, src/Solution.php, tests/SolutionTest.php, Install, Test.
