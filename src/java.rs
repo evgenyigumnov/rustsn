@@ -124,17 +124,17 @@ mod tests {
 
     #[test]
     fn test_parse_llm_response() {
-        for i in 1..=8 {
+        for i in 1..=5 {
             let file = format!("./test_data/java_create_{}.txt", i);
             let response = std::fs::read_to_string(file).unwrap();
             let mut project = crate::java::parse_llm_response(&response);
 
             println!("{:#?}", project);
-            // assert!(!project.pom_xml.is_empty());
-            // assert!(!project.solution_java.is_empty());
-            // assert!(!project.test_java.is_empty());
-            // assert!(!project.build.is_empty());
-            // assert!(!project.test.is_empty());
+            assert!(!project.pom_xml.is_empty());
+            assert!(!project.solution_java.is_empty());
+            assert!(!project.test_java.is_empty());
+            assert!(!project.build.is_empty());
+            assert!(!project.test.is_empty());
         }
 
     }

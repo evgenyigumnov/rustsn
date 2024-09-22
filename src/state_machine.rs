@@ -1,4 +1,4 @@
-use crate::build_tool::{build_tool, create_project, create_project_java};
+use crate::build_tool::{build_tool, create_project_rust, create_project_java};
 use crate::cache::Cache;
 use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS};
 use crate::llm_prompt::Prompt;
@@ -19,7 +19,7 @@ pub fn run_state_machine(
             println!("================");
             println!("{:#?}", project);
             println!("================");
-            create_project(lang, &project);
+            create_project_rust(lang, &project);
             println!("================");
             let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
@@ -49,7 +49,7 @@ pub fn run_state_machine(
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
-                    create_project(lang, &project);
+                    create_project_rust(lang, &project);
                     println!("================");
                     build_res = build_tool(lang, &project.build, cache);
                     println!("================");
