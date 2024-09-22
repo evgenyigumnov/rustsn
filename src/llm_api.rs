@@ -10,6 +10,7 @@ const STOP_WORDS: &[&str] = &[
     "**Additional Notes",
 ];
 // const STOP_WORDS: &[&str] = &[];
+const MAX_TOKENS: i32 = 1000;
 pub struct LLMApi {
     model_type: ModelType,
 }
@@ -35,13 +36,13 @@ impl LLMApi {
                 let prompt = prompt.create(prompt_template, params);
                 let stop = STOP_WORDS;
                 let request = OllamaRequest {
-                    model: "gemma2:27b".to_string(),
-                   // model: "gemma2:2b".to_string(), // fast but very stupid model - excellent for testing
+                    model: "gemma2:27b".to_string(), // smart model but slow
+                   // model: "gemma2:2b".to_string(), // fast but very stupid model - excellent for fast testing
                    //  model: "gemma2".to_string(), // medium model
                     prompt: prompt.to_string(),
                     stream: false,
                     options: OllamaOptions {
-                        num_predict: 500,
+                        num_predict: MAX_TOKENS,
                         stop: stop.iter().map(|s| s.to_string()).collect(),
                     },
                 };
@@ -88,7 +89,7 @@ impl LLMApi {
                 let request = OpenAIChatRequest {
                     model: "gpt-4o-2024-08-06".to_string(),
                     messages,
-                    max_tokens: 500,
+                    max_tokens: MAX_TOKENS,
                     temperature: 0.7,
                     stop: Some(STOP_WORDS.iter().map(|s| s.to_string()).collect()),
                 };

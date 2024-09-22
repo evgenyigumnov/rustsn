@@ -1,0 +1,69 @@
+**pom.xml**
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example.solution</groupId>
+    <artifactId>solution</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!-- JUnit dependency for testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+**src/main/java/com/example/solution/Solution.java**
+```rust
+package com.example.solution;
+
+public class Solution {
+    public int solution(int a, int b) {
+        return a * b;
+    }
+}
+```
+
+**src/test/java/com/example/solution/SolutionTest.java**
+```rust
+package com.example.solution;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class SolutionTest {
+
+    @Test
+    public void testSolution() {
+        Solution sol = new Solution();
+        assertEquals(6, sol.solution(2, 3));
+        assertEquals(0, sol.solution(0, 5));
+        assertEquals(-15, sol.solution(-3, 5));
+        assertEquals(12, sol.solution(-4, -3));
+    }
+}
+```
+
+**Compile**
+```bash
+mvn clean compile
+```
+
+**Test**
+```bash
+mvn test
+```
