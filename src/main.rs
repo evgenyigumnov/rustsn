@@ -46,7 +46,7 @@ fn main() {
     }
 
     let mut cache = cache::Cache::new();
-    let prompt = llm_prompt::Prompt::new(format!("{}/prompt.txt", lang).as_str());
+    let prompt = llm_prompt::Prompt::new(format!("prompt/{}.txt", lang).as_str());
     // if file token.txt exists
     let llm= if std::path::Path::new("token.txt").exists() {
         println!("Use OpenAI API");

@@ -41,8 +41,12 @@ pub fn parse_llm_response(response: &str) -> Project {
         if let Some(cap) = re_code_block.captures(section_content) {
             let content = cap.get(1).unwrap().as_str().to_string();
 
-            if section_name.contains("Cargo.toml") {
+            if section_name.contains("pom.xml") {
                 pom_xml = content;
+            } else if section_name.contains("src/lib.rs") {
+                solution_java = content;
+            } else if section_name.contains("Build") {
+                test_java = content;
             } else if section_name.contains("src/lib.rs") {
                 solution_java = content;
             } else if section_name.contains("Build") {
@@ -54,8 +58,8 @@ pub fn parse_llm_response(response: &str) -> Project {
     }
 
     if pom_xml == "" {
-        let mut cargo_toml = String::new();
-        let mut lib_rs = String::new();
+        let mut pom_xml = String::new();
+        let mut solution_java = String::new();
         let mut build = String::new();
         let mut test = String::new();
 
@@ -82,8 +86,8 @@ pub fn parse_llm_response(response: &str) -> Project {
 
                         // Assign the captured content to the appropriate field
                         match section_title {
-                            "Cargo.toml" => cargo_toml = code_content.trim_end().to_string(),
-                            "src/lib.rs" => lib_rs = code_content.trim_end().to_string(),
+                            "Cargo.toml" => pom_xml = code_content.trim_end().to_string(),
+                            "src/lib.rs" => solution_java = code_content.trim_end().to_string(),
                             "Build" => build = code_content.trim_end().to_string(),
                             "Test" => test = code_content.trim_end().to_string(),
                             _ => (),
@@ -97,8 +101,8 @@ pub fn parse_llm_response(response: &str) -> Project {
         }
 
         Project {
-            pom_xml: cargo_toml,
-            solution_java: lib_rs,
+            pom_xml,
+            solution_java,
             test_java,
             build,
             test,
