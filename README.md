@@ -19,7 +19,8 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 ## Supported languages
 - Rust
 - Java
-- TODO: Python https://github.com/evgenyigumnov/rustsn/issues/4 C https://github.com/evgenyigumnov/rustsn/issues/8 JavaScript https://github.com/evgenyigumnov/rustsn/issues/2 TypeScript https://github.com/evgenyigumnov/rustsn/issues/3 CPP https://github.com/evgenyigumnov/rustsn/issues/9 Scala https://github.com/evgenyigumnov/rustsn/issues/6 Kotlin https://github.com/evgenyigumnov/rustsn/issues/7 Swift https://github.com/evgenyigumnov/rustsn/issues/10 Other [languages](https://github.com/evgenyigumnov/rustsn/issues) 
+- Scala
+- TODO: Python https://github.com/evgenyigumnov/rustsn/issues/4 C https://github.com/evgenyigumnov/rustsn/issues/8 JavaScript https://github.com/evgenyigumnov/rustsn/issues/2 TypeScript https://github.com/evgenyigumnov/rustsn/issues/3 CPP https://github.com/evgenyigumnov/rustsn/issues/9 Kotlin https://github.com/evgenyigumnov/rustsn/issues/7 Swift https://github.com/evgenyigumnov/rustsn/issues/10 Other [languages](https://github.com/evgenyigumnov/rustsn/issues) 
 
 
 ## How it works
@@ -160,6 +161,9 @@ I would love to see contributions from the community. If you experience bugs, fe
 3. Create pull request
 
 ## Versions
+### 0.9.0 - Scala 22 September 2024
+- Add Scala language support
+
 ### 0.8.0 - Java 22 September 2024
 - Add Java language support
 
