@@ -1,0 +1,72 @@
+Sure, here’s a Java Maven project structure that includes the implementation of a `solution` function which multiplies two integers, along with test cases for this function.
+
+### **pom.xml**
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>solution</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+### **src/main/java/com/example/solution/Solution.java**
+```java
+package com.example.solution;
+
+public class Solution {
+    public int solution(int a, int b) {
+        return a * b;
+    }
+}
+```
+
+### **src/test/java/com/example/solution/SolutionTest.java**
+```java
+package com.example.solution;
+
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+public class SolutionTest {
+    @Test
+    public void testSolution() {
+        Solution sol = new Solution();
+        assertEquals(0, sol.solution(0, 5));
+        assertEquals(-10, sol.solution(2, -5));
+        assertEquals(10, sol.solution(2, 5));
+        assertEquals(49, sol.solution(7, 7));
+    }
+}
+```
+
+### **Compile**
+```bash
+# Compile the code
+mvn compile
+```
+
+### **Test**
+```bash
+# Run the tests
+mvn test
+```
+
+This setup uses Maven to handle dependencies and build configurations. The provided commands will compile the code and run the specified tests, ensuring your function works as expected across different scenarios.

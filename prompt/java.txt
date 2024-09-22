@@ -108,4 +108,4 @@ Commands for compile code with tests
 Commands for running tests
 ```
 
-In the end, there will be 4 blocks: pom.xml, "src/main/java/com/example/solution/Solution.java",src/test/java/com/example/solution/SolutionTest.java, Compile, Test
+In the end, there will be 4 blocks: pom.xml, "src/main/java/com/example/solution/Solution.java","src/test/java/com/example/solution/SolutionTest.java", Compile, Test
