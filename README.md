@@ -19,6 +19,7 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 ## Supported languages
 - JavaScript
 - Java
+- PHP
 - Rust
 - Scala
 
@@ -161,6 +162,9 @@ I would love to see contributions from the community. If you experience bugs, fe
 4. Create pull request
 
 ## Versions
+### 0.11.0 - PHP 22 September 2024
+- Add PHP language support
+- 
 ### 0.10.0 - JavaScript 22 September 2024
 - Add JavaScript language support
 
