@@ -7,7 +7,7 @@ Also, write tests for this function inside .
 
 Finally, create 3 files:
 
-1. `src/Solution` (contains the implementation of the function)
+1. `src/Solution.php` (contains the implementation of the function)
 2. `tests/SolutionTest.php` (contains the implementation of tests) under the namespace `Tests`
 3. `composer.json` (contains information about the project and dependencies)
 
