@@ -22,7 +22,7 @@ fn main() {
         let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
-        .about("Generation, compilation, and testing of code using LLMs")
+        .about("Code snippets generator via LLMs and compiler/tester via build tools")
         .arg(
             Arg::new("lang")
                 .long("lang")
