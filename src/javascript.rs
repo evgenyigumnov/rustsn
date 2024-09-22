@@ -1,14 +1,6 @@
 use regex::Regex;
+use crate::java::Project;
 use crate::rust::remove_comments;
-
-#[derive(Debug)]
-pub struct Project {
-    pub project_build_script: String,
-    pub solution_code: String,
-    pub test_code: String,
-    pub build: String,
-    pub test: String,
-}
 
 pub fn parse_llm_response(response: &str) -> Project {
     let mut pom_xml = String::new();
@@ -42,13 +34,13 @@ pub fn parse_llm_response(response: &str) -> Project {
         if let Some(cap) = re_code_block.captures(section_content) {
             let content = cap.get(1).unwrap().as_str().to_string();
 
-            if section_name.contains("pom.xml") {
+            if section_name.contains("package.json") {
                 pom_xml = content;
-            } else if section_name.contains("src/main/java/com/example/solution/Solution.java") {
+            } else if section_name.contains("src/solution.js") {
                 solution_java = content;
-            } else if section_name.contains("src/test/java/com/example/solution/SolutionTest.java") {
+            } else if section_name.contains("src/solution.test.js") {
                 test_java = content;
-            } else if section_name.contains("Compile") {
+            } else if section_name.contains("Install") {
                 build = content;
             } else if section_name.contains("Test") {
                 test = content;
@@ -85,10 +77,10 @@ pub fn parse_llm_response(response: &str) -> Project {
 
                         // Assign the captured content to the appropriate field
                         match section_title {
-                            "pom.xml" => pom_xml = code_content.trim_end().to_string(),
-                            "src/main/java/com/example/solution/Solution.java" => solution_java = code_content.trim_end().to_string(),
-                            "src/test/java/com/example/solution/SolutionTest.java" => test_java = code_content.trim_end().to_string(),
-                            "Compile" => build = code_content.trim_end().to_string(),
+                            "package.json" => pom_xml = code_content.trim_end().to_string(),
+                            "src/solution.js" => solution_java = code_content.trim_end().to_string(),
+                            "src/solution.test.js" => test_java = code_content.trim_end().to_string(),
+                            "Install" => build = code_content.trim_end().to_string(),
                             "Test" => test = code_content.trim_end().to_string(),
                             _ => (),
                         }
@@ -119,23 +111,3 @@ pub fn parse_llm_response(response: &str) -> Project {
     }
 }
 
-
-mod tests {
-
-    #[test]
-    fn test_parse_llm_response() {
-        for i in 1..=5 {
-            let file = format!("./test_data/java_create_{}.txt", i);
-            let response = std::fs::read_to_string(file).unwrap();
-            let project = crate::java::parse_llm_response(&response);
-
-            println!("{:#?}", project);
-            assert!(!project.project_build_script.is_empty());
-            assert!(!project.solution_code.is_empty());
-            assert!(!project.test_code.is_empty());
-            assert!(!project.build.is_empty());
-            assert!(!project.test.is_empty());
-        }
-
-    }
-}

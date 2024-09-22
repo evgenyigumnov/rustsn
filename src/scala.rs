@@ -93,18 +93,18 @@ pub fn parse_llm_response(response: &str) -> Project {
         }
 
         Project {
-            pom_xml,
-            solution_java,
-            test_java,
+            project_build_script: pom_xml,
+            solution_code: solution_java,
+            test_code: test_java,
             build: remove_comments(&build),
             test: remove_comments(&test),
         }
     }
     else {
         Project {
-            pom_xml,
-            solution_java,
-            test_java,
+            project_build_script: pom_xml,
+            solution_code: solution_java,
+            test_code: test_java,
             build: remove_comments(&build),
             test: remove_comments(&test),
         }

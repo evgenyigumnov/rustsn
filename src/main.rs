@@ -12,6 +12,7 @@ mod state_machine;
 mod rust;
 mod java;
 mod scala;
+mod javascript;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
@@ -26,7 +27,7 @@ fn main() {
                 .value_name("LANG")
                 .help("Sets the programming language")
                 .default_value("RUST")
-                .value_parser(*&["RUST", "JAVA", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "SWIFT"]),
+                .value_parser(*&["RUST", "JAVA", "JAVASCRIPT", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "SWIFT"]),
         )
         .get_matches();
 
@@ -44,6 +45,7 @@ fn main() {
         Lang::Rust => println!("Selected language: Rust"),
         Lang::Java => println!("Selected language: Java"),
         Lang::Scala => println!("Selected language: Scala"),
+        Lang::JavaScript => println!("Selected language: JavaScript"),
         _ => {println!("Unsupported language: {:?}", lang); std::process::exit(1);}
     }
 
@@ -122,6 +124,7 @@ fn main() {
 enum Lang {
     Rust,
     Java,
+    JavaScript,
     Scala,
     Python,
     C,
@@ -135,6 +138,7 @@ impl  Display for Lang {
         match self {
             Lang::Rust => write!(f, "rust"),
             Lang::Java => write!(f, "java"),
+            Lang::JavaScript => write!(f, "javascript"),
             Lang::Scala => write!(f, "scala"),
             Lang::Python => write!(f, "python"),
             Lang::C => write!(f, "c"),
@@ -152,6 +156,7 @@ impl FromStr for Lang {
         match s.to_lowercase().as_str() {
             "rust" => Ok(Lang::Rust),
             "java" => Ok(Lang::Java),
+            "javascript" => Ok(Lang::JavaScript),
             "scala" => Ok(Lang::Scala),
             "python" => Ok(Lang::Python),
             "c" => Ok(Lang::C),
