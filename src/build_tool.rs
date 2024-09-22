@@ -57,7 +57,13 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                 None => {
                     let command_parts= command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
-                    let output = std::process::Command::new(command_parts[0])
+                    // check OS if windows then add ".cmd" to command name in command_parts[0]
+                    let command = if cfg!(target_os = "windows") {
+                        format!("{}.cmd", command_parts[0])
+                    } else {
+                        command_parts[0].to_string()
+                    };
+                    let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")
                         .output()
