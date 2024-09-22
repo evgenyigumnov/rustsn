@@ -21,8 +21,6 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - Java
 - Rust
 - Scala
-- TODO: Python https://github.com/evgenyigumnov/rustsn/issues/4 C https://github.com/evgenyigumnov/rustsn/issues/8 TypeScript https://github.com/evgenyigumnov/rustsn/issues/3 CPP https://github.com/evgenyigumnov/rustsn/issues/9 Kotlin https://github.com/evgenyigumnov/rustsn/issues/7 Swift https://github.com/evgenyigumnov/rustsn/issues/10 Other [languages](https://github.com/evgenyigumnov/rustsn/issues) 
-
 
 ## How it works
 
@@ -159,7 +157,8 @@ Finished
 I would love to see contributions from the community. If you experience bugs, feel free to open an issue. If you would like to implement a new feature or bug fix, please follow the steps:
 1. Read "[Contributor License Agreement (CLA)](CLA)"
 2. Do fork 
-3. Create pull request
+3. Add comment to the [issue](https://github.com/evgenyigumnov/rustsn/issues) that you are going to work on it
+4. Create pull request
 
 ## Versions
 ### 0.10.0 - JavaScript 22 September 2024
