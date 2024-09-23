@@ -18,7 +18,7 @@ mod python;
 mod kotlin;
 
 const DEBUG: bool = false;
-const MAX_NUMBER_OF_ATTEMPTS:i32 = 2;
+const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
 fn main() {
         let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
