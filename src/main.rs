@@ -15,9 +15,10 @@ mod scala;
 mod javascript;
 mod php;
 mod python;
+mod kotlin;
 
 const DEBUG: bool = false;
-const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
+const MAX_NUMBER_OF_ATTEMPTS:i32 = 2;
 fn main() {
         let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
@@ -50,6 +51,7 @@ fn main() {
         Lang::JavaScript => println!("Selected language: JavaScript"),
         Lang::Php => println!("Selected language: PHP"),
         Lang::Python => println!("Selected language: Python"),
+        Lang::Kotlin => println!("Selected language: Kotlin"),
         _ => {
             println!("Unimplemented language: {:?}", lang); std::process::exit(1);
         }

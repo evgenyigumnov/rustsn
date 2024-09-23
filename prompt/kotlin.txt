@@ -29,12 +29,12 @@ Contents of src/test/kotlin/SolutionTest.kt file
 
 **Compile**
 ```bash
-Commands for compile code with tests
+Commands for compile code with tests (gradle command not gradlew)
 ```
 
 **Test**
 ```bash
-Commands for running tests
+Commands for running tests (use gradle command not gradlew)
 ```
 
 In the end, there will be 5 blocks: build.gradle, "src/main/kotlin/Solution.kt","src/test/kotlin/SolutionTest.kt", Compile, Test
@@ -100,12 +100,12 @@ Contents of src/test/kotlin/SolutionTest.kt file
 
 **Compile**
 ```bash
-Commands for compile code with tests
+Commands for compile code with tests (use gradle command not gradlew)
 ```
 
 **Test**
 ```bash
-Commands for running tests
+Commands for running tests (use gradle command not gradlew)
 ```
 
 In the end, there will be 5 blocks: build.gradle, "src/main/kotlin/Solution.kt","src/test/kotlin/SolutionTest.kt", Compile, Test

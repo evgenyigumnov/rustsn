@@ -9,6 +9,7 @@ and runs tests to ensure functionality.
 - Python
 - JavaScript
 - Java
+- Kotlin
 - PHP
 - Rust
 - Scala
@@ -157,6 +158,9 @@ I would love to see contributions from the community. If you experience bugs, fe
 4. Create pull request
 
 ## Versions
+### 0.13.0 - Kotlin 22 September 2024
+- Add Kotlin language support
+
 ### 0.12.0 - Python 22 September 2024
 - Add Python language support
 
