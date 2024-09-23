@@ -47,11 +47,11 @@ In the end, there will be 5 blocks: build.sbt, "src/main/scala/Solution.scala","
 {{{0}}}
 ```
 **src/main/scala/Solution.scala**
-```rust
+```scala
 {{{1}}}
 ```
 **src/test/scala/SolutionTest.scala**
-```rust
+```scala
 {{{2}}}
 ```
 
