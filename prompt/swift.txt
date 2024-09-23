@@ -1,0 +1,111 @@
+[[[generate]]]
+
+{{{0}}}
+
+Write Swift code that implements this function and name it `solution`. Also, write tests for this function.
+
+Finally, create 3 files:
+
+1. `Sources/Solution/Solution.swift` (contains the implementation of the function)
+2. `Tests/SolutionTests/SolutionTests.swift` (contains the implementation of the tests)
+2. `Package.swift` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**Package.swift**
+```swift
+Contents of Package.swift file
+```
+**Sources/Solution/Solution.swift**
+```swift
+Contents of Sources/Solution/Solution.swift file
+```
+**Tests/SolutionTests/SolutionTests.swift**
+```swift
+Contents of Tests/SolutionTests/SolutionTests.swift file
+```
+
+**Compile**
+```bash
+Commands for compile code with tests
+```
+
+**Test**
+```bash
+Commands for running tests
+```
+
+In the end, there will be 5 blocks: Package.swift, "Sources/Solution/Solution.swift","Tests/SolutionTests/SolutionTests.swift", Compile, Test
+
+
+[[[rewrite]]]
+
+**Package.swift**
+```swift
+{{{0}}}
+```
+**Sources/Solution/Solution.swift**
+```swift
+{{{1}}}
+```
+**Tests/SolutionTests/SolutionTests.swift**
+```swift
+{{{2}}}
+```
+
+```bash
+{{{3}}}
+```
+
+```console
+{{{4}}}
+```
+
+```bash
+{{{5}}}
+```
+
+```console
+{{{6}}}
+```
+
+{{{7}}}
+
+Rewrite Swift code that implements this function and name it `solution`. Also, rewrite tests for this function.
+
+Finally, create 3 files:
+
+1. `Sources/Solution/Solution.swift` (contains the implementation of the function)
+2. `Tests/SolutionTests/SolutionTests.swift` (contains the implementation of the tests)
+2. `Package.swift` (contains information about the project and dependencies)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**Package.swift**
+```swift
+Contents of pom.xml file
+```
+**Sources/Solution/Solution.swift**
+```swift
+Contents of Sources/Solution/Solution.swift file
+```
+**Tests/SolutionTests/SolutionTests.swift**
+```swift
+Contents of Tests/SolutionTests/SolutionTests.swift file
+```
+
+**Compile**
+```bash
+Commands for compile code with tests
+```
+
+**Test**
+```bash
+Commands for running tests
+```
+
+In the end, there will be 5 blocks: Package.swift, "Sources/Solution/Solution.swift","Tests/SolutionTests/SolutionTests.swift", Compile, Test

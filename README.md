@@ -10,6 +10,7 @@ and runs tests to ensure functionality.
 - JavaScript
 - Java
 - Kotlin
+- Swift
 - PHP
 - Rust
 - Scala
@@ -68,7 +69,7 @@ cd rustsn
 1. **Start the Program**
 
    ```bash
-   cargo run -- --lang=RUST
+   cargo run -- --lang=rust
    ```
 
 2. **Provide an Explanation**
@@ -158,6 +159,9 @@ I would love to see contributions from the community. If you experience bugs, fe
 4. Create pull request
 
 ## Versions
+### 0.14.0 - Swift 23 September 2024
+- Add Swift language support
+
 ### 0.13.0 - Kotlin 23 September 2024
 - Add Kotlin language support
 

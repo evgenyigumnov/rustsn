@@ -141,6 +141,50 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let exit_code_bool = exit_code == 0;
             (exit_code_bool, only_error_message(&output, exit_code))
         }
+        Lang::Swift => {
+            println!("Launch: {}", command_str);
+            let code = std::fs::read_to_string("sandbox/Sources/Solution/Solution.swift").unwrap();
+            let test = std::fs::read_to_string("sandbox/Tests/SolutionTests/SolutionTests.swift").unwrap();
+            let code_and_test = format!("{}\n{}", code, test);
+            let dependencies = std::fs::read_to_string("sandbox/Package.swift").unwrap();
+            let src= format!("{}\n{}", dependencies, code_and_test);
+            let key = format!("{}{}", command_str, src);
+            let result_str_opt = cache.get(&key);
+            let result_str = match result_str_opt {
+                None => {
+                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let args = command_parts[1..].to_vec();
+                    // check OS if windows then add ".cmd" to command name in command_parts[0]
+                    let command = command_parts[0].to_string();
+                    let output = std::process::Command::new(command)
+                        .args(args)
+                        .current_dir("sandbox")
+                        .output()
+                        .unwrap();
+                    let exit_code = output.status.code().unwrap();
+                    // let std_out = String::from_utf8(output.stdout).unwrap();
+                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    let tuple: (i32, String) = (exit_code, std_err);
+                    let json_str = serde_json::to_string(&tuple).unwrap();
+                    cache.set(key, json_str.clone());
+                    json_str
+                }
+                Some(result) => {
+                    result.to_string()
+                }
+            };
+            let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
+
+            let exit_code = parsed.0;
+            let output = parsed.1;
+
+            println!("Exit result: {}", exit_code == 0);
+            if DEBUG {
+                println!("Output: {}", output);
+            }
+            let exit_code_bool = exit_code == 0;
+            (exit_code_bool, only_error_message(&output, exit_code))
+        }
         Lang::Kotlin => {
             println!("Launch: {}", command_str);
             let code = std::fs::read_to_string("sandbox/src/main/kotlin/Solution.kt").unwrap();
@@ -407,7 +451,26 @@ pub fn create_project_scala(project: &crate::java::Project) {
     std::fs::write(&test_path, &project.test_code).unwrap();
     std::fs::write(&pom_path, &project.project_build_script).unwrap();
 }
+pub fn create_project_swift(project: &crate::java::Project) {
+    println!("Create sandbox project with");
+    println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
+    let sandbox_path = "sandbox";
 
+    let main_path = format!("{}/Sources/Solution/Solution.swift", sandbox_path);
+    let test_path = format!("{}/Tests/SolutionTests/SolutionTests.swift", sandbox_path);
+    let pom_path = format!("{}/Package.swift", sandbox_path);
+    if !std::path::Path::new(sandbox_path).exists() {
+        std::fs::create_dir(sandbox_path).unwrap();
+    } else {
+        std::fs::remove_dir_all(sandbox_path).unwrap();
+        std::fs::create_dir(sandbox_path).unwrap();
+    }
+    std::fs::create_dir_all(format!("{}/Sources/Solution/", sandbox_path)).unwrap();
+    std::fs::create_dir_all(format!("{}/Tests/SolutionTests", sandbox_path)).unwrap();
+    std::fs::write(&main_path, &project.solution_code).unwrap();
+    std::fs::write(&test_path, &project.test_code).unwrap();
+    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+}
 pub fn create_project_kotlin(project: &crate::java::Project) {
     println!("Create sandbox project with");
     println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);

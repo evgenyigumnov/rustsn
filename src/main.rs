@@ -16,6 +16,7 @@ mod javascript;
 mod php;
 mod python;
 mod kotlin;
+mod swift;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
@@ -29,8 +30,8 @@ fn main() {
                 .long("lang")
                 .value_name("LANG")
                 .help("Sets the programming language")
-                .default_value("RUST")
-                .value_parser(*&["RUST", "JAVA", "JAVASCRIPT", "SCALA", "PYTHON", "C", "CPP", "KOTLIN", "PHP", "SWIFT"]),
+                .default_value("javascript")
+                .value_parser(*&["rust", "java", "javascript", "scala", "kotlin", "swift", "php", "python"]),
         )
         .get_matches();
 
@@ -52,6 +53,7 @@ fn main() {
         Lang::Php => println!("Selected language: PHP"),
         Lang::Python => println!("Selected language: Python"),
         Lang::Kotlin => println!("Selected language: Kotlin"),
+        Lang::Swift => println!("Selected language: Swift"),
         _ => {
             println!("Unimplemented language: {:?}", lang); std::process::exit(1);
         }
