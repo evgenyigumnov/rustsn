@@ -19,11 +19,11 @@ Formulate the solution in the following format:
 Contents of pom.xml file
 ```
 **src/main/java/com/example/solution/Solution.java**
-```rust
+```java
 Contents of src/main/java/com/example/solution/Solution.java file
 ```
 **src/test/java/com/example/solution/SolutionTest.java**
-```rust
+```java
 Contents of src/test/java/com/example/solution/SolutionTest.java file
 ```
 
@@ -47,11 +47,11 @@ In the end, there will be 4 blocks: pom.xml, "src/main/java/com/example/solution
 {{{0}}}
 ```
 **src/main/java/com/example/solution/Solution.java**
-```rust
+```java
 {{{1}}}
 ```
 **src/test/java/com/example/solution/SolutionTest.java**
-```rust
+```java
 {{{2}}}
 ```
 
@@ -90,11 +90,11 @@ Formulate the solution in the following format:
 Contents of pom.xml file
 ```
 **src/main/java/com/example/solution/Solution.java**
-```rust
+```java
 Contents of src/main/java/com/example/solution/Solution.java file
 ```
 **src/test/java/com/example/solution/SolutionTest.java**
-```rust
+```java
 Contents of src/test/java/com/example/solution/SolutionTest.java file
 ```
 

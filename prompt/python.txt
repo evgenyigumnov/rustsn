@@ -43,15 +43,15 @@ In the end, there will be 5 blocks: requirements.txt, solution.py, test.py, Depe
 [[[rewrite]]]
 
 **requirements.txt**
-```scala
+```
 {{{0}}}
 ```
 **solution.py**
-```rust
+```python
 {{{1}}}
 ```
 **test.py**
-```rust
+```python
 {{{2}}}
 ```
 

@@ -66,7 +66,7 @@ In the end, there will be 4 blocks: Cargo.toml, src/lib.rs, Build, Test
 
 {{{6}}}
 
-Rewrite Rust code that implements this function and name it `solution`. Also, rewrite tests for this function.
+Rewrite Scala code that implements this function and name it `solution`. Also, rewrite tests for this function.
 
 Finally, create 2 files:
 

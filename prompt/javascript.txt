@@ -78,7 +78,7 @@ In the end, there will be 5 blocks: package.json, src/solution.js, src/solution.
 
 {{{7}}}
 
-Rewrite Rust code that implements this function and name it `solution`. Also, rewrite tests for this function.
+Rewrite JavaScript code that implements this function and name it `solution`. Also, rewrite tests for this function.
 
 Finally, create 3 files:
 
