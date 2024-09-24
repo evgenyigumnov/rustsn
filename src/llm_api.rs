@@ -1,8 +1,10 @@
 use crate::cache::Cache;
 use crate::llm_prompt::Prompt;
+use crate::OLLAMA_API;
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
+
 // const STOP_WORDS: &[&str] = &[
 //     "**Explanation",
 //     "**Notes",
@@ -64,7 +66,7 @@ impl LLMApi {
                             .unwrap();
 
                         let response = client
-                            .post("http://127.0.0.1:11434/api/generate")
+                            .post(OLLAMA_API)
                             .json(&request)
                             .send()
                             .unwrap()

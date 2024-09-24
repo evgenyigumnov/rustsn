@@ -21,6 +21,7 @@ mod typescript;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
+const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
 fn main() {
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
@@ -83,7 +84,8 @@ fn main() {
             api_key: token.trim().to_string(),
         })
     } else {
-        println!("Use Ollama API");
+        println!("Warning: Cant find \"token.txt\" file for OpenAI API integration.");
+        println!("Use Ollama API: {}", OLLAMA_API);
         println!("");
         llm_api::LLMApi::new(llm_api::ModelType::Ollama)
     };
