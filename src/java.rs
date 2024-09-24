@@ -1,5 +1,5 @@
-use regex::Regex;
 use crate::rust::remove_comments;
+use regex::Regex;
 
 #[derive(Debug)]
 pub struct Project {
@@ -17,7 +17,8 @@ pub fn parse_llm_response(response: &str) -> Project {
     let mut build = String::new();
     let mut test = String::new();
 
-    let re_section = Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
+    let re_section =
+        Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
 
     let mut positions = Vec::new();
 
@@ -46,7 +47,8 @@ pub fn parse_llm_response(response: &str) -> Project {
                 pom_xml = content;
             } else if section_name.contains("src/main/java/com/example/solution/Solution.java") {
                 solution_java = content;
-            } else if section_name.contains("src/test/java/com/example/solution/SolutionTest.java") {
+            } else if section_name.contains("src/test/java/com/example/solution/SolutionTest.java")
+            {
                 test_java = content;
             } else if section_name.contains("Compile") {
                 build = content;
@@ -57,7 +59,6 @@ pub fn parse_llm_response(response: &str) -> Project {
     }
 
     if pom_xml == "" {
-
         let mut lines = response.lines().peekable();
 
         while let Some(line) = lines.next() {
@@ -82,8 +83,12 @@ pub fn parse_llm_response(response: &str) -> Project {
                         // Assign the captured content to the appropriate field
                         match section_title {
                             "pom.xml" => pom_xml = code_content.trim_end().to_string(),
-                            "src/main/java/com/example/solution/Solution.java" => solution_java = code_content.trim_end().to_string(),
-                            "src/test/java/com/example/solution/SolutionTest.java" => test_java = code_content.trim_end().to_string(),
+                            "src/main/java/com/example/solution/Solution.java" => {
+                                solution_java = code_content.trim_end().to_string()
+                            }
+                            "src/test/java/com/example/solution/SolutionTest.java" => {
+                                test_java = code_content.trim_end().to_string()
+                            }
                             "Compile" => build = code_content.trim_end().to_string(),
                             "Test" => test = code_content.trim_end().to_string(),
                             _ => (),
@@ -103,8 +108,7 @@ pub fn parse_llm_response(response: &str) -> Project {
             build: remove_comments(&build),
             test: remove_comments(&test),
         }
-    }
-    else {
+    } else {
         Project {
             project_build_script: pom_xml,
             solution_code: solution_java,
@@ -114,7 +118,6 @@ pub fn parse_llm_response(response: &str) -> Project {
         }
     }
 }
-
 
 mod tests {
 
@@ -132,6 +135,5 @@ mod tests {
             assert!(!project.build.is_empty());
             assert!(!project.test.is_empty());
         }
-
     }
 }

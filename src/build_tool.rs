@@ -1,6 +1,6 @@
 use crate::cache::Cache;
-use crate::{DEBUG, Lang};
 use crate::rust::Project;
+use crate::{Lang, DEBUG};
 
 pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, String) {
     match lang {
@@ -8,12 +8,12 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             println!("Launch: {}", command_str);
             let code = std::fs::read_to_string("sandbox/src/lib.rs").unwrap();
             let dependencies = std::fs::read_to_string("sandbox/Cargo.toml").unwrap();
-            let src= format!("{}\n{}", dependencies, code);
+            let src = format!("{}\n{}", dependencies, code);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     let output = std::process::Command::new(command_parts[0])
                         .args(args)
@@ -28,9 +28,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -46,16 +44,21 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
         }
         Lang::Java => {
             println!("Launch: {}", command_str);
-            let code = std::fs::read_to_string("sandbox/src/main/java/com/example/solution/Solution.java").unwrap();
-            let test = std::fs::read_to_string("sandbox/src/test/java/com/example/solution/SolutionTest.java").unwrap();
+            let code =
+                std::fs::read_to_string("sandbox/src/main/java/com/example/solution/Solution.java")
+                    .unwrap();
+            let test = std::fs::read_to_string(
+                "sandbox/src/test/java/com/example/solution/SolutionTest.java",
+            )
+            .unwrap();
             let code_and_test = format!("{}\n{}", code, test);
             let dependencies = std::fs::read_to_string("sandbox/pom.xml").unwrap();
-            let src= format!("{}\n{}", dependencies, code_and_test);
+            let src = format!("{}\n{}", dependencies, code_and_test);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     // check OS if windows then add ".cmd" to command name in command_parts[0]
                     let command = if cfg!(target_os = "windows") {
@@ -76,9 +79,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -96,15 +97,16 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
         Lang::Scala => {
             println!("Launch: {}", command_str);
             let code = std::fs::read_to_string("sandbox/src/main/scala/Solution.scala").unwrap();
-            let test = std::fs::read_to_string("sandbox/src/test/scala/SolutionTest.scala").unwrap();
+            let test =
+                std::fs::read_to_string("sandbox/src/test/scala/SolutionTest.scala").unwrap();
             let code_and_test = format!("{}\n{}", code, test);
             let dependencies = std::fs::read_to_string("sandbox/build.sbt").unwrap();
-            let src= format!("{}\n{}", dependencies, code_and_test);
+            let src = format!("{}\n{}", dependencies, code_and_test);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     // check OS if windows then add ".cmd" to command name in command_parts[0]
                     let command = if cfg!(target_os = "windows") {
@@ -125,9 +127,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -144,15 +144,16 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
         Lang::Swift => {
             println!("Launch: {}", command_str);
             let code = std::fs::read_to_string("sandbox/Sources/Solution/Solution.swift").unwrap();
-            let test = std::fs::read_to_string("sandbox/Tests/SolutionTests/SolutionTests.swift").unwrap();
+            let test =
+                std::fs::read_to_string("sandbox/Tests/SolutionTests/SolutionTests.swift").unwrap();
             let code_and_test = format!("{}\n{}", code, test);
             let dependencies = std::fs::read_to_string("sandbox/Package.swift").unwrap();
-            let src= format!("{}\n{}", dependencies, code_and_test);
+            let src = format!("{}\n{}", dependencies, code_and_test);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     // check OS if windows then add ".cmd" to command name in command_parts[0]
                     let command = command_parts[0].to_string();
@@ -169,9 +170,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -191,12 +190,12 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let test = std::fs::read_to_string("sandbox/src/test/kotlin/SolutionTest.kt").unwrap();
             let code_and_test = format!("{}\n{}", code, test);
             let dependencies = std::fs::read_to_string("sandbox/build.gradle").unwrap();
-            let src= format!("{}\n{}", dependencies, code_and_test);
+            let src = format!("{}\n{}", dependencies, code_and_test);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     // check OS if windows then add ".cmd" to command name in command_parts[0]
                     let command = if cfg!(target_os = "windows") {
@@ -218,9 +217,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -244,12 +241,12 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let test = std::fs::read_to_string("sandbox/test.py").unwrap();
             let code_and_test = format!("{}\n{}", code, test);
             let dependencies = std::fs::read_to_string("sandbox/requirements.txt").unwrap();
-            let src= format!("{}\n{}", dependencies, code_and_test);
+            let src = format!("{}\n{}", dependencies, code_and_test);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     let output = std::process::Command::new(command_parts[0])
                         .args(args)
@@ -264,9 +261,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -287,12 +282,12 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let test = std::fs::read_to_string("sandbox/src/solution.test.js").unwrap();
             let code_and_test = format!("{}\n{}", code, test);
             let dependencies = std::fs::read_to_string("sandbox/package.json").unwrap();
-            let src= format!("{}\n{}", dependencies, code_and_test);
+            let src = format!("{}\n{}", dependencies, code_and_test);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     // check OS if windows then add ".cmd" to command name in command_parts[0]
                     let command = if cfg!(target_os = "windows") {
@@ -313,9 +308,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -335,12 +328,12 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let test = std::fs::read_to_string("sandbox/tests/SolutionTest.php").unwrap();
             let code_and_test = format!("{}\n{}", code, test);
             let dependencies = std::fs::read_to_string("sandbox/composer.json").unwrap();
-            let src= format!("{}\n{}", dependencies, code_and_test);
+            let src = format!("{}\n{}", dependencies, code_and_test);
             let key = format!("{}{}", command_str, src);
             let result_str_opt = cache.get(&key);
             let result_str = match result_str_opt {
                 None => {
-                    let command_parts= command_str.split(" ").collect::<Vec<&str>>();
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
                     // check OS if windows then add ".cmd" to command name in command_parts[0]
                     let command = if cfg!(target_os = "windows") {
@@ -364,9 +357,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     cache.set(key, json_str.clone());
                     json_str
                 }
-                Some(result) => {
-                    result.to_string()
-                }
+                Some(result) => result.to_string(),
             };
             let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
 
@@ -381,15 +372,12 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             (exit_code_bool, only_error_message(&output, exit_code))
         }
         _ => panic!("Unsupported language: {:?}", lang),
-
     }
-
 }
 
 pub fn create_project_rust(lang: &Lang, project: &Project) {
     match lang {
         Lang::Rust => {
-
             println!("Create sandbox project with");
             println!("{}\n{}", project.cargo_toml, project.lib_rs);
             let sandbox_path = "sandbox";
@@ -406,34 +394,54 @@ pub fn create_project_rust(lang: &Lang, project: &Project) {
                 std::fs::create_dir(&src_path).unwrap();
             }
             std::fs::write(&main_path, &project.lib_rs).unwrap();
-            std::fs::write(&cargo_path, &project.cargo_toml ).unwrap();
+            std::fs::write(&cargo_path, &project.cargo_toml).unwrap();
         }
         _ => panic!("Unsupported language: {:?}", lang),
     }
 }
 pub fn create_project_java(project: &crate::java::Project) {
-        println!("Create sandbox project with");
-        println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
-        let sandbox_path = "sandbox";
+    println!("Create sandbox project with");
+    println!(
+        "{}\n{}\n{}",
+        project.project_build_script, project.solution_code, project.test_code
+    );
+    let sandbox_path = "sandbox";
 
-        let main_path = format!("{}/src/main/java/com/example/solution/Solution.java", sandbox_path);
-        let test_path = format!("{}/src/test/java/com/example/solution/SolutionTest.java", sandbox_path);
-        let pom_path = format!("{}/pom.xml", sandbox_path);
-        if !std::path::Path::new(sandbox_path).exists() {
-            std::fs::create_dir(sandbox_path).unwrap();
-        } else {
-            std::fs::remove_dir_all(sandbox_path).unwrap();
-            std::fs::create_dir(sandbox_path).unwrap();
-        }
-        std::fs::create_dir_all(format!("{}/src/main/java/com/example/solution", sandbox_path)).unwrap();
-        std::fs::create_dir_all(format!("{}/src/test/java/com/example/solution", sandbox_path)).unwrap();
-        std::fs::write(&main_path, &project.solution_code).unwrap();
-        std::fs::write(&test_path, &project.test_code).unwrap();
-        std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    let main_path = format!(
+        "{}/src/main/java/com/example/solution/Solution.java",
+        sandbox_path
+    );
+    let test_path = format!(
+        "{}/src/test/java/com/example/solution/SolutionTest.java",
+        sandbox_path
+    );
+    let pom_path = format!("{}/pom.xml", sandbox_path);
+    if !std::path::Path::new(sandbox_path).exists() {
+        std::fs::create_dir(sandbox_path).unwrap();
+    } else {
+        std::fs::remove_dir_all(sandbox_path).unwrap();
+        std::fs::create_dir(sandbox_path).unwrap();
+    }
+    std::fs::create_dir_all(format!(
+        "{}/src/main/java/com/example/solution",
+        sandbox_path
+    ))
+    .unwrap();
+    std::fs::create_dir_all(format!(
+        "{}/src/test/java/com/example/solution",
+        sandbox_path
+    ))
+    .unwrap();
+    std::fs::write(&main_path, &project.solution_code).unwrap();
+    std::fs::write(&test_path, &project.test_code).unwrap();
+    std::fs::write(&pom_path, &project.project_build_script).unwrap();
 }
 pub fn create_project_scala(project: &crate::java::Project) {
     println!("Create sandbox project with");
-    println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
+    println!(
+        "{}\n{}\n{}",
+        project.project_build_script, project.solution_code, project.test_code
+    );
     let sandbox_path = "sandbox";
 
     let main_path = format!("{}/src/main/scala/Solution.scala", sandbox_path);
@@ -453,7 +461,10 @@ pub fn create_project_scala(project: &crate::java::Project) {
 }
 pub fn create_project_swift(project: &crate::java::Project) {
     println!("Create sandbox project with");
-    println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
+    println!(
+        "{}\n{}\n{}",
+        project.project_build_script, project.solution_code, project.test_code
+    );
     let sandbox_path = "sandbox";
 
     let main_path = format!("{}/Sources/Solution/Solution.swift", sandbox_path);
@@ -473,7 +484,10 @@ pub fn create_project_swift(project: &crate::java::Project) {
 }
 pub fn create_project_kotlin(project: &crate::java::Project) {
     println!("Create sandbox project with");
-    println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
+    println!(
+        "{}\n{}\n{}",
+        project.project_build_script, project.solution_code, project.test_code
+    );
     let sandbox_path = "sandbox";
 
     let main_path = format!("{}/src/main/kotlin/Solution.kt", sandbox_path);
@@ -493,7 +507,10 @@ pub fn create_project_kotlin(project: &crate::java::Project) {
 }
 pub fn create_project_python(project: &crate::java::Project) {
     println!("Create sandbox project with");
-    println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
+    println!(
+        "{}\n{}\n{}",
+        project.project_build_script, project.solution_code, project.test_code
+    );
     let sandbox_path = "sandbox";
 
     let main_path = format!("{}/solution.py", sandbox_path);
@@ -512,7 +529,10 @@ pub fn create_project_python(project: &crate::java::Project) {
 
 pub fn create_project_javascript(project: &crate::java::Project) {
     println!("Create sandbox project with");
-    println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
+    println!(
+        "{}\n{}\n{}",
+        project.project_build_script, project.solution_code, project.test_code
+    );
     let sandbox_path = "sandbox";
 
     let main_path = format!("{}/src/solution.js", sandbox_path);
@@ -531,7 +551,10 @@ pub fn create_project_javascript(project: &crate::java::Project) {
 }
 pub fn create_project_php(project: &crate::java::Project) {
     println!("Create sandbox project with");
-    println!("{}\n{}\n{}", project.project_build_script, project.solution_code, project.test_code);
+    println!(
+        "{}\n{}\n{}",
+        project.project_build_script, project.solution_code, project.test_code
+    );
     let sandbox_path = "sandbox";
     let main_path = format!("{}/src/Solution.php", sandbox_path);
     let test_path = format!("{}/tests/SolutionTest.php", sandbox_path);
@@ -549,10 +572,9 @@ pub fn create_project_php(project: &crate::java::Project) {
     std::fs::write(&pom_path, &project.project_build_script).unwrap();
 }
 
-
 fn only_error_message(output: &str, exit_code: i32) -> String {
     if exit_code == 0 {
-        return "".to_string()
+        return "".to_string();
     } else {
         output.to_string()
     }
