@@ -7,8 +7,8 @@ Write JavaScript code that implements this function and name it `solution`. Also
 Finally, create 3 files:
 
 1. `src/solution.js` (contains the implementation of the function)
-1. `src/solution.test.js` (contains the implementation of tests)
-2. `package.json` (contains information about the project and dependencies)
+2. `src/solution.test.js` (contains the implementation of tests)
+3. `package.json` (contains information about the project and dependencies)
 
 You need to build this code and run the tests.
 
@@ -83,8 +83,8 @@ Rewrite JavaScript code that implements this function and name it `solution`. Al
 Finally, create 3 files:
 
 1. `src/solution.js` (contains the implementation of the function)
-1. `src/solution.test.js` (contains the implementation of tests)
-2. `package.json` (contains information about the project and dependencies)
+2. `src/solution.test.js` (contains the implementation of tests)
+3. `package.json` (contains information about the project and dependencies)
 
 You need to build this code and run the tests.
 
