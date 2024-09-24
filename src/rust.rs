@@ -14,7 +14,8 @@ pub fn parse_llm_response(response: &str) -> Project {
     let mut build = String::new();
     let mut test = String::new();
 
-    let re_section = Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
+    let re_section =
+        Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
 
     let mut positions = Vec::new();
 
@@ -52,8 +53,6 @@ pub fn parse_llm_response(response: &str) -> Project {
     }
 
     if cargo_toml == "" {
-
-
         let mut lines = response.lines().peekable();
 
         while let Some(line) = lines.next() {
@@ -97,8 +96,7 @@ pub fn parse_llm_response(response: &str) -> Project {
             build: remove_comments(&build),
             test: remove_comments(&test),
         }
-    }
-    else {
+    } else {
         Project {
             cargo_toml,
             lib_rs,
@@ -110,7 +108,11 @@ pub fn parse_llm_response(response: &str) -> Project {
 
 pub fn remove_comments(text: &str) -> String {
     let re_comment = Regex::new(r"(?m)^#.*$").unwrap();
-    re_comment.replace_all(text, "").to_string().trim().to_string()
+    re_comment
+        .replace_all(text, "")
+        .to_string()
+        .trim()
+        .to_string()
 }
 mod tests {
 
@@ -129,6 +131,5 @@ mod tests {
             assert!(!project.build.is_empty());
             assert!(!project.test.is_empty());
         }
-
     }
 }

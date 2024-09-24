@@ -1,27 +1,27 @@
-use std::fmt::Display;
 use clap::{Arg, Command};
+use std::fmt::Display;
 use std::str::FromStr;
 
+mod build_tool;
 mod cache;
 mod llm_prompt;
-mod build_tool;
 
 mod llm_api;
 mod state_machine;
 
-mod rust;
 mod java;
-mod scala;
 mod javascript;
+mod kotlin;
 mod php;
 mod python;
-mod kotlin;
+mod rust;
+mod scala;
 mod swift;
 
 const DEBUG: bool = false;
-const MAX_NUMBER_OF_ATTEMPTS:i32 = 5;
+const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
 fn main() {
-        let matches = Command::new("rustsn - Rust Snippets Generator")
+    let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
         .about("Code snippets generator via LLMs and compiler/tester via build tools")
@@ -31,7 +31,16 @@ fn main() {
                 .value_name("LANG")
                 .help("Sets the programming language")
                 .default_value("javascript")
-                .value_parser(*&["rust", "java", "javascript", "scala", "kotlin", "swift", "php", "python"]),
+                .value_parser(*&[
+                    "rust",
+                    "java",
+                    "javascript",
+                    "scala",
+                    "kotlin",
+                    "swift",
+                    "php",
+                    "python",
+                ]),
         )
         .get_matches();
 
@@ -55,28 +64,30 @@ fn main() {
         Lang::Kotlin => println!("Selected language: Kotlin"),
         Lang::Swift => println!("Selected language: Swift"),
         _ => {
-            println!("Unimplemented language: {:?}", lang); std::process::exit(1);
+            println!("Unimplemented language: {:?}", lang);
+            std::process::exit(1);
         }
     }
 
     let mut cache = cache::Cache::new();
     let prompt = llm_prompt::Prompt::new(format!("prompt/{}.txt", lang).as_str());
     // if file token.txt exists
-    let llm= if std::path::Path::new("token.txt").exists() {
+    let llm = if std::path::Path::new("token.txt").exists() {
         println!("Use OpenAI API");
         println!("");
         let token = std::fs::read_to_string("token.txt").unwrap();
         llm_api::LLMApi::new(llm_api::ModelType::OpenAI {
-            api_key: token.trim().to_string()
+            api_key: token.trim().to_string(),
         })
-    }
-    else {
+    } else {
         println!("Use Ollama API");
         println!("");
         llm_api::LLMApi::new(llm_api::ModelType::Ollama)
     };
 
-    println!("Use '\\' char in the end of line for multiline mode or just copy-paste multiline text.");
+    println!(
+        "Use '\\' char in the end of line for multiline mode or just copy-paste multiline text."
+    );
     println!("");
     println!("For launch code generation, type ENTER twice after the last line of the prompt.");
     println!("");
@@ -100,9 +111,12 @@ fn main() {
             lines.push(line.clone());
         }
 
-        let now_sec = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis();
+        let now_sec = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis();
 
-        if start_sec == 0  {
+        if start_sec == 0 {
             start_sec = now_sec;
         } else {
             if now_sec - start_sec < 100 {
@@ -111,7 +125,7 @@ fn main() {
                 if line.ends_with("\\\r\n") {
                     continue;
                 }
-                break
+                break;
             }
         }
     }
@@ -120,15 +134,10 @@ fn main() {
     question.push('\r');
     question.push('\n');
 
-
-
     println!("====================");
     state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
     println!("++++++++ Finished ++++++++++++");
-
-
 }
-
 
 #[derive(Debug, Clone)]
 enum Lang {
@@ -144,7 +153,7 @@ enum Lang {
     Swift,
 }
 
-impl  Display for Lang {
+impl Display for Lang {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Lang::Rust => write!(f, "rust"),

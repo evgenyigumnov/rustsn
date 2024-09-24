@@ -1,6 +1,6 @@
-use regex::Regex;
 use crate::java::Project;
 use crate::rust::remove_comments;
+use regex::Regex;
 
 pub fn parse_llm_response(response: &str) -> Project {
     let mut pom_xml = String::new();
@@ -9,7 +9,8 @@ pub fn parse_llm_response(response: &str) -> Project {
     let mut build = String::new();
     let mut test = String::new();
 
-    let re_section = Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
+    let re_section =
+        Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
     let mut positions = Vec::new();
 
     for cap in re_section.captures_iter(response) {
@@ -72,8 +73,12 @@ pub fn parse_llm_response(response: &str) -> Project {
                         // Assign the captured content to the appropriate field
                         match section_title {
                             "composer.json" => pom_xml = code_content.trim_end().to_string(),
-                            "src/Solution.php" => solution_php = code_content.trim_end().to_string(),
-                            "tests/SolutionTest.php" => test_php = code_content.trim_end().to_string(),
+                            "src/Solution.php" => {
+                                solution_php = code_content.trim_end().to_string()
+                            }
+                            "tests/SolutionTest.php" => {
+                                test_php = code_content.trim_end().to_string()
+                            }
                             "Install" => build = code_content.trim_end().to_string(),
                             "Test" => test = code_content.trim_end().to_string(),
                             _ => (),
@@ -93,8 +98,7 @@ pub fn parse_llm_response(response: &str) -> Project {
             build: remove_comments(&build),
             test: remove_comments(&test),
         }
-    }
-    else {
+    } else {
         Project {
             project_build_script: pom_xml,
             solution_code: solution_php,

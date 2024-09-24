@@ -1,6 +1,6 @@
-use regex::Regex;
 use crate::java::Project;
 use crate::rust::remove_comments;
+use regex::Regex;
 
 pub fn parse_llm_response(response: &str) -> Project {
     let mut pom_xml = String::new();
@@ -9,7 +9,8 @@ pub fn parse_llm_response(response: &str) -> Project {
     let mut build = String::new();
     let mut test = String::new();
 
-    let re_section = Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
+    let re_section =
+        Regex::new(r"(?m)^(?:\s*(?:\#*)?\s*\*\*)?(?:\d+\.\s*)?(.*?)[:\*]*\*\*\s*$").unwrap();
 
     let mut positions = Vec::new();
 
@@ -49,7 +50,6 @@ pub fn parse_llm_response(response: &str) -> Project {
     }
 
     if pom_xml == "" {
-
         let mut lines = response.lines().peekable();
 
         while let Some(line) = lines.next() {
@@ -95,8 +95,7 @@ pub fn parse_llm_response(response: &str) -> Project {
             build: remove_comments(&build),
             test: remove_comments(&test),
         }
-    }
-    else {
+    } else {
         Project {
             project_build_script: pom_xml,
             solution_code: solution_java,
@@ -106,4 +105,3 @@ pub fn parse_llm_response(response: &str) -> Project {
         }
     }
 }
-

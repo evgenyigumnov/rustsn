@@ -20,7 +20,7 @@ impl Prompt {
                     prompt_content = replace_last_multiple_return_to_one(&prompt_content);
                     prompts.prompts.insert(prompt_name, prompt_content);
                 }
-                prompt_name = line[3..line.len()-3].to_string();
+                prompt_name = line[3..line.len() - 3].to_string();
                 prompt_content = String::new();
             } else {
                 prompt_content.push_str(line);
@@ -30,9 +30,7 @@ impl Prompt {
         prompt_content = replace_last_multiple_return_to_one(&prompt_content);
         prompts.prompts.insert(prompt_name, prompt_content);
 
-
         prompts
-
     }
 
     pub fn create(&self, key: &str, params: &Vec<String>) -> String {
@@ -40,8 +38,6 @@ impl Prompt {
         prompt = construct_prompt(&prompt, params);
         prompt
     }
-
-
 }
 
 fn construct_prompt(template: &str, replace: &Vec<String>) -> String {
@@ -56,7 +52,6 @@ fn construct_prompt(template: &str, replace: &Vec<String>) -> String {
     prompt
 }
 
-
 fn replace_last_multiple_return_to_one(input: &str) -> String {
     let trimmed = input.trim_end_matches('\n');
     let mut result = String::from(trimmed);
@@ -65,8 +60,6 @@ fn replace_last_multiple_return_to_one(input: &str) -> String {
     }
     result
 }
-
-
 
 #[cfg(test)]
 mod tests {

@@ -1,15 +1,18 @@
-use crate::build_tool::{build_tool, create_project_java, create_project_javascript, create_project_kotlin, create_project_php, create_project_python, create_project_rust, create_project_scala, create_project_swift};
+use crate::build_tool::{
+    build_tool, create_project_java, create_project_javascript, create_project_kotlin,
+    create_project_php, create_project_python, create_project_rust, create_project_scala,
+    create_project_swift,
+};
 use crate::cache::Cache;
-use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS};
-use crate::llm_prompt::Prompt;
 use crate::llm_api::LLMApi;
-
+use crate::llm_prompt::Prompt;
+use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS};
 
 pub fn run_state_machine(
     lang: &Lang,
     question: &str,
     prompt: &Prompt,
-    cache:  &mut Cache,
+    cache: &mut Cache,
     llm: &LLMApi,
 ) {
     match lang {
@@ -36,15 +39,20 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.cargo_toml,
-                                                   project.lib_rs,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.cargo_toml,
+                            project.lib_rs,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::rust::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -84,16 +92,21 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.project_build_script,
-                                                   project.solution_code,
-                                                   project.test_code,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::java::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -133,16 +146,21 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.project_build_script,
-                                                   project.solution_code,
-                                                   project.test_code,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::scala::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -182,16 +200,21 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.project_build_script,
-                                                   project.solution_code,
-                                                   project.test_code,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::swift::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -231,16 +254,21 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.project_build_script,
-                                                   project.solution_code,
-                                                   project.test_code,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::kotlin::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -280,16 +308,21 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.project_build_script,
-                                                   project.solution_code,
-                                                   project.test_code,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::python::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -329,16 +362,21 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.project_build_script,
-                                                   project.solution_code,
-                                                   project.test_code,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::javascript::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -378,16 +416,21 @@ pub fn run_state_machine(
                         break;
                     }
                     number_of_attempts += 1;
-                    let result = llm.request("rewrite",
-                                             &vec![project.project_build_script,
-                                                   project.solution_code,
-                                                   project.test_code,
-                                                   project.build,
-                                                   build_res.1,
-                                                   project.test,
-                                                   test_res.1,
-                                                   question.to_string()],
-                                             cache, prompt);
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
                     project = crate::php::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
@@ -409,5 +452,4 @@ pub fn run_state_machine(
             panic!("Unknown lang: {}", lang);
         }
     }
-
 }

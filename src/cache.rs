@@ -1,5 +1,5 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Cache {
@@ -44,7 +44,7 @@ impl Cache {
         std::fs::write("cache.json", json).unwrap();
     }
 
-    fn restore(&mut self)  {
+    fn restore(&mut self) {
         if !std::path::Path::new("cache.json").exists() {
             return;
         }
