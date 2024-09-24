@@ -33,7 +33,7 @@ Commands for building code with tests (compiling all code and tests, add "--test
 Commands for running tests
 ```
 
-In the end, there will be 4 blocks: Cargo.toml, src/lib.rs, Build, Test
+In the end, there will be 4 blocks: **Cargo.toml**, **src/lib.rs**, **Build**, **Test**
 
 
 [[[rewrite]]]
@@ -66,7 +66,7 @@ In the end, there will be 4 blocks: Cargo.toml, src/lib.rs, Build, Test
 
 {{{6}}}
 
-Rewrite Scala code that implements this function and name it `solution`. Also, rewrite tests for this function.
+Rewrite Rust code that implements this function and name it `solution`. Also, rewrite tests for this function.
 
 Finally, create 2 files:
 
@@ -97,4 +97,4 @@ Commands for building code with tests (compiling all code and tests, add "--test
 Commands for running tests
 ```
 
-In the end, there will be 4 blocks: Cargo.toml, src/lib.rs, Build, Test
+In the end, there will be 4 blocks: **Cargo.toml**, **src/lib.rs**, **Build**, **Test**

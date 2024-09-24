@@ -38,6 +38,8 @@ impl LLMApi {
                 let prompt = prompt.create(prompt_template, params);
                 let stop = STOP_WORDS;
                 let request = OllamaRequest {
+                    // model: "qwen2.5-coder:7b".to_string(), // smart model but slow
+                    // model: "qwen2.5-coder:1.5b".to_string(), // smart model but slow
                     model: "gemma2:27b".to_string(), // smart model but slow
                     // model: "gemma2:2b".to_string(), // fast but very stupid model - excellent for fast testing
                     //  model: "gemma2".to_string(), // medium model
