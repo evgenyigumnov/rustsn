@@ -322,6 +322,53 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let exit_code_bool = exit_code == 0;
             (exit_code_bool, only_error_message(&output, exit_code))
         }
+        Lang::TypeScript => {
+            println!("Launch: {}", command_str);
+            let code = std::fs::read_to_string("sandbox/src/solution.ts").unwrap();
+            let test = std::fs::read_to_string("sandbox/src/solution.test.ts").unwrap();
+            let config = std::fs::read_to_string("sandbox/tsconfig.json").unwrap();
+            let code_and_test = format!("{}\n{}", code, test);
+            let dependencies = std::fs::read_to_string("sandbox/package.json").unwrap();
+            let src = format!("{}\n{}\n{}", dependencies, config, code_and_test);
+            let key = format!("{}{}", command_str, src);
+            let result_str_opt = cache.get(&key);
+            let result_str = match result_str_opt {
+                None => {
+                    let command_parts = command_str.split(" ").collect::<Vec<&str>>();
+                    let args = command_parts[1..].to_vec();
+                    // check OS if windows then add ".cmd" to command name in command_parts[0]
+                    let command = if cfg!(target_os = "windows") {
+                        format!("{}.cmd", command_parts[0])
+                    } else {
+                        command_parts[0].to_string()
+                    };
+                    let output = std::process::Command::new(command)
+                        .args(args)
+                        .current_dir("sandbox")
+                        .output()
+                        .unwrap();
+                    let exit_code = output.status.code().unwrap();
+                    // let std_out = String::from_utf8(output.stdout).unwrap();
+                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    let tuple: (i32, String) = (exit_code, std_err);
+                    let json_str = serde_json::to_string(&tuple).unwrap();
+                    cache.set(key, json_str.clone());
+                    json_str
+                }
+                Some(result) => result.to_string(),
+            };
+            let parsed: (i32, String) = serde_json::from_str(&result_str).unwrap();
+
+            let exit_code = parsed.0;
+            let output = parsed.1;
+
+            println!("Exit result: {}", exit_code == 0);
+            if DEBUG {
+                println!("Output: {}", output);
+            }
+            let exit_code_bool = exit_code == 0;
+            (exit_code_bool, only_error_message(&output, exit_code))
+        }
         Lang::Php => {
             println!("Launch: {}", command_str);
             let code = std::fs::read_to_string("sandbox/src/Solution.php").unwrap();
@@ -549,6 +596,35 @@ pub fn create_project_javascript(project: &crate::java::Project) {
     std::fs::write(&test_path, &project.test_code).unwrap();
     std::fs::write(&pom_path, &project.project_build_script).unwrap();
 }
+
+pub fn create_project_typescript(project: &crate::typescript::Project) {
+    println!("Create sandbox project with");
+    println!(
+        "{}\n{}\n{}\n{}",
+        project.project_build_script,
+        project.typescript_config,
+        project.solution_code,
+        project.test_code
+    );
+    let sandbox_path = "sandbox";
+
+    let main_path = format!("{}/src/solution.ts", sandbox_path);
+    let test_path = format!("{}/src/solution.test.ts", sandbox_path);
+    let pom_path = format!("{}/package.json", sandbox_path);
+    let config_path = format!("{}/tsconfig.json", sandbox_path);
+    if !std::path::Path::new(sandbox_path).exists() {
+        std::fs::create_dir(sandbox_path).unwrap();
+    } else {
+        std::fs::remove_dir_all(sandbox_path).unwrap();
+        std::fs::create_dir(sandbox_path).unwrap();
+    }
+    std::fs::create_dir_all(format!("{}/src", sandbox_path)).unwrap();
+    std::fs::write(&main_path, &project.solution_code).unwrap();
+    std::fs::write(&test_path, &project.test_code).unwrap();
+    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&config_path, &project.typescript_config).unwrap();
+}
+
 pub fn create_project_php(project: &crate::java::Project) {
     println!("Create sandbox project with");
     println!(

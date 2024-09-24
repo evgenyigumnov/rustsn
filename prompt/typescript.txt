@@ -1,0 +1,135 @@
+[[[generate]]]
+
+{{{0}}}
+
+Write TypeScript code that implements this function and name it `solution`. Also, write tests for this function.
+
+Finally, create 3 files:
+
+1. `src/solution.ts` (contains the implementation of the function)
+2. `src/solution.test.ts` (contains the implementation of tests)
+3. `package.json` (contains information about the project and dependencies)
+4. `tsconfig.json` (typescript configuration file)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**package.json**
+```json
+Contents of package.json file. Use only "Mocha" dependency for tests (exclude "jest")
+```
+
+**tsconfig.json**
+```json
+Contents of tsconfig.json file
+```
+
+**src/solution.ts**
+```javascript
+Contents of src/solution.ts file
+```
+
+**src/solution.test.ts**
+```javascript
+Contents of src/solution.test.ts file
+```
+
+
+**Install**
+```bash
+One command for install all dependencies
+```
+
+**Test**
+```bash
+One command for running tests
+```
+
+In the end, there will be 5 blocks: package.json, tsconfig.json, src/solution.ts, src/solution.test.ts, Install, Test
+
+
+[[[rewrite]]]
+
+**package.json**
+```json
+{{{0}}}
+```
+
+**tsconfig.json**
+```json
+{{{1}}}
+```
+
+**src/solution.ts**
+```javascript
+{{{2}}}
+```
+
+**src/solution.test.ts**
+```javascript
+{{{3}}}
+```
+
+```bash
+{{{4}}}
+```
+
+```console
+{{{5}}}
+```
+
+```bash
+{{{6}}}
+```
+
+```console
+{{{7}}}
+```
+
+{{{8}}}
+
+Rewrite TypeScript code that implements this function and name it `solution`. Also, rewrite tests for this function.
+
+Finally, create 3 files:
+
+1. `src/solution.ts` (contains the implementation of the function)
+2. `src/solution.test.ts` (contains the implementation of tests)
+3. `package.json` (contains information about the project and dependencies)
+4. `tsconfig.json` (typescript configuration file)
+
+You need to build this code and run the tests.
+
+Formulate the solution in the following format:
+
+**package.json**
+```json
+Contents of package.json file. Use only "Mocha" dependency for tests (exclude "jest")
+```
+**tsconfig.json**
+```json
+Contents of tsconfig.json file
+```
+
+**src/solution.ts**
+```javascript
+Contents of src/solution.ts file
+```
+
+**src/solution.test.ts**
+```javascript
+Contents of src/solution.test.ts file
+```
+
+
+**Install**
+```bash
+One command for install all dependencies
+```
+
+**Test**
+```bash
+One command for running tests
+```
+
+In the end, there will be 5 blocks: package.json, tsconfig.json, src/solution.ts, src/solution.test.ts, Install, Test

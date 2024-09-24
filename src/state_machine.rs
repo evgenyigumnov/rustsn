@@ -1,7 +1,7 @@
 use crate::build_tool::{
     build_tool, create_project_java, create_project_javascript, create_project_kotlin,
     create_project_php, create_project_python, create_project_rust, create_project_scala,
-    create_project_swift,
+    create_project_swift, create_project_typescript,
 };
 use crate::cache::Cache;
 use crate::llm_api::LLMApi;
@@ -382,6 +382,61 @@ pub fn run_state_machine(
                     println!("{:#?}", project);
                     println!("================");
                     create_project_javascript(&project);
+                    println!("================");
+                    build_res = build_tool(lang, &project.build, cache);
+                    println!("================");
+                    test_res = build_tool(lang, &project.test, cache);
+                    println!("================");
+                    if build_res.0 && test_res.0 {
+                        return;
+                    }
+                }
+            }
+        }
+        Lang::TypeScript => {
+            let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
+            let mut project = crate::typescript::parse_llm_response(&result);
+            println!("================");
+            println!("{:#?}", project);
+            println!("================");
+            create_project_typescript(&project);
+            println!("================");
+            let mut build_res = build_tool(lang, &project.build, cache);
+            println!("================");
+            let mut test_res = build_tool(lang, &project.test, cache);
+            println!("================");
+            if build_res.0 && test_res.0 {
+                return;
+            } else {
+                let mut number_of_attempts = 0;
+                loop {
+                    if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
+                        println!("To many attempts");
+                        println!("================");
+                        break;
+                    }
+                    number_of_attempts += 1;
+                    let result = llm.request(
+                        "rewrite",
+                        &vec![
+                            project.project_build_script,
+                            project.typescript_config,
+                            project.solution_code,
+                            project.test_code,
+                            project.build,
+                            build_res.1,
+                            project.test,
+                            test_res.1,
+                            question.to_string(),
+                        ],
+                        cache,
+                        prompt,
+                    );
+                    project = crate::typescript::parse_llm_response(&result);
+                    println!("================");
+                    println!("{:#?}", project);
+                    println!("================");
+                    create_project_typescript(&project);
                     println!("================");
                     build_res = build_tool(lang, &project.build, cache);
                     println!("================");

@@ -17,6 +17,7 @@ mod python;
 mod rust;
 mod scala;
 mod swift;
+mod typescript;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
@@ -35,6 +36,7 @@ fn main() {
                     "rust",
                     "java",
                     "javascript",
+                    "typescript",
                     "scala",
                     "kotlin",
                     "swift",
@@ -63,6 +65,7 @@ fn main() {
         Lang::Python => println!("Selected language: Python"),
         Lang::Kotlin => println!("Selected language: Kotlin"),
         Lang::Swift => println!("Selected language: Swift"),
+        Lang::TypeScript => println!("Selected language: TypeScript"),
         _ => {
             println!("Unimplemented language: {:?}", lang);
             std::process::exit(1);
@@ -144,6 +147,7 @@ enum Lang {
     Rust,
     Java,
     JavaScript,
+    TypeScript,
     Scala,
     Python,
     C,
@@ -159,6 +163,7 @@ impl Display for Lang {
             Lang::Rust => write!(f, "rust"),
             Lang::Java => write!(f, "java"),
             Lang::JavaScript => write!(f, "javascript"),
+            Lang::TypeScript => write!(f, "typescript"),
             Lang::Scala => write!(f, "scala"),
             Lang::Python => write!(f, "python"),
             Lang::C => write!(f, "c"),
@@ -178,6 +183,7 @@ impl FromStr for Lang {
             "rust" => Ok(Lang::Rust),
             "java" => Ok(Lang::Java),
             "javascript" => Ok(Lang::JavaScript),
+            "typescript" => Ok(Lang::TypeScript),
             "scala" => Ok(Lang::Scala),
             "python" => Ok(Lang::Python),
             "c" => Ok(Lang::C),

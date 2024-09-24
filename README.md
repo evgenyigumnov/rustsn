@@ -8,6 +8,7 @@ and runs tests to ensure functionality.
 ## Supported languages
 - Python
 - JavaScript
+- TypeScript
 - Java
 - Kotlin
 - Swift
@@ -159,6 +160,9 @@ I would love to see contributions from the community. If you experience bugs, fe
 4. Create pull request
 
 ## Versions
+### 0.15.0 - TypeScript 24 September 2024
+- Add TypeScript language support
+
 ### 0.14.0 - Swift 23 September 2024
 - Add Swift language support
 
