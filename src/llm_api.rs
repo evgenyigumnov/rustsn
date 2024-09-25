@@ -19,7 +19,7 @@ pub struct LLMApi {
 
 #[derive(Debug, PartialEq)]
 pub enum ModelType {
-    Ollama {model: String},
+    Ollama { model: String },
     OpenAI { api_key: String },
 }
 
@@ -36,7 +36,7 @@ impl LLMApi {
         prompt: &Prompt,
     ) -> String {
         match &self.model_type {
-            ModelType::Ollama {model} => {
+            ModelType::Ollama { model } => {
                 let prompt = prompt.create(prompt_template, params);
                 let stop = STOP_WORDS;
                 let request = OllamaRequest {
