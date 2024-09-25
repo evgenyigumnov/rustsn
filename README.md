@@ -175,6 +175,9 @@ dual licensed as above, without any additional terms or conditions.
 
 
 ## Versions
+### 0.16.0 - MIT OR Apache-2.0 26 September 2024
+- Add MIT OR Apache-2.0 license
+
 ### 0.15.0 - TypeScript 24 September 2024
 - Add TypeScript language support
 
