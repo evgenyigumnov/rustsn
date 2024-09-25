@@ -45,6 +45,13 @@ fn main() {
                     "python",
                 ]),
         )
+        .arg(
+            Arg::new("ollmod")
+                .long("ollmod")
+                .value_name("OLLAMA-MODEL")
+                .help("Set desired ollama model")
+                .default_value("gemma2:27b"),
+        )
         .get_matches();
 
     let lang: Lang = matches
@@ -84,10 +91,22 @@ fn main() {
             api_key: token.trim().to_string(),
         })
     } else {
+        let ollama_model: String = matches
+            .get_one::<String>("ollmod")
+            .unwrap()
+            .parse()
+            .unwrap_or_else(|err| {
+                eprintln!("{}", err);
+                std::process::exit(1);
+            });
         println!("Warning: Cant find \"token.txt\" file for OpenAI API integration.");
         println!("Use Ollama API: {}", OLLAMA_API);
+        println!("Use Ollama model : {}", ollama_model);
         println!("");
-        llm_api::LLMApi::new(llm_api::ModelType::Ollama)
+
+        llm_api::LLMApi::new(llm_api::ModelType::Ollama {
+            model: ollama_model,
+        })
     };
 
     println!(
