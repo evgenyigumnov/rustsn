@@ -154,10 +154,25 @@ Finished
 ## Contributing
 
 I would love to see contributions from the community. If you experience bugs, feel free to open an issue. If you would like to implement a new feature or bug fix, please follow the steps:
-1. Read "[Contributor License Agreement (CLA)](CLA)"
-2. Do fork 
-3. Add comment to the [issue](https://github.com/evgenyigumnov/rustsn/issues) that you are going to work on it
-4. Create pull request
+1. Do fork 
+2. Add comment to the [issue](https://github.com/evgenyigumnov/rustsn/issues) that you are going to work on it
+3. Create pull request
+
+#### License
+
+<sup>
+Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
+2.0</a> or <a href="LICENSE-MIT">MIT license</a> at your option.
+</sup>
+
+<br>
+
+<sub>
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in Rustsn by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
+</sub>
+
 
 ## Versions
 ### 0.15.0 - TypeScript 24 September 2024
