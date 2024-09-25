@@ -101,7 +101,7 @@ fn main() {
             });
         println!("Warning: Cant find \"token.txt\" file for OpenAI API integration.");
         println!("Use Ollama API: {}", OLLAMA_API);
-        println!("Use Ollama model : {}", ollama_model);
+        println!("Use Ollama model: {}", ollama_model);
         println!("");
 
         llm_api::LLMApi::new(llm_api::ModelType::Ollama {
