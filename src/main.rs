@@ -6,6 +6,7 @@ mod build_tool;
 mod cache;
 mod llm_prompt;
 
+mod llm_response;
 mod llm_api;
 mod state_machine;
 
@@ -18,6 +19,8 @@ mod rust;
 mod scala;
 mod swift;
 mod typescript;
+
+mod utils;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
@@ -176,6 +179,7 @@ enum Lang {
     Kotlin,
     Php,
     Swift,
+    Unknown,
 }
 
 impl Display for Lang {
@@ -192,6 +196,9 @@ impl Display for Lang {
             Lang::Kotlin => write!(f, "kotlin"),
             Lang::Php => write!(f, "php"),
             Lang::Swift => write!(f, "swift"),
+            _ => {
+                return Ok(());
+            }
         }
     }
 }

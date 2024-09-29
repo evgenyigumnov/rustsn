@@ -1,5 +1,5 @@
 use crate::cache::Cache;
-use crate::rust::Project;
+use crate::llm_response::Project;
 use crate::{Lang, DEBUG};
 
 pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, String) {
@@ -426,7 +426,7 @@ pub fn create_project_rust(lang: &Lang, project: &Project) {
     match lang {
         Lang::Rust => {
             println!("Create sandbox project with");
-            println!("{}\n{}", project.cargo_toml, project.lib_rs);
+            println!("{}\n{}", project.dependencies, project.solution_code);
             let sandbox_path = "sandbox";
             let src_path = format!("{}/src", sandbox_path);
             let main_path = format!("{}/src/lib.rs", sandbox_path);
@@ -440,17 +440,17 @@ pub fn create_project_rust(lang: &Lang, project: &Project) {
             if !std::path::Path::new(&src_path).exists() {
                 std::fs::create_dir(&src_path).unwrap();
             }
-            std::fs::write(&main_path, &project.lib_rs).unwrap();
-            std::fs::write(&cargo_path, &project.cargo_toml).unwrap();
+            std::fs::write(&main_path, &project.solution_code).unwrap();
+            std::fs::write(&cargo_path, &project.dependencies).unwrap();
         }
         _ => panic!("Unsupported language: {:?}", lang),
     }
 }
-pub fn create_project_java(project: &crate::java::Project) {
+pub fn create_project_java(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}",
-        project.project_build_script, project.solution_code, project.test_code
+        project.dependencies, project.solution_code, project.test_code
     );
     let sandbox_path = "sandbox";
 
@@ -481,13 +481,13 @@ pub fn create_project_java(project: &crate::java::Project) {
     .unwrap();
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
 }
-pub fn create_project_scala(project: &crate::java::Project) {
+pub fn create_project_scala(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}",
-        project.project_build_script, project.solution_code, project.test_code
+        project.dependencies, project.solution_code, project.test_code
     );
     let sandbox_path = "sandbox";
 
@@ -504,13 +504,13 @@ pub fn create_project_scala(project: &crate::java::Project) {
     std::fs::create_dir_all(format!("{}/src/test/scala", sandbox_path)).unwrap();
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
 }
-pub fn create_project_swift(project: &crate::java::Project) {
+pub fn create_project_swift(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}",
-        project.project_build_script, project.solution_code, project.test_code
+        project.dependencies, project.solution_code, project.test_code
     );
     let sandbox_path = "sandbox";
 
@@ -527,13 +527,13 @@ pub fn create_project_swift(project: &crate::java::Project) {
     std::fs::create_dir_all(format!("{}/Tests/SolutionTests", sandbox_path)).unwrap();
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
 }
-pub fn create_project_kotlin(project: &crate::java::Project) {
+pub fn create_project_kotlin(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}",
-        project.project_build_script, project.solution_code, project.test_code
+        project.dependencies, project.solution_code, project.test_code
     );
     let sandbox_path = "sandbox";
 
@@ -550,13 +550,13 @@ pub fn create_project_kotlin(project: &crate::java::Project) {
     std::fs::create_dir_all(format!("{}/src/test/kotlin", sandbox_path)).unwrap();
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
 }
-pub fn create_project_python(project: &crate::java::Project) {
+pub fn create_project_python(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}",
-        project.project_build_script, project.solution_code, project.test_code
+        project.dependencies, project.solution_code, project.test_code
     );
     let sandbox_path = "sandbox";
 
@@ -571,14 +571,14 @@ pub fn create_project_python(project: &crate::java::Project) {
     }
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
 }
 
-pub fn create_project_javascript(project: &crate::java::Project) {
+pub fn create_project_javascript(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}",
-        project.project_build_script, project.solution_code, project.test_code
+        project.dependencies, project.solution_code, project.test_code
     );
     let sandbox_path = "sandbox";
 
@@ -594,15 +594,15 @@ pub fn create_project_javascript(project: &crate::java::Project) {
     std::fs::create_dir_all(format!("{}/src", sandbox_path)).unwrap();
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
 }
 
-pub fn create_project_typescript(project: &crate::typescript::Project) {
+pub fn create_project_typescript(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}\n{}",
-        project.project_build_script,
-        project.typescript_config,
+        project.dependencies,
+        project.additional_config[0],
         project.solution_code,
         project.test_code
     );
@@ -621,15 +621,15 @@ pub fn create_project_typescript(project: &crate::typescript::Project) {
     std::fs::create_dir_all(format!("{}/src", sandbox_path)).unwrap();
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
-    std::fs::write(&config_path, &project.typescript_config).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
+    std::fs::write(&config_path, &project.additional_config[0]).unwrap();
 }
 
-pub fn create_project_php(project: &crate::java::Project) {
+pub fn create_project_php(project: &Project) {
     println!("Create sandbox project with");
     println!(
         "{}\n{}\n{}",
-        project.project_build_script, project.solution_code, project.test_code
+        project.dependencies, project.solution_code, project.test_code
     );
     let sandbox_path = "sandbox";
     let main_path = format!("{}/src/Solution.php", sandbox_path);
@@ -645,7 +645,7 @@ pub fn create_project_php(project: &crate::java::Project) {
     std::fs::create_dir_all(format!("{}/tests", sandbox_path)).unwrap();
     std::fs::write(&main_path, &project.solution_code).unwrap();
     std::fs::write(&test_path, &project.test_code).unwrap();
-    std::fs::write(&pom_path, &project.project_build_script).unwrap();
+    std::fs::write(&pom_path, &project.dependencies).unwrap();
 }
 
 fn only_error_message(output: &str, exit_code: i32) -> String {
