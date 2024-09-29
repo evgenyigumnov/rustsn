@@ -6,8 +6,8 @@ use crate::build_tool::{
 use crate::cache::Cache;
 use crate::llm_api::LLMApi;
 use crate::llm_prompt::Prompt;
-use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS};
 use crate::llm_response::LLMResponse;
+use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS};
 
 pub fn run_state_machine(
     lang: &Lang,
@@ -162,7 +162,7 @@ pub fn run_state_machine(
                         cache,
                         prompt,
                     );
-                    project =  LLMResponse::parse_llm_response(&result,   Lang::Scala );
+                    project = LLMResponse::parse_llm_response(&result, Lang::Scala);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
@@ -180,7 +180,7 @@ pub fn run_state_machine(
         }
         Lang::Swift => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result,  Lang::Swift );
+            let mut project = LLMResponse::parse_llm_response(&result, Lang::Swift);
             println!("================");
             println!("{:#?}", project);
             println!("================");
@@ -216,7 +216,7 @@ pub fn run_state_machine(
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result,  Lang::Swift );
+                    project = LLMResponse::parse_llm_response(&result, Lang::Swift);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
@@ -234,7 +234,7 @@ pub fn run_state_machine(
         }
         Lang::Kotlin => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result,  Lang::Kotlin );
+            let mut project = LLMResponse::parse_llm_response(&result, Lang::Kotlin);
             println!("================");
             println!("{:#?}", project);
             println!("================");
@@ -270,7 +270,7 @@ pub fn run_state_machine(
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Kotlin  );
+                    project = LLMResponse::parse_llm_response(&result, Lang::Kotlin);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
@@ -288,7 +288,7 @@ pub fn run_state_machine(
         }
         Lang::Python => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result,  Lang::Python );
+            let mut project = LLMResponse::parse_llm_response(&result, Lang::Python);
             println!("================");
             println!("{:#?}", project);
             println!("================");
@@ -324,7 +324,7 @@ pub fn run_state_machine(
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Python  );
+                    project = LLMResponse::parse_llm_response(&result, Lang::Python);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
@@ -378,7 +378,7 @@ pub fn run_state_machine(
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::JavaScript  );
+                    project = LLMResponse::parse_llm_response(&result, Lang::JavaScript);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
@@ -396,7 +396,7 @@ pub fn run_state_machine(
         }
         Lang::TypeScript => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::TypeScript  );
+            let mut project = LLMResponse::parse_llm_response(&result, Lang::TypeScript);
             println!("================");
             println!("{:#?}", project);
             println!("================");
@@ -434,7 +434,7 @@ pub fn run_state_machine(
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result,  Lang::TypeScript );
+                    project = LLMResponse::parse_llm_response(&result, Lang::TypeScript);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
@@ -452,7 +452,7 @@ pub fn run_state_machine(
         }
         Lang::Php => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Php  );
+            let mut project = LLMResponse::parse_llm_response(&result, Lang::Php);
             println!("================");
             println!("{:#?}", project);
             println!("================");
@@ -488,7 +488,7 @@ pub fn run_state_machine(
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Php  );
+                    project = LLMResponse::parse_llm_response(&result, Lang::Php);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");

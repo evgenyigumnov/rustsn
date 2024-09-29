@@ -1,14 +1,11 @@
-
-
 mod tests {
-    use crate::llm_response::LLMResponse;
-
     #[test]
     fn test_parse_llm_response() {
         for i in 1..=8 {
             let file = format!("./test_data/rust_create_{}.txt", i);
             let response = std::fs::read_to_string(file).unwrap();
-            let mut project = LLMResponse::parse_llm_response(&response, crate::Lang::Rust);
+            let mut project =
+                crate::llm_response::LLMResponse::parse_llm_response(&response, crate::Lang::Rust);
             project.build_command = crate::utils::remove_comments(&project.build_command);
             project.test_command = crate::utils::remove_comments(&project.test_command);
 
