@@ -5,11 +5,9 @@ use std::str::FromStr;
 mod build_tool;
 mod cache;
 mod llm_prompt;
-
 mod llm_api;
 mod llm_response;
 mod state_machine;
-
 mod java;
 mod javascript;
 mod kotlin;
@@ -19,8 +17,8 @@ mod rust;
 mod scala;
 mod swift;
 mod typescript;
-
 mod utils;
+mod file_explorer;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
@@ -167,6 +165,26 @@ Usage:
 
         },
         Some("ask") => {
+            let path: &String = matches.subcommand_matches("ask").unwrap().get_one("path").unwrap();
+            println!("Path: {:?}", path);
+            match lang {
+                Lang::Rust => {
+                    let files = file_explorer::explore_files(&path, &vec![String::from("rs"), String::from("toml")],
+                                                             &vec![String::from("target")]);
+                    println!("{:#?}", files);
+                }
+
+                _ => {
+                    println!("Unsupported language: {:?}", lang);
+                    std::process::exit(1);
+                }
+            }
+
+            println!("====================");
+
+
+
+            println!("++++++++ Finished ++++++++++++");
 
         },
         _ => {
