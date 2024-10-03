@@ -195,14 +195,14 @@ Usage:
                     for file in &files {
                         let content_file = std::fs::read_to_string(file).unwrap();
                         let content = format!("{}\r\n{}", file, content_file);
-                        let emb = llm.emb(&content);
+                        let emb = llm.emb(&content, &mut cache);
                         // println!("{:#?}", emb);
                         vectors.insert(file.clone(), emb);
                     }
 
                     println!("Enter the question:");
                     let question: String = ask();
-                    let target_emb = llm.emb(&question);
+                    let target_emb = llm.emb(&question, &mut cache);
                     let result = vector_utils::find_closest(&target_emb, &vectors);
                     println!("Closest file: {:#?}", result);
 

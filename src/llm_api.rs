@@ -140,7 +140,7 @@ impl LLMApi {
             }
         }
     }
-    pub fn emb(&self, content: &str) -> Vec<f32> {
+    pub fn emb(&self, content: &str, cache: &mut Cache) -> Vec<f32> {
         match &self.model_type {
             ModelType::Ollama { emb, .. } => {
                 let request = OllamaEmbRequest {
@@ -148,19 +148,27 @@ impl LLMApi {
                     prompt: content.to_string()
                 };
 
-                // println!("Request: {:?}", request);
-                let client = Client::builder()
-                    .timeout(Duration::from_secs(60 * 10))
-                    .build()
-                    .unwrap();
-                let response = client
-                    .post(OLLAMA_EMB)
-                    .json(&request)
-                    .send()
-                    .unwrap();
-                // println!("Response: {:?}", response.text());
-                let emb_response = response.json::<OllamaEmbResponse>().unwrap();
-                emb_response.embedding
+                let request_str = serde_json::to_string(&request).unwrap();
+                let response_opt = cache.get(&request_str);
+                let response = match response_opt {
+                    None => {
+                        let client = Client::builder()
+                            .timeout(Duration::from_secs(60 * 10))
+                            .build()
+                            .unwrap();
+                        let response = client
+                            .post(OLLAMA_EMB)
+                            .json(&request)
+                            .send()
+                            .unwrap()
+                            .json::<OllamaEmbResponse>()
+                            .unwrap();
+                        cache.set(request_str.clone(), serde_json::to_string(&response.embedding).unwrap());
+                        response.embedding
+                    }
+                    Some(result) => serde_json::from_str(&result).unwrap(),
+                };
+                response
             },
             ModelType::OpenAI { .. } => {
                 todo!("OpenAI does not support embeddings")
