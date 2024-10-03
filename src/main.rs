@@ -194,8 +194,8 @@ Usage:
                     let mut vectors: HashMap<String, Vec<f32>> =  HashMap::new();
                     for file in &files {
                         let content_file = std::fs::read_to_string(file).unwrap();
-                        let content = format!("{}\r\n{}", file, content_file);
-                        let emb = llm.emb(&content, &mut cache);
+                        // let content = format!("{}\r\n{}", file, content_file);
+                        let emb = llm.emb(&content_file, &mut cache);
                         // println!("{:#?}", emb);
                         vectors.insert(file.clone(), emb);
                     }
