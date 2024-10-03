@@ -23,6 +23,8 @@ mod file_explorer;
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
 const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
+const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
+
 fn main() {
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
@@ -63,6 +65,14 @@ Usage:
                 .value_name("OLLAMA-MODEL")
                 .help("Set desired ollama model")
                 .default_value("qwen2.5-coder:1.5b")
+                .global(true),
+        )
+        .arg(
+            Arg::new("ollemb")
+                .long("ollemb")
+                .value_name("OLLAMA-EMBEDIDING")
+                .help("Set desired ollama embedding")
+                .default_value("bge-large")
                 .global(true),
         )
         .subcommand(
@@ -140,8 +150,17 @@ Usage:
         println!("Use Ollama model: {}", ollama_model);
         println!("");
 
+        let emb: String = matches
+            .get_one::<String>("ollemb")
+            .unwrap()
+            .parse()
+            .unwrap_or_else(|err| {
+                eprintln!("{}", err);
+                std::process::exit(1);
+            });
         llm_api::LLMApi::new(llm_api::ModelType::Ollama {
             model: ollama_model,
+            emb,
         })
     };
 
@@ -171,7 +190,11 @@ Usage:
                 Lang::Rust => {
                     let files = file_explorer::explore_files(&path, &vec![String::from("rs"), String::from("toml")],
                                                              &vec![String::from("target")]);
-                    println!("{:#?}", files);
+                    for file in &files {
+                        let content = std::fs::read_to_string(file).unwrap();
+                        let emb = llm.emb(&content);
+                        println!("{:#?}", emb);
+                    }
                 }
 
                 _ => {
