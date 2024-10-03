@@ -36,6 +36,7 @@ fn main() {
                 .value_name("LANG")
                 .help("Sets the programming language")
                 .default_value("javascript")
+                .global(true)
                 .value_parser(*&[
                     "rust",
                     "java",
@@ -53,7 +54,31 @@ fn main() {
                 .long("ollmod")
                 .value_name("OLLAMA-MODEL")
                 .help("Set desired ollama model")
-                .default_value("gemma2:27b"),
+                .default_value("qwen2.5-coder:1.5b")
+                .global(true),
+        )
+        .subcommand(
+            Command::new("generate")
+                .about("Generate code")
+                .alias("g")
+                .arg(
+                    Arg::new("type")
+                        .help("Type of generation")
+                        .value_parser(*&["function", "application"])
+                        .default_value("function")
+                        .index(1),
+                )
+        )
+        .subcommand(
+            Command::new("ask")
+                .about("Ask a question about code in a folder")
+                .alias("a")
+                .arg(
+                    Arg::new("path")
+                        .help("Path to the source code folder")
+                        .required(true)
+                        .index(1),
+                )
         )
         .get_matches();
 
