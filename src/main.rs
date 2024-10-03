@@ -151,9 +151,34 @@ Usage:
         "Use '\\' char in the end of line for multiline mode or just copy-paste multiline text."
     );
     println!("");
-    println!("For launch code generation, type ENTER twice after the last line of the prompt.");
-    println!("");
-    println!("Explain what the function should do:");
+// get generate or ask command
+    let command = matches.subcommand_name();
+    match command {
+        Some("generate") => {
+            println!("For launch code generation, type ENTER twice after the last line of the prompt.");
+            println!("");
+            println!("Explain what the function should do:");
+            let question: String = ask();
+
+
+            println!("====================");
+            state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
+            println!("++++++++ Finished ++++++++++++");
+
+        },
+        Some("ask") => {
+
+        },
+        _ => {
+            println!("Unknown command, please use 'generate' or 'ask'");
+            std::process::exit(1);
+        }
+    }
+
+
+}
+
+fn ask() -> String {
     let mut question;
     let mut lines = vec![];
     let mut start_sec = 0 as u128;
@@ -195,10 +220,7 @@ Usage:
     question = question.trim().to_string();
     question.push('\r');
     question.push('\n');
-
-    println!("====================");
-    state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
-    println!("++++++++ Finished ++++++++++++");
+    question
 }
 
 #[derive(Debug, Clone)]
