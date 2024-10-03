@@ -148,7 +148,7 @@ impl LLMApi {
                     prompt: content.to_string()
                 };
 
-                println!("Request: {:?}", request);
+                // println!("Request: {:?}", request);
                 let client = Client::builder()
                     .timeout(Duration::from_secs(60 * 10))
                     .build()

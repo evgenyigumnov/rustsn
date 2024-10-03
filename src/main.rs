@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use clap::{Arg, Command};
 use std::fmt::Display;
 use std::str::FromStr;
@@ -19,6 +20,7 @@ mod swift;
 mod typescript;
 mod utils;
 mod file_explorer;
+mod vector_utils;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
@@ -168,7 +170,6 @@ Usage:
         "Use '\\' char in the end of line for multiline mode or just copy-paste multiline text."
     );
     println!("");
-// get generate or ask command
     let command = matches.subcommand_name();
     match command {
         Some("generate") => {
@@ -190,11 +191,21 @@ Usage:
                 Lang::Rust => {
                     let files = file_explorer::explore_files(&path, &vec![String::from("rs"), String::from("toml")],
                                                              &vec![String::from("target")]);
+                    let mut vectors: HashMap<String, Vec<f32>> =  HashMap::new();
                     for file in &files {
-                        let content = std::fs::read_to_string(file).unwrap();
+                        let content_file = std::fs::read_to_string(file).unwrap();
+                        let content = format!("{}\r\n{}", file, content_file);
                         let emb = llm.emb(&content);
-                        println!("{:#?}", emb);
+                        // println!("{:#?}", emb);
+                        vectors.insert(file.clone(), emb);
                     }
+
+                    println!("Enter the question:");
+                    let question: String = ask();
+                    let target_emb = llm.emb(&question);
+                    let result = vector_utils::find_closest(&target_emb, &vectors);
+                    println!("Closest file: {:#?}", result);
+
                 }
 
                 _ => {
