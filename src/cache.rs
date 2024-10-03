@@ -42,7 +42,7 @@ impl Cache {
 
     fn save(&mut self) {
         let config = config::standard();
-        let encoded: Vec<u8> = bincode::encode_to_vec(&*opself, config).unwrap();
+        let encoded: Vec<u8> = bincode::encode_to_vec(&*self, config).unwrap();
         fs::write("cache.bin", encoded).unwrap();
     }
 
