@@ -30,6 +30,16 @@ fn main() {
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
         .about("Code snippets generator via LLMs and compiler/tester via build tools")
+        .help_template(
+            "{bin} {version}
+{about}
+
+Usage:
+    {usage}
+
+{all-args}
+",
+        )
         .arg(
             Arg::new("lang")
                 .long("lang")
@@ -67,7 +77,7 @@ fn main() {
                         .value_parser(*&["function", "application"])
                         .default_value("function")
                         .index(1),
-                )
+                ),
         )
         .subcommand(
             Command::new("ask")
@@ -78,7 +88,7 @@ fn main() {
                         .help("Path to the source code folder")
                         .required(true)
                         .index(1),
-                )
+                ),
         )
         .get_matches();
 
