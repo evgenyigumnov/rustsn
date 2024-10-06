@@ -7,7 +7,6 @@ mod cache;
 mod llm_prompt;
 
 mod llm_api;
-mod llm_response;
 mod state_machine;
 
 mod java;
@@ -20,11 +19,10 @@ mod scala;
 mod swift;
 mod typescript;
 
-mod utils;
-
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
 const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
+
 fn main() {
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
@@ -47,13 +45,6 @@ fn main() {
                     "php",
                     "python",
                 ]),
-        )
-        .arg(
-            Arg::new("ollmod")
-                .long("ollmod")
-                .value_name("OLLAMA-MODEL")
-                .help("Set desired ollama model")
-                .default_value("gemma2:27b"),
         )
         .get_matches();
 
@@ -94,22 +85,10 @@ fn main() {
             api_key: token.trim().to_string(),
         })
     } else {
-        let ollama_model: String = matches
-            .get_one::<String>("ollmod")
-            .unwrap()
-            .parse()
-            .unwrap_or_else(|err| {
-                eprintln!("{}", err);
-                std::process::exit(1);
-            });
         println!("Warning: Cant find \"token.txt\" file for OpenAI API integration.");
         println!("Use Ollama API: {}", OLLAMA_API);
-        println!("Use Ollama model: {}", ollama_model);
         println!("");
-
-        llm_api::LLMApi::new(llm_api::ModelType::Ollama {
-            model: ollama_model,
-        })
+        llm_api::LLMApi::new(llm_api::ModelType::Ollama)
     };
 
     println!(
@@ -179,7 +158,6 @@ enum Lang {
     Kotlin,
     Php,
     Swift,
-    Unknown,
 }
 
 impl Display for Lang {
@@ -196,9 +174,6 @@ impl Display for Lang {
             Lang::Kotlin => write!(f, "kotlin"),
             Lang::Php => write!(f, "php"),
             Lang::Swift => write!(f, "swift"),
-            _ => {
-                return Ok(());
-            }
         }
     }
 }
