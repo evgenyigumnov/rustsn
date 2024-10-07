@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use clap::{Arg, Command};
 use std::fmt::Display;
 use std::str::FromStr;
@@ -5,11 +6,9 @@ use std::str::FromStr;
 mod build_tool;
 mod cache;
 mod llm_prompt;
-
 mod llm_api;
 mod llm_response;
 mod state_machine;
-
 mod java;
 mod javascript;
 mod kotlin;
@@ -19,23 +18,37 @@ mod rust;
 mod scala;
 mod swift;
 mod typescript;
-
 mod utils;
+mod file_explorer;
+mod vector_utils;
 
 const DEBUG: bool = false;
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
 const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
+const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
+
 fn main() {
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
         .about("Code snippets generator via LLMs and compiler/tester via build tools")
+        .help_template(
+            "{bin} {version}
+{about}
+
+Usage:
+    {usage}
+
+{all-args}
+",
+        )
         .arg(
             Arg::new("lang")
                 .long("lang")
                 .value_name("LANG")
                 .help("Sets the programming language")
                 .default_value("javascript")
+                .global(true)
                 .value_parser(*&[
                     "rust",
                     "java",
@@ -53,7 +66,39 @@ fn main() {
                 .long("ollmod")
                 .value_name("OLLAMA-MODEL")
                 .help("Set desired ollama model")
-                .default_value("gemma2:27b"),
+                .default_value("qwen2.5-coder:1.5b")
+                .global(true),
+        )
+        .arg(
+            Arg::new("ollemb")
+                .long("ollemb")
+                .value_name("OLLAMA-EMBEDIDING")
+                .help("Set desired ollama embedding")
+                .default_value("bge-large")
+                .global(true),
+        )
+        .subcommand(
+            Command::new("generate")
+                .about("Generate code")
+                .alias("g")
+                .arg(
+                    Arg::new("type")
+                        .help("Type of generation")
+                        .value_parser(*&["function", "application"])
+                        .default_value("function")
+                        .index(1),
+                ),
+        )
+        .subcommand(
+            Command::new("ask")
+                .about("Ask a question about code in a folder")
+                .alias("a")
+                .arg(
+                    Arg::new("path")
+                        .help("Path to the source code folder")
+                        .required(true)
+                        .index(1),
+                ),
         )
         .get_matches();
 
@@ -107,8 +152,17 @@ fn main() {
         println!("Use Ollama model: {}", ollama_model);
         println!("");
 
+        let emb: String = matches
+            .get_one::<String>("ollemb")
+            .unwrap()
+            .parse()
+            .unwrap_or_else(|err| {
+                eprintln!("{}", err);
+                std::process::exit(1);
+            });
         llm_api::LLMApi::new(llm_api::ModelType::Ollama {
             model: ollama_model,
+            emb,
         })
     };
 
@@ -116,9 +170,68 @@ fn main() {
         "Use '\\' char in the end of line for multiline mode or just copy-paste multiline text."
     );
     println!("");
-    println!("For launch code generation, type ENTER twice after the last line of the prompt.");
-    println!("");
-    println!("Explain what the function should do:");
+    let command = matches.subcommand_name();
+    match command {
+        Some("generate") => {
+            println!("For launch code generation, type ENTER twice after the last line of the prompt.");
+            println!("");
+            println!("Explain what the function should do:");
+            let question: String = ask();
+
+
+            println!("====================");
+            state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
+            println!("++++++++ Finished ++++++++++++");
+
+        },
+        Some("ask") => {
+            let path: &String = matches.subcommand_matches("ask").unwrap().get_one("path").unwrap();
+            println!("Path: {:?}", path);
+            match lang {
+                Lang::Rust => {
+                    let files = file_explorer::explore_files(&path, &vec![String::from("rs"), String::from("toml")],
+                                                             &vec![String::from("target")]);
+                    let mut vectors: HashMap<String, Vec<f32>> =  HashMap::new();
+                    for file in &files {
+                        println!("File: {:?}", file);
+                        let content_file = std::fs::read_to_string(file).unwrap();
+                        let content = format!("== {} ==\r\n{}", file, content_file);
+                        let emb = llm.emb(&content, &mut cache);
+                        // println!("{:#?}", emb);
+                        vectors.insert(file.clone(), emb);
+                    }
+
+                    println!("Enter the question:");
+                    let question: String = ask();
+                    let target_emb = llm.emb(&question, &mut cache);
+                    let result = vector_utils::find_closest(&target_emb, &vectors);
+                    println!("Closest file: {:#?}", result);
+
+                }
+
+                _ => {
+                    println!("Unsupported language: {:?}", lang);
+                    std::process::exit(1);
+                }
+            }
+
+            println!("====================");
+
+
+
+            println!("++++++++ Finished ++++++++++++");
+
+        },
+        _ => {
+            println!("Unknown command, please use 'generate' or 'ask'");
+            std::process::exit(1);
+        }
+    }
+
+
+}
+
+fn ask() -> String {
     let mut question;
     let mut lines = vec![];
     let mut start_sec = 0 as u128;
@@ -160,10 +273,7 @@ fn main() {
     question = question.trim().to_string();
     question.push('\r');
     question.push('\n');
-
-    println!("====================");
-    state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
-    println!("++++++++ Finished ++++++++++++");
+    question
 }
 
 #[derive(Debug, Clone)]

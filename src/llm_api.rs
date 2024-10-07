@@ -1,6 +1,6 @@
 use crate::cache::Cache;
 use crate::llm_prompt::Prompt;
-use crate::OLLAMA_API;
+use crate::{OLLAMA_API, OLLAMA_EMB};
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -19,7 +19,10 @@ pub struct LLMApi {
 
 #[derive(Debug, PartialEq)]
 pub enum ModelType {
-    Ollama { model: String },
+    Ollama {
+        model: String,
+        emb: String,
+    },
     OpenAI { api_key: String },
 }
 
@@ -36,7 +39,7 @@ impl LLMApi {
         prompt: &Prompt,
     ) -> String {
         match &self.model_type {
-            ModelType::Ollama { model } => {
+            ModelType::Ollama { model, .. } => {
                 let prompt = prompt.create(prompt_template, params);
                 let stop = STOP_WORDS;
                 let request = OllamaRequest {
@@ -137,6 +140,41 @@ impl LLMApi {
             }
         }
     }
+    pub fn emb(&self, content: &str, cache: &mut Cache) -> Vec<f32> {
+        match &self.model_type {
+            ModelType::Ollama { emb, .. } => {
+                let request = OllamaEmbRequest {
+                    model: emb.to_string(),
+                    prompt: content.to_string()
+                };
+
+                let request_str = serde_json::to_string(&request).unwrap();
+                let response_opt = cache.get(&request_str);
+                let response = match response_opt {
+                    None => {
+                        let client = Client::builder()
+                            .timeout(Duration::from_secs(60 * 10))
+                            .build()
+                            .unwrap();
+                        let response = client
+                            .post(OLLAMA_EMB)
+                            .json(&request)
+                            .send()
+                            .unwrap()
+                            .json::<OllamaEmbResponse>()
+                            .unwrap();
+                        cache.set(request_str.clone(), serde_json::to_string(&response.embedding).unwrap());
+                        response.embedding
+                    }
+                    Some(result) => serde_json::from_str(&result).unwrap(),
+                };
+                response
+            },
+            ModelType::OpenAI { .. } => {
+                todo!("OpenAI does not support embeddings")
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -168,6 +206,18 @@ struct OllamaResponse {
     eval_count: i32,
     eval_duration: i64,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct OllamaEmbRequest {
+    model: String,
+    prompt: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct OllamaEmbResponse {
+    embedding: Vec<f32>,
+}
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct OpenAIChatRequest {

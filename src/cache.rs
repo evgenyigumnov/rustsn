@@ -1,36 +1,22 @@
-use serde::{Deserialize, Serialize};
+use bincode::{config, Decode, Encode};
 use std::collections::HashMap;
+use std::fs;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Encode, Decode, PartialEq, Debug)]
 pub struct Cache {
     cache: HashMap<String, String>,
-    attempts: HashMap<String, u32>,
 }
 
 impl Cache {
     pub fn new() -> Cache {
         let mut cache = Cache {
             cache: HashMap::new(),
-            attempts: HashMap::new(),
         };
         cache.restore();
         cache
     }
 
     pub fn get(&mut self, key: &str) -> Option<&String> {
-        if self.cache.contains_key(key) {
-            let attempts = self.attempts.get(key).or_else(|| Some(&0)).unwrap().clone();
-            self.attempts.insert(key.to_string(), attempts + 1);
-            self.save();
-            if attempts > 2 {
-                self.cache.remove(key);
-                self.attempts.remove(key);
-                self.save();
-                println!("To many attempts cache removed");
-                println!("================");
-                return None;
-            }
-        }
         self.cache.get(key)
     }
 
@@ -40,16 +26,19 @@ impl Cache {
     }
 
     fn save(&mut self) {
-        let json = serde_json::to_string(&self.cache).unwrap();
-        std::fs::write("cache.json", json).unwrap();
+        let config = config::standard();
+        let encoded: Vec<u8> = bincode::encode_to_vec(&*self, config).unwrap();
+        fs::write("cache.bin", encoded).unwrap();
     }
 
     fn restore(&mut self) {
-        if !std::path::Path::new("cache.json").exists() {
+        if !std::path::Path::new("cache.bin").exists() {
             return;
         }
-        let json = std::fs::read_to_string("cache.json").unwrap();
-        self.cache = serde_json::from_str(&json).unwrap();
+        let config = config::standard();
+        let encoded = fs::read("cache.bin").unwrap();
+        let (decoded, _): (Cache, usize) = bincode::decode_from_slice(&encoded, config).unwrap();
+        *self = decoded;
     }
 }
 
