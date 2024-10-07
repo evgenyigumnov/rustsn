@@ -6,7 +6,6 @@ use crate::build_tool::{
 use crate::cache::Cache;
 use crate::llm_api::LLMApi;
 use crate::llm_prompt::Prompt;
-use crate::llm_response::LLMResponse;
 use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS};
 
 pub fn run_state_machine(
@@ -19,15 +18,15 @@ pub fn run_state_machine(
     match lang {
         Lang::Rust => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Rust);
+            let mut project = crate::rust::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_rust(lang, &project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, "build", cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, "test", cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -35,7 +34,7 @@ pub fn run_state_machine(
                 let mut number_of_attempts = 0;
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
-                        println!("To many attempts");
+                        println!("Too many attempts");
                         println!("================");
                         break;
                     }
@@ -43,26 +42,26 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
-                            project.solution_code,
-                            project.build_command,
+                            project.cargo_toml,
+                            project.lib_rs,
+                            project.build,
                             build_res.1,
-                            project.test_code,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Rust);
+                    project = crate::rust::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_rust(lang, &project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, "build", cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, "test", cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -72,15 +71,15 @@ pub fn run_state_machine(
         }
         Lang::Java => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Java);
+            let mut project = crate::java::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_java(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -96,27 +95,27 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
+                            project.project_build_script,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Java);
+                    project = crate::java::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_java(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -126,15 +125,15 @@ pub fn run_state_machine(
         }
         Lang::Scala => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Scala);
+            let mut project = crate::scala::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_scala(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -150,27 +149,27 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
+                            project.project_build_script,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Scala);
+                    project = crate::scala::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_scala(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -180,15 +179,15 @@ pub fn run_state_machine(
         }
         Lang::Swift => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Swift);
+            let mut project = crate::swift::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_swift(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -204,27 +203,27 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
+                            project.project_build_script,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Swift);
+                    project = crate::swift::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_swift(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -234,15 +233,15 @@ pub fn run_state_machine(
         }
         Lang::Kotlin => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Kotlin);
+            let mut project = crate::kotlin::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_kotlin(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -258,27 +257,27 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
+                            project.project_build_script,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Kotlin);
+                    project = crate::kotlin::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_kotlin(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -288,15 +287,15 @@ pub fn run_state_machine(
         }
         Lang::Python => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Python);
+            let mut project = crate::python::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_python(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -312,27 +311,27 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
+                            project.project_build_script,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Python);
+                    project = crate::python::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_python(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -342,15 +341,15 @@ pub fn run_state_machine(
         }
         Lang::JavaScript => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::JavaScript);
+            let mut project = crate::javascript::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_javascript(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -366,27 +365,27 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
+                            project.project_build_script,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::JavaScript);
+                    project = crate::javascript::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_javascript(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -396,22 +395,21 @@ pub fn run_state_machine(
         }
         Lang::TypeScript => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::TypeScript);
+            let mut project = crate::typescript::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_typescript(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
             } else {
                 let mut number_of_attempts = 0;
                 loop {
-                    let ts_config = project.additional_config[0].clone();
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
                         println!("================");
@@ -421,28 +419,28 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
-                            ts_config,
+                            project.project_build_script,
+                            project.typescript_config,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::TypeScript);
+                    project = crate::typescript::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_typescript(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
@@ -452,15 +450,15 @@ pub fn run_state_machine(
         }
         Lang::Php => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
-            let mut project = LLMResponse::parse_llm_response(&result, Lang::Php);
+            let mut project = crate::php::parse_llm_response(&result);
             println!("================");
             println!("{:#?}", project);
             println!("================");
             create_project_php(&project);
             println!("================");
-            let mut build_res = build_tool(lang, &project.build_command, cache);
+            let mut build_res = build_tool(lang, &project.build, cache);
             println!("================");
-            let mut test_res = build_tool(lang, &project.test_command, cache);
+            let mut test_res = build_tool(lang, &project.test, cache);
             println!("================");
             if build_res.0 && test_res.0 {
                 return;
@@ -476,27 +474,27 @@ pub fn run_state_machine(
                     let result = llm.request(
                         "rewrite",
                         &vec![
-                            project.dependencies,
+                            project.project_build_script,
                             project.solution_code,
                             project.test_code,
-                            project.build_command,
+                            project.build,
                             build_res.1,
-                            project.test_command,
+                            project.test,
                             test_res.1,
                             question.to_string(),
                         ],
                         cache,
                         prompt,
                     );
-                    project = LLMResponse::parse_llm_response(&result, Lang::Php);
+                    project = crate::php::parse_llm_response(&result);
                     println!("================");
                     println!("{:#?}", project);
                     println!("================");
                     create_project_php(&project);
                     println!("================");
-                    build_res = build_tool(lang, &project.build_command, cache);
+                    build_res = build_tool(lang, &project.build, cache);
                     println!("================");
-                    test_res = build_tool(lang, &project.test_command, cache);
+                    test_res = build_tool(lang, &project.test, cache);
                     println!("================");
                     if build_res.0 && test_res.0 {
                         return;
