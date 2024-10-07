@@ -5,33 +5,18 @@ use std::fs;
 #[derive(Encode, Decode, PartialEq, Debug)]
 pub struct Cache {
     cache: HashMap<String, String>,
-    attempts: HashMap<String, u32>,
 }
 
 impl Cache {
     pub fn new() -> Cache {
         let mut cache = Cache {
             cache: HashMap::new(),
-            attempts: HashMap::new(),
         };
         cache.restore();
         cache
     }
 
     pub fn get(&mut self, key: &str) -> Option<&String> {
-        if self.cache.contains_key(key) {
-            let attempts = self.attempts.get(key).unwrap_or(&0).clone();
-            self.attempts.insert(key.to_string(), attempts + 1);
-            self.save();
-            if attempts > 2 {
-                self.cache.remove(key);
-                self.attempts.remove(key);
-                self.save();
-                println!("Too many attempts, cache removed");
-                println!("================");
-                return None;
-            }
-        }
         self.cache.get(key)
     }
 
