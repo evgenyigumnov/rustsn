@@ -1,25 +1,25 @@
-use std::collections::HashMap;
 use clap::{Arg, Command};
+use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 
 mod build_tool;
 mod cache;
-mod llm_prompt;
-mod llm_api;
-mod llm_response;
-mod state_machine;
+mod file_explorer;
 mod java;
 mod javascript;
 mod kotlin;
+mod llm_api;
+mod llm_prompt;
+mod llm_response;
 mod php;
 mod python;
 mod rust;
 mod scala;
+mod state_machine;
 mod swift;
 mod typescript;
 mod utils;
-mod file_explorer;
 mod vector_utils;
 
 const DEBUG: bool = false;
@@ -173,25 +173,32 @@ Usage:
     let command = matches.subcommand_name();
     match command {
         Some("generate") => {
-            println!("For launch code generation, type ENTER twice after the last line of the prompt.");
+            println!(
+                "For launch code generation, type ENTER twice after the last line of the prompt."
+            );
             println!("");
             println!("Explain what the function should do:");
             let question: String = ask();
 
-
             println!("====================");
             state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
             println!("++++++++ Finished ++++++++++++");
-
-        },
+        }
         Some("ask") => {
-            let path: &String = matches.subcommand_matches("ask").unwrap().get_one("path").unwrap();
+            let path: &String = matches
+                .subcommand_matches("ask")
+                .unwrap()
+                .get_one("path")
+                .unwrap();
             println!("Path: {:?}", path);
             match lang {
                 Lang::Rust => {
-                    let files = file_explorer::explore_files(&path, &vec![String::from("rs"), String::from("toml")],
-                                                             &vec![String::from("target")]);
-                    let mut vectors: HashMap<String, Vec<f32>> =  HashMap::new();
+                    let files = file_explorer::explore_files(
+                        &path,
+                        &vec![String::from("rs"), String::from("toml")],
+                        &vec![String::from("target")],
+                    );
+                    let mut vectors: HashMap<String, Vec<f32>> = HashMap::new();
                     for file in &files {
                         println!("File: {:?}", file);
                         let content_file = std::fs::read_to_string(file).unwrap();
@@ -206,7 +213,6 @@ Usage:
                     let target_emb = llm.emb(&question, &mut cache);
                     let result = vector_utils::find_closest(&target_emb, &vectors);
                     println!("Closest file: {:#?}", result);
-
                 }
 
                 _ => {
@@ -217,18 +223,13 @@ Usage:
 
             println!("====================");
 
-
-
             println!("++++++++ Finished ++++++++++++");
-
-        },
+        }
         _ => {
             println!("Unknown command, please use 'generate' or 'ask'");
             std::process::exit(1);
         }
     }
-
-
 }
 
 fn ask() -> String {

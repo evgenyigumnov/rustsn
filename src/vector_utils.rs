@@ -9,7 +9,8 @@ fn euclidean_distance(v1: &[f32], v2: &[f32]) -> f32 {
 }
 
 pub fn find_closest(target: &[f32], vectors: &HashMap<String, Vec<f32>>) -> Vec<(String, f32)> {
-    let mut distances: Vec<(String, f32)> = vectors.iter()
+    let mut distances: Vec<(String, f32)> = vectors
+        .iter()
         .map(|(k, v)| (k.clone(), euclidean_distance(target, v)))
         .collect();
 
@@ -18,8 +19,12 @@ pub fn find_closest(target: &[f32], vectors: &HashMap<String, Vec<f32>>) -> Vec<
     distances
 }
 
-pub fn _find_most_similar(target: &[f32], vectors: &HashMap<String, Vec<f32>>) -> Vec<(String, f32)> {
-    let mut similarities: Vec<(String, f32)> = vectors.iter()
+pub fn _find_most_similar(
+    target: &[f32],
+    vectors: &HashMap<String, Vec<f32>>,
+) -> Vec<(String, f32)> {
+    let mut similarities: Vec<(String, f32)> = vectors
+        .iter()
         .map(|(filename, vector)| (filename.clone(), _cosine_similarity(target, vector)))
         .collect();
 

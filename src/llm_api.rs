@@ -19,10 +19,7 @@ pub struct LLMApi {
 
 #[derive(Debug, PartialEq)]
 pub enum ModelType {
-    Ollama {
-        model: String,
-        emb: String,
-    },
+    Ollama { model: String, emb: String },
     OpenAI { api_key: String },
 }
 
@@ -145,7 +142,7 @@ impl LLMApi {
             ModelType::Ollama { emb, .. } => {
                 let request = OllamaEmbRequest {
                     model: emb.to_string(),
-                    prompt: content.to_string()
+                    prompt: content.to_string(),
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();
@@ -163,13 +160,16 @@ impl LLMApi {
                             .unwrap()
                             .json::<OllamaEmbResponse>()
                             .unwrap();
-                        cache.set(request_str.clone(), serde_json::to_string(&response.embedding).unwrap());
+                        cache.set(
+                            request_str.clone(),
+                            serde_json::to_string(&response.embedding).unwrap(),
+                        );
                         response.embedding
                     }
                     Some(result) => serde_json::from_str(&result).unwrap(),
                 };
                 response
-            },
+            }
             ModelType::OpenAI { .. } => {
                 todo!("OpenAI does not support embeddings")
             }
@@ -217,7 +217,6 @@ struct OllamaEmbRequest {
 struct OllamaEmbResponse {
     embedding: Vec<f32>,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct OpenAIChatRequest {
