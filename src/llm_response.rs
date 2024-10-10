@@ -87,7 +87,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -173,7 +173,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -271,7 +271,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -363,7 +363,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -457,7 +457,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -552,7 +552,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -642,7 +642,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -730,7 +730,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
@@ -823,7 +823,7 @@ impl LLMResponse {
                     let mut lines = response.lines().peekable();
 
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") {
+                        if line.starts_with("## ") || line.starts_with("### ") {
                             let section_title = line[3..].trim();
 
                             // Skip lines until the start of the code block
