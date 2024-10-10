@@ -47,7 +47,7 @@ Usage:
                 .long("lang")
                 .value_name("LANG")
                 .help("Sets the programming language")
-                .default_value("javascript")
+                .default_value("rust")
                 .global(true)
                 .value_parser(*&[
                     "rust",
@@ -170,13 +170,15 @@ Usage:
         "Use '\\' char in the end of line for multiline mode or just copy-paste multiline text."
     );
     println!("");
+
+    println!(
+        "For launch work with AI, type ENTER twice after the last line of the prompt."
+    );
+    println!("");
+
     let command = matches.subcommand_name();
     match command {
         Some("generate") => {
-            println!(
-                "For launch code generation, type ENTER twice after the last line of the prompt."
-            );
-            println!("");
             println!("Explain what the function should do:");
             let question: String = ask();
 
@@ -208,7 +210,7 @@ Usage:
                         vectors.insert(file.clone(), emb);
                     }
 
-                    println!("Enter the question:");
+                    println!("Enter the question about your project sources:");
                     let question: String = ask();
                     let target_emb = llm.emb(&question, &mut cache);
                     let result = vector_utils::find_closest(&target_emb, &vectors);
