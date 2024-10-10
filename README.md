@@ -52,7 +52,7 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - **If you choose Ollama**: Required for LLM interactions. Install from [Ollama's official site](https://ollama.ai/).
   - Download Ollam model  
    ```bash
-   ollama run gemma2:27b
+   ollama run qwen2.5-coder:1.5b
    ```
    After downloading the model, you can say "hello" to the model to check if it is working correctly. 
    After that, you can use type "Ctrl+D" to exit the model.
@@ -70,7 +70,7 @@ cd rustsn
 1. **Start the Program**
 
    ```bash
-   cargo run -- --lang=rust
+   cargo run -- generate function --lang=rust
    ```
 
 2. **Provide an Explanation**
