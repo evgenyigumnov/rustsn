@@ -6,6 +6,7 @@ code based on user-provided explanations, compiles the code, resolves dependenci
 and runs tests to ensure functionality.
 
 ## Supported languages
+- Rust
 - Python
 - JavaScript
 - TypeScript
@@ -13,7 +14,6 @@ and runs tests to ensure functionality.
 - Kotlin
 - Swift
 - PHP
-- Rust
 - Scala
 
 ## How it works
