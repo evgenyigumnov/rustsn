@@ -143,7 +143,9 @@ impl LLMApi {
                     }
                 };
 
-                println!("OpenAI Chat Response: {}", response);
+                if *VERBOSE.lock().unwrap() {
+                    println!("OpenAI Chat Response: {}", response);
+                }
                 response
             }
         }
