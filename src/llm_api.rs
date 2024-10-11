@@ -1,6 +1,6 @@
 use crate::cache::Cache;
 use crate::llm_prompt::Prompt;
-use crate::{OLLAMA_API, OLLAMA_EMB};
+use crate::{OLLAMA_API, OLLAMA_EMB, VERBOSE};
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -35,9 +35,13 @@ impl LLMApi {
         cache: &mut Cache,
         prompt: &Prompt,
     ) -> String {
+        let prompt = if params.len()> 0 {
+            prompt.create(prompt_template, params)
+        } else {
+            prompt_template.to_string()
+        };
         match &self.model_type {
             ModelType::Ollama { model, .. } => {
-                let prompt = prompt.create(prompt_template, params);
                 let stop = STOP_WORDS;
                 let request = OllamaRequest {
                     // model: "qwen2.5-coder:7b".to_string(), // smart model but slow
@@ -54,8 +58,9 @@ impl LLMApi {
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();
-                println!("Request: {}", request.prompt);
-                println!("===============");
+                if *VERBOSE.lock().unwrap() {
+                    println!("Request: {}", request.prompt);
+                }
 
                 let response_opt = cache.get(&request_str);
                 let response = match response_opt {
@@ -64,7 +69,7 @@ impl LLMApi {
                             .timeout(Duration::from_secs(60 * 10))
                             .build()
                             .unwrap();
-                        println!("Request in progress");
+                        println!("Request to LLM in progress");
 
                         let response = client
                             .post(OLLAMA_API)
@@ -76,17 +81,21 @@ impl LLMApi {
                         cache.set(request_str.clone(), response.response.clone());
                         response.response
                     }
-                    Some(result) => result.to_string(),
+                    Some(result) => {
+                        println!("LLM Request already cached");
+                        result.to_string()
+                    }
                 };
 
-                println!("Response: {}", response);
+                if *VERBOSE.lock().unwrap() {
+                    println!("Response: {}", response);
+                }
                 response
             }
             ModelType::OpenAI { api_key } => {
-                let user_prompt = prompt.create(prompt_template, params);
                 let messages = vec![ChatMessage {
                     role: "user".to_string(),
-                    content: user_prompt.to_string(),
+                    content: prompt.to_string(),
                 }];
 
                 let request = OpenAIChatRequest {
@@ -98,12 +107,14 @@ impl LLMApi {
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();
-                println!("OpenAI Chat Request: {}", user_prompt);
-                println!("===============");
+                if *VERBOSE.lock().unwrap() {
+                    println!("Request: {}", prompt);
+                }
 
                 let response_opt = cache.get(&request_str);
                 let response = match response_opt {
                     None => {
+                        println!("Request to LLM in progress");
                         let client = Client::builder()
                             .timeout(Duration::from_secs(60 * 5))
                             .build()
@@ -129,15 +140,20 @@ impl LLMApi {
                         cache.set(request_str.clone(), openai_response.clone());
                         openai_response
                     }
-                    Some(result) => result.to_string(),
+                    Some(result) => {
+                        println!("LLM Request already cached");
+                        result.to_string()
+                    }
                 };
 
-                println!("OpenAI Chat Response: {}", response);
+                if *VERBOSE.lock().unwrap() {
+                    println!("OpenAI Chat Response: {}", response);
+                }
                 response
             }
         }
     }
-    pub fn emb(&self, content: &str, cache: &mut Cache) -> Vec<f32> {
+    pub fn emb(&self, content: &str, cache: &mut Cache, full_content: &str) -> Vec<f32> {
         match &self.model_type {
             ModelType::Ollama { emb, .. } => {
                 let request = OllamaEmbRequest {
@@ -149,32 +165,103 @@ impl LLMApi {
                 let response_opt = cache.get(&request_str);
                 let response = match response_opt {
                     None => {
+                        println!("Request to Ollama Embeddings API in progress");
                         let client = Client::builder()
                             .timeout(Duration::from_secs(60 * 10))
                             .build()
                             .unwrap();
-                        let response = client
+                        // let response = client
+                        //     .post(OLLAMA_EMB)
+                        //     .json(&request)
+                        //     .send()
+                        //     .unwrap()
+                        //     .json::<OllamaEmbResponse>()
+                        //     .unwrap();
+                        //
+                        let response_str = client
                             .post(OLLAMA_EMB)
                             .json(&request)
                             .send()
                             .unwrap()
-                            .json::<OllamaEmbResponse>()
+                            .text()
                             .unwrap();
+                        // println!("Response: {}", response_str);
+                        let response: OllamaEmbResponse = serde_json::from_str(&response_str).unwrap();
+
                         cache.set(
                             request_str.clone(),
                             serde_json::to_string(&response.embedding).unwrap(),
                         );
                         response.embedding
                     }
-                    Some(result) => serde_json::from_str(&result).unwrap(),
+                    Some(result) => {
+                        println!("Embedding Request already cached");
+                        serde_json::from_str(&result).unwrap()
+                    },
                 };
                 response
             }
-            ModelType::OpenAI { .. } => {
-                todo!("OpenAI does not support embeddings")
+            ModelType::OpenAI { api_key } => {
+                let request = OpenAIEmbRequest {
+                    model: "text-embedding-ada-002".to_string(),
+                    input: full_content.to_string(),
+                };
+
+                let request_str = serde_json::to_string(&request).unwrap();
+
+                let response_opt = cache.get(&request_str);
+
+                let response = match response_opt {
+                    None => {
+                        let client = Client::builder()
+                            .timeout(Duration::from_secs(60 * 5))
+                            .build()
+                            .unwrap();
+
+                        println!("Request to OpenAI Embeddings API in progress");
+
+                        let api_response = match client
+                            .post("https://api.openai.com/v1/embeddings")
+                            .bearer_auth(api_key)
+                            .json(&request)
+                            .send()
+                        {
+                            Ok(resp) => resp,
+                            Err(e) => {
+                                eprintln!("Network error: {}", e);
+                                return vec![];
+                            }
+                        };
+
+
+                        let api_response = match api_response.json::<OpenAIEmbResponse>() {
+                            Ok(json) => json,
+                            Err(e) => {
+                                eprintln!("Failed to parse JSON response: {}", e);
+                                return vec![];
+                            }
+                        };
+
+                        cache.set(
+                            request_str.clone(),
+                            serde_json::to_string(&api_response.data[0].embedding).unwrap(),
+                        );
+                        api_response.data[0].embedding.clone()
+                    }
+                    Some(result) => {
+                        println!("Embedding Request already cached");
+                        serde_json::from_str(&result).unwrap()
+                    }
+                };
+
+                if *VERBOSE.lock().unwrap() {
+                    println!("OpenAI Embedding Response: {:?}", response);
+                }
+                response.to_vec()
             }
         }
     }
+
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -255,3 +342,18 @@ struct OpenAIUsage {
     completion_tokens: i32,
     total_tokens: i32,
 }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct OpenAIEmbRequest {
+    model: String,
+    input: String,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct OpenAIEmbResponse {
+    data: Vec<OpenAIEmbData>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct OpenAIEmbData {
+    embedding: Vec<f32>,
+}
+

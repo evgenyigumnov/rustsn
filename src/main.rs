@@ -1,7 +1,9 @@
-use clap::{Arg, Command};
+use clap::{Arg, ArgAction, Command};
+use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
+use std::sync::Mutex;
 
 mod build_tool;
 mod cache;
@@ -22,12 +24,18 @@ mod typescript;
 mod utils;
 mod vector_utils;
 
-const DEBUG: bool = false;
+static VERBOSE: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
+
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
 const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
 const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
 
 fn main() {
+
+    std::env::set_var("OLLAMA_NUM_PARALLEL", "2");
+
+
+
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
@@ -41,6 +49,13 @@ Usage:
 
 {all-args}
 ",
+        )
+        .arg(
+            Arg::new("verbose")
+                .long("verbose")
+                .help("Enable verbose mode")
+                .global(true)
+                .action(ArgAction::SetTrue),
         )
         .arg(
             Arg::new("lang")
@@ -66,7 +81,7 @@ Usage:
                 .long("ollmod")
                 .value_name("OLLAMA-MODEL")
                 .help("Set desired ollama model")
-                .default_value("qwen2.5-coder:1.5b")
+                .default_value("gemma2:9b")
                 .global(true),
         )
         .arg(
@@ -101,6 +116,9 @@ Usage:
                 ),
         )
         .get_matches();
+
+    let verbose = matches.get_one::<bool>("verbose").unwrap();
+    *VERBOSE.lock().unwrap() = *verbose;
 
     let lang: Lang = matches
         .get_one::<String>("lang")
@@ -171,9 +189,7 @@ Usage:
     );
     println!("");
 
-    println!(
-        "For launch work with AI, type ENTER twice after the last line of the prompt."
-    );
+    println!("For launch work with AI, type ENTER twice after the last line of the prompt.");
     println!("");
 
     let command = matches.subcommand_name();
@@ -182,7 +198,6 @@ Usage:
             println!("Explain what the function should do:");
             let question: String = ask();
 
-            println!("====================");
             state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
             println!("++++++++ Finished ++++++++++++");
         }
@@ -205,16 +220,45 @@ Usage:
                         println!("File: {:?}", file);
                         let content_file = std::fs::read_to_string(file).unwrap();
                         let content = format!("== {} ==\r\n{}", file, content_file);
-                        let emb = llm.emb(&content, &mut cache);
+
+                        let prompt_template = format!("{}\r\n{}", content, "Explain how this code works and what it do:");
+                        let llm_question = llm.request(&prompt_template,
+                                                       &Vec::new(),
+                                                       &mut cache,
+                                                       &prompt);
+
+                        let emb = llm.emb(&content, &mut cache, &llm_question);
                         // println!("{:#?}", emb);
                         vectors.insert(file.clone(), emb);
                     }
 
                     println!("Enter the question about your project sources:");
                     let question: String = ask();
-                    let target_emb = llm.emb(&question, &mut cache);
+                    let target_emb = llm.emb(&question, &mut cache, &question);
                     let result = vector_utils::find_closest(&target_emb, &vectors);
-                    println!("Closest file: {:#?}", result);
+                    let limited_result = result.iter().take(3).collect::<Vec<_>>();
+                    println!("Find closest files:");
+                    for (k, _v) in &limited_result {
+                        println!("File: {}", k);
+                    }
+                    let files_content_vec = limited_result.iter().map(|(k, _)| {
+                        let content = std::fs::read_to_string(k).unwrap();
+                        format!("== {} ==\r\n{}", k, content)
+                    }).collect::<Vec<_>>();
+                    let files_content = files_content_vec.join("\r\n");
+
+
+                    let prompt_template = format!("{}\r\n{}\r\n{}", files_content, "Use functions from code above to give answer for this question: ", question);
+                    if *VERBOSE.lock().unwrap() {
+                        println!("Request: {}", prompt_template);
+                    }
+                    let answer = llm.request(&prompt_template,
+                                                   &Vec::new(),
+                                                   &mut cache,
+                                                   &prompt);
+                    println!("++++++++ Answer ++++++++++++");
+
+                    println!("Answer: {}", answer);
                 }
 
                 _ => {
@@ -222,8 +266,6 @@ Usage:
                     std::process::exit(1);
                 }
             }
-
-            println!("====================");
 
             println!("++++++++ Finished ++++++++++++");
         }

@@ -7,7 +7,7 @@ use crate::cache::Cache;
 use crate::llm_api::LLMApi;
 use crate::llm_prompt::Prompt;
 use crate::llm_response::LLMResponse;
-use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS};
+use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS, VERBOSE};
 
 pub fn run_state_machine(
     lang: &Lang,
@@ -20,15 +20,12 @@ pub fn run_state_machine(
         Lang::Rust => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::Rust);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
             create_project_rust(lang, &project);
-            println!("================");
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -36,7 +33,6 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
                         break;
                     }
                     number_of_attempts += 1;
@@ -55,15 +51,12 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::Rust);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
                     create_project_rust(lang, &project);
-                    println!("================");
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -73,15 +66,12 @@ pub fn run_state_machine(
         Lang::Java => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::Java);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
             create_project_java(&project);
-            println!("================");
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -89,7 +79,6 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
                         break;
                     }
                     number_of_attempts += 1;
@@ -109,15 +98,17 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::Java);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
+
                     create_project_java(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -127,15 +118,17 @@ pub fn run_state_machine(
         Lang::Scala => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::Scala);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
+
             create_project_scala(&project);
-            println!("================");
+
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
+
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
+
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -143,7 +136,7 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
+
                         break;
                     }
                     number_of_attempts += 1;
@@ -163,15 +156,17 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::Scala);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
+
                     create_project_scala(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -181,15 +176,17 @@ pub fn run_state_machine(
         Lang::Swift => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::Swift);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
+
             create_project_swift(&project);
-            println!("================");
+
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
+
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
+
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -197,7 +194,7 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
+
                         break;
                     }
                     number_of_attempts += 1;
@@ -217,15 +214,17 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::Swift);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
+
                     create_project_swift(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -235,15 +234,17 @@ pub fn run_state_machine(
         Lang::Kotlin => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::Kotlin);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
+
             create_project_kotlin(&project);
-            println!("================");
+
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
+
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
+
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -251,7 +252,7 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
+
                         break;
                     }
                     number_of_attempts += 1;
@@ -271,15 +272,17 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::Kotlin);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
+
                     create_project_kotlin(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -289,15 +292,17 @@ pub fn run_state_machine(
         Lang::Python => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::Python);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
+
             create_project_python(&project);
-            println!("================");
+
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
+
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
+
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -305,7 +310,7 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
+
                         break;
                     }
                     number_of_attempts += 1;
@@ -325,15 +330,17 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::Python);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
+
                     create_project_python(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -343,15 +350,19 @@ pub fn run_state_machine(
         Lang::JavaScript => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::JavaScript);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
-            create_project_javascript(&project);
-            println!("================");
+
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
+
+            if *VERBOSE.lock().unwrap() {
+                create_project_javascript(&project);
+            }
+
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
+
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
+
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -359,7 +370,7 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
+
                         break;
                     }
                     number_of_attempts += 1;
@@ -379,15 +390,15 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::JavaScript);
-                    println!("================");
+
                     println!("{:#?}", project);
-                    println!("================");
+
                     create_project_javascript(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -397,15 +408,17 @@ pub fn run_state_machine(
         Lang::TypeScript => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::TypeScript);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
+
             create_project_typescript(&project);
-            println!("================");
+
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
+
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
+
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -414,7 +427,7 @@ pub fn run_state_machine(
                     let ts_config = project.additional_config[0].clone();
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
+
                         break;
                     }
                     number_of_attempts += 1;
@@ -435,15 +448,17 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::TypeScript);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
+
                     create_project_typescript(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }
@@ -453,15 +468,17 @@ pub fn run_state_machine(
         Lang::Php => {
             let result = llm.request("generate", &vec![question.to_string()], cache, prompt);
             let mut project = LLMResponse::parse_llm_response(&result, Lang::Php);
-            println!("================");
-            println!("{:#?}", project);
-            println!("================");
+
+            if *VERBOSE.lock().unwrap() {
+                println!("{:#?}", project);
+            }
+
             create_project_php(&project);
-            println!("================");
+
             let mut build_res = build_tool(lang, &project.build_command, cache);
-            println!("================");
+
             let mut test_res = build_tool(lang, &project.test_command, cache);
-            println!("================");
+
             if build_res.0 && test_res.0 {
                 return;
             } else {
@@ -469,7 +486,7 @@ pub fn run_state_machine(
                 loop {
                     if number_of_attempts > MAX_NUMBER_OF_ATTEMPTS {
                         println!("To many attempts");
-                        println!("================");
+
                         break;
                     }
                     number_of_attempts += 1;
@@ -489,15 +506,17 @@ pub fn run_state_machine(
                         prompt,
                     );
                     project = LLMResponse::parse_llm_response(&result, Lang::Php);
-                    println!("================");
-                    println!("{:#?}", project);
-                    println!("================");
+
+                    if *VERBOSE.lock().unwrap() {
+                        println!("{:#?}", project);
+                    }
+
                     create_project_php(&project);
-                    println!("================");
+
                     build_res = build_tool(lang, &project.build_command, cache);
-                    println!("================");
+
                     test_res = build_tool(lang, &project.test_command, cache);
-                    println!("================");
+
                     if build_res.0 && test_res.0 {
                         return;
                     }

@@ -1,0 +1,120 @@
+Certainly! Below is the complete `Cargo.toml`, `src/lib.rs`, and instructions to build and test the code.
+
+### Cargo.toml
+```toml
+[package]
+name = "random_multiplier"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = { version = "0.8", features = ["derive"] }  # Updated to a more recent version of rand with feature for derive macros
+```
+
+### src/lib.rs
+```rust
+use rand::Rng;  // Import the Random trait from rand crate
+
+/// Generates a random number between 1 and 10 using rand::thread_rng() and multiplies it by `param`.
+///
+/// # Examples
+///
+/// ```
+/// assert_eq!(random_multiplier::solution(2), 20); // Check if multiplication works with a simple case
+/// assert_eq!(random_multiplier::solution(5), 50); // Another test case with different input
+/// assert_eq!(random_multiplier::solution(1), 10); // Edge case where param is 1
+/// ```
+pub fn solution(param: i32) -> i32 {
+    let random_number = rand::thread_rng().gen_range(1..=10);
+
+    random_number * param
+}
+
+// Test function for solution to ensure it returns the correct result
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_solution() {
+        assert_eq!(solution(2), 20); // Check if multiplication works with a simple case
+        assert_eq!(solution(5), 50); // Another test case with different input
+        assert_eq!(solution(1), 10); // Edge case where param is 1
+    }
+}
+```
+
+### Build and Test
+
+To build the code with tests, run:
+```bash
+cargo build --tests
+```
+
+This will compile the code and run all the tests.
+
+To run the tests individually, you can use:
+```bash
+cargo test <test_name>
+```
+
+For example, to run only the `test_solution` test, you would use:
+```bash
+cargo test test_solution
+```
+
+### Final Summary
+
+- **Cargo.toml**:
+  ```toml
+  [package]
+  name = "random_multiplier"
+  version = "0.1.0"
+  edition = "2021"
+
+  [dependencies]
+  rand = { version = "0.8", features = ["derive"] }  # Updated to a more recent version of rand with feature for derive macros
+  ```
+
+- **src/lib.rs**:
+  ```rust
+  use rand::Rng;  // Import the Random trait from rand crate
+
+  /// Generates a random number between 1 and 10 using rand::thread_rng() and multiplies it by `param`.
+  ///
+  /// # Examples
+  ///
+  /// ```
+  /// assert_eq!(random_multiplier::solution(2), 20); // Check if multiplication works with a simple case
+  /// assert_eq!(random_multiplier::solution(5), 50); // Another test case with different input
+  /// assert_eq!(random_multiplier::solution(1), 10); // Edge case where param is 1
+  /// ```
+  pub fn solution(param: i32) -> i32 {
+      let random_number = rand::thread_rng().gen_range(1..=10);
+
+      random_number * param
+  }
+
+  // Test function for solution to ensure it returns the correct result
+  #[cfg(test)]
+  mod tests {
+      use super::*;
+
+      #[test]
+      fn test_solution() {
+          assert_eq!(solution(2), 20); // Check if multiplication works with a simple case
+          assert_eq!(solution(5), 50); // Another test case with different input
+          assert_eq!(solution(1), 10); // Edge case where param is 1
+      }
+  }
+  ```
+
+- **Build**:
+  ```bash
+  cargo build --tests
+  ```
+
+- **Test**:
+  ```bash
+  cargo test <test_name>
+  ```

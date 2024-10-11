@@ -1,7 +1,7 @@
 mod tests {
     #[test]
     fn test_parse_llm_response() {
-        for i in 1..=8 {
+        for i in 1..=9 {
             let file = format!("./test_data/rust_create_{}.txt", i);
             let response = std::fs::read_to_string(file).unwrap();
             let mut project =
