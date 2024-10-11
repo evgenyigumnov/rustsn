@@ -1,6 +1,6 @@
 use crate::cache::Cache;
 use crate::llm_prompt::Prompt;
-use crate::{OLLAMA_API, OLLAMA_EMB};
+use crate::{OLLAMA_API, OLLAMA_EMB, VERBOSE};
 use reqwest::blocking::Client;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -54,8 +54,9 @@ impl LLMApi {
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();
-                println!("Request: {}", request.prompt);
-                println!("===============");
+                if *VERBOSE.lock().unwrap() {
+                    println!("Request: {}", request.prompt);
+                }
 
                 let response_opt = cache.get(&request_str);
                 let response = match response_opt {
@@ -64,7 +65,7 @@ impl LLMApi {
                             .timeout(Duration::from_secs(60 * 10))
                             .build()
                             .unwrap();
-                        println!("Request in progress");
+                        println!("Request to LLM in progress");
 
                         let response = client
                             .post(OLLAMA_API)
@@ -76,10 +77,15 @@ impl LLMApi {
                         cache.set(request_str.clone(), response.response.clone());
                         response.response
                     }
-                    Some(result) => result.to_string(),
+                    Some(result) => {
+                        println!("Request already cached");
+                        result.to_string()
+                    }
                 };
 
-                println!("Response: {}", response);
+                if *VERBOSE.lock().unwrap() {
+                    println!("Response: {}", response);
+                }
                 response
             }
             ModelType::OpenAI { api_key } => {
@@ -98,8 +104,10 @@ impl LLMApi {
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();
-                println!("OpenAI Chat Request: {}", user_prompt);
-                println!("===============");
+                println!("Request to LLM in progress");
+                if *VERBOSE.lock().unwrap() {
+                    println!("Request: {}", user_prompt);
+                }
 
                 let response_opt = cache.get(&request_str);
                 let response = match response_opt {
@@ -129,7 +137,10 @@ impl LLMApi {
                         cache.set(request_str.clone(), openai_response.clone());
                         openai_response
                     }
-                    Some(result) => result.to_string(),
+                    Some(result) => {
+                        println!("Request already cached");
+                        result.to_string()
+                    }
                 };
 
                 println!("OpenAI Chat Response: {}", response);

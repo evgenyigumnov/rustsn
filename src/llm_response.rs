@@ -83,20 +83,25 @@ impl LLMResponse {
                     }
                 }
 
-                if cargo_toml == "" {
+                if cargo_toml == "" || lib_rs == "" || build == "" || test == "" {
                     let mut lines = response.lines().peekable();
 
+                    let re = regex::Regex::new(r"- \*\*(.*)\*\*").unwrap();
                     while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
+                        if line.starts_with("## ") || line.starts_with("### ") || re.is_match(line)
+                        {
+                            let section_title = line[3..]
+                                .trim()
+                                .replace("`", "")
+                                .replace("- **", "")
+                                .replace("*", "")
+                                .replace(":", "");
                             while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
+                                if line.trim().starts_with("```") {
                                     // Capture the code block content
                                     let mut code_content = String::new();
                                     while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
+                                        if line.trim().starts_with("```") {
                                             // End of code block
                                             break;
                                         } else {
@@ -106,7 +111,7 @@ impl LLMResponse {
                                     }
 
                                     // Assign the captured content to the appropriate field
-                                    match section_title {
+                                    match section_title.as_str() {
                                         "Cargo.toml" => {
                                             cargo_toml = code_content.trim_end().to_string()
                                         }
@@ -118,13 +123,13 @@ impl LLMResponse {
                                         _ => (),
                                     }
 
-                                    // Break out of the inner loop to process the next section
                                     break;
                                 }
                             }
                         }
                     }
                 }
+
                 Project {
                     dependencies: cargo_toml,
                     solution_code: lib_rs,

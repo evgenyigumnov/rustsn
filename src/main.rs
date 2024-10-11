@@ -1,7 +1,9 @@
-use clap::{Arg, Command};
+use clap::{Arg, ArgAction, Command};
+use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
+use std::sync::Mutex;
 
 mod build_tool;
 mod cache;
@@ -22,7 +24,8 @@ mod typescript;
 mod utils;
 mod vector_utils;
 
-const DEBUG: bool = false;
+static VERBOSE: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
+
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
 const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
 const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
@@ -41,6 +44,13 @@ Usage:
 
 {all-args}
 ",
+        )
+        .arg(
+            Arg::new("verbose")
+                .long("verbose")
+                .help("Enable verbose mode")
+                .global(true)
+                .action(ArgAction::SetTrue),
         )
         .arg(
             Arg::new("lang")
@@ -101,6 +111,9 @@ Usage:
                 ),
         )
         .get_matches();
+
+    let verbose = matches.get_one::<bool>("verbose").unwrap();
+    *VERBOSE.lock().unwrap() = *verbose;
 
     let lang: Lang = matches
         .get_one::<String>("lang")
@@ -171,9 +184,7 @@ Usage:
     );
     println!("");
 
-    println!(
-        "For launch work with AI, type ENTER twice after the last line of the prompt."
-    );
+    println!("For launch work with AI, type ENTER twice after the last line of the prompt.");
     println!("");
 
     let command = matches.subcommand_name();
@@ -182,7 +193,6 @@ Usage:
             println!("Explain what the function should do:");
             let question: String = ask();
 
-            println!("====================");
             state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
             println!("++++++++ Finished ++++++++++++");
         }
@@ -222,8 +232,6 @@ Usage:
                     std::process::exit(1);
                 }
             }
-
-            println!("====================");
 
             println!("++++++++ Finished ++++++++++++");
         }

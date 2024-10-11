@@ -1,6 +1,6 @@
 use crate::cache::Cache;
 use crate::llm_response::Project;
-use crate::{Lang, DEBUG};
+use crate::{Lang, VERBOSE};
 
 pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, String) {
     match lang {
@@ -36,7 +36,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -87,7 +87,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -135,7 +135,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -178,7 +178,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -225,7 +225,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -269,7 +269,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -316,7 +316,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -363,7 +363,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
@@ -412,7 +412,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let output = parsed.1;
 
             println!("Exit result: {}", exit_code == 0);
-            if DEBUG {
+            if *VERBOSE.lock().unwrap() {
                 println!("Output: {}", output);
             }
             let exit_code_bool = exit_code == 0;
