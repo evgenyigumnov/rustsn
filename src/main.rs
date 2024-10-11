@@ -32,7 +32,6 @@ const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
 
 fn main() {
     std::env::set_var("OLLAMA_NUM_PARALLEL", "2");
-
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
@@ -225,6 +224,7 @@ Usage:
                         let llm_question =
                             llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
 
+
                         let emb = llm.emb(&content, &mut cache, &llm_question);
                         // println!("{:#?}", emb);
                         vectors.insert(file.clone(), emb);
@@ -258,6 +258,7 @@ Usage:
                         println!("Request: {}", prompt_template);
                     }
                     let answer = llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
+
                     println!("++++++++ Answer ++++++++++++");
 
                     println!("Answer: {}", answer);

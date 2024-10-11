@@ -188,7 +188,6 @@ impl LLMApi {
                         // println!("Response: {}", response_str);
                         let response: OllamaEmbResponse =
                             serde_json::from_str(&response_str).unwrap();
-
                         cache.set(
                             request_str.clone(),
                             serde_json::to_string(&response.embedding).unwrap(),
@@ -199,7 +198,7 @@ impl LLMApi {
                         println!("Embedding Request already cached");
                         serde_json::from_str(&result).unwrap()
                     }
-                };
+              };
                 response
             }
             ModelType::OpenAI { api_key } => {
@@ -234,6 +233,7 @@ impl LLMApi {
                             }
                         };
 
+
                         let api_response = match api_response.json::<OpenAIEmbResponse>() {
                             Ok(json) => json,
                             Err(e) => {
@@ -261,6 +261,7 @@ impl LLMApi {
             }
         }
     }
+
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -355,3 +356,4 @@ struct OpenAIEmbResponse {
 struct OpenAIEmbData {
     embedding: Vec<f32>,
 }
+
