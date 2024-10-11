@@ -31,10 +31,7 @@ const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
 const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
 
 fn main() {
-
     std::env::set_var("OLLAMA_NUM_PARALLEL", "2");
-
-
 
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
@@ -221,11 +218,12 @@ Usage:
                         let content_file = std::fs::read_to_string(file).unwrap();
                         let content = format!("== {} ==\r\n{}", file, content_file);
 
-                        let prompt_template = format!("{}\r\n{}", content, "Explain how this code works and what it do:");
-                        let llm_question = llm.request(&prompt_template,
-                                                       &Vec::new(),
-                                                       &mut cache,
-                                                       &prompt);
+                        let prompt_template = format!(
+                            "{}\r\n{}",
+                            content, "Explain how this code works and what it do:"
+                        );
+                        let llm_question =
+                            llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
 
                         let emb = llm.emb(&content, &mut cache, &llm_question);
                         // println!("{:#?}", emb);
@@ -241,21 +239,25 @@ Usage:
                     for (k, _v) in &limited_result {
                         println!("File: {}", k);
                     }
-                    let files_content_vec = limited_result.iter().map(|(k, _)| {
-                        let content = std::fs::read_to_string(k).unwrap();
-                        format!("== {} ==\r\n{}", k, content)
-                    }).collect::<Vec<_>>();
+                    let files_content_vec = limited_result
+                        .iter()
+                        .map(|(k, _)| {
+                            let content = std::fs::read_to_string(k).unwrap();
+                            format!("== {} ==\r\n{}", k, content)
+                        })
+                        .collect::<Vec<_>>();
                     let files_content = files_content_vec.join("\r\n");
 
-
-                    let prompt_template = format!("{}\r\n{}\r\n{}", files_content, "Use functions from code above to give answer for this question: ", question);
+                    let prompt_template = format!(
+                        "{}\r\n{}\r\n{}",
+                        files_content,
+                        "Use functions from code above to give answer for this question: ",
+                        question
+                    );
                     if *VERBOSE.lock().unwrap() {
                         println!("Request: {}", prompt_template);
                     }
-                    let answer = llm.request(&prompt_template,
-                                                   &Vec::new(),
-                                                   &mut cache,
-                                                   &prompt);
+                    let answer = llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
                     println!("++++++++ Answer ++++++++++++");
 
                     println!("Answer: {}", answer);
