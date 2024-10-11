@@ -166,7 +166,10 @@ Usage:
                     // Write the content to the prompt file
                     std::fs::write(&prompt_file_path, content).unwrap();
                 } else {
-                    eprintln!("Failed to download the prompt file: HTTP {}", response.status());
+                    eprintln!(
+                        "Failed to download the prompt file: HTTP {}",
+                        response.status()
+                    );
                     std::process::exit(1);
                 }
             }
