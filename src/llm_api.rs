@@ -35,9 +35,13 @@ impl LLMApi {
         cache: &mut Cache,
         prompt: &Prompt,
     ) -> String {
+        let prompt = if params.len()> 0 {
+            prompt.create(prompt_template, params)
+        } else {
+            prompt_template.to_string()
+        };
         match &self.model_type {
             ModelType::Ollama { model, .. } => {
-                let prompt = prompt.create(prompt_template, params);
                 let stop = STOP_WORDS;
                 let request = OllamaRequest {
                     // model: "qwen2.5-coder:7b".to_string(), // smart model but slow
@@ -89,10 +93,9 @@ impl LLMApi {
                 response
             }
             ModelType::OpenAI { api_key } => {
-                let user_prompt = prompt.create(prompt_template, params);
                 let messages = vec![ChatMessage {
                     role: "user".to_string(),
-                    content: user_prompt.to_string(),
+                    content: prompt.to_string(),
                 }];
 
                 let request = OpenAIChatRequest {
@@ -106,7 +109,7 @@ impl LLMApi {
                 let request_str = serde_json::to_string(&request).unwrap();
                 println!("Request to LLM in progress");
                 if *VERBOSE.lock().unwrap() {
-                    println!("Request: {}", user_prompt);
+                    println!("Request: {}", prompt);
                 }
 
                 let response_opt = cache.get(&request_str);
@@ -230,7 +233,7 @@ impl LLMApi {
 
                         cache.set(
                             request_str.clone(),
-                            serde_json::to_string(&api_response).unwrap(),
+                            serde_json::to_string(&api_response.data[0].embedding).unwrap(),
                         );
                         api_response.data[0].embedding.clone()
                     }

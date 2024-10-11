@@ -4,8 +4,6 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 use std::sync::Mutex;
-use crate::cache::Cache;
-use crate::llm_prompt::Prompt;
 
 mod build_tool;
 mod cache;
