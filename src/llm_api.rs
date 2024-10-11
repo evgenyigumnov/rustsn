@@ -35,7 +35,7 @@ impl LLMApi {
         cache: &mut Cache,
         prompt: &Prompt,
     ) -> String {
-        let prompt = if params.len()> 0 {
+        let prompt = if params.len() > 0 {
             prompt.create(prompt_template, params)
         } else {
             prompt_template.to_string()
@@ -186,8 +186,8 @@ impl LLMApi {
                             .text()
                             .unwrap();
                         // println!("Response: {}", response_str);
-                        let response: OllamaEmbResponse = serde_json::from_str(&response_str).unwrap();
-
+                        let response: OllamaEmbResponse =
+                            serde_json::from_str(&response_str).unwrap();
                         cache.set(
                             request_str.clone(),
                             serde_json::to_string(&response.embedding).unwrap(),
@@ -197,8 +197,8 @@ impl LLMApi {
                     Some(result) => {
                         println!("Embedding Request already cached");
                         serde_json::from_str(&result).unwrap()
-                    },
-                };
+                    }
+              };
                 response
             }
             ModelType::OpenAI { api_key } => {
