@@ -1,4 +1,5 @@
 use regex::Regex;
+use std::collections::HashMap;
 
 use crate::{utils::remove_comments, Lang};
 
@@ -49,53 +50,53 @@ impl LLMResponse {
         positions
     }
 
-    pub fn parse_llm_response(response: &str, language: Lang) -> Project {
-        match language {
-            Lang::Rust => {
-                let mut cargo_toml = String::new();
-                let mut lib_rs = String::new();
-                let mut build = String::new();
-                let mut test = String::new();
+    fn extract_sections(response: &str, section_names: &[&str]) -> HashMap<String, String> {
+        let mut sections_content = HashMap::new();
+        let positions = LLMResponse::parse_positions(response);
 
-                let positions = LLMResponse::parse_positions(response);
+        // First method: use positions and extract content
+        for i in 0..positions.len() - 1 {
+            let (section_name, start) = &positions[i];
+            let end = positions[i + 1].1;
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
+            let section_content = &response[*start..end];
 
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("Cargo.toml") {
-                            cargo_toml = content;
-                        } else if section_name.contains("src/lib.rs") {
-                            lib_rs = content;
-                        } else if section_name.contains("Build") {
-                            build = content;
-                        } else if section_name.contains("Test") {
-                            test = content;
-                        }
+            // Regular expression to extract code blocks (including multiline texts)
+            let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
+            if let Some(cap) = re_code_block.captures(section_content) {
+                let content = cap.get(1).unwrap().as_str().to_string();
+                for &desired_section in section_names {
+                    if section_name.contains(desired_section) {
+                        sections_content.insert(desired_section.to_string(), content.clone());
                     }
                 }
+            }
+        }
 
-                if cargo_toml == "" || lib_rs == "" || build == "" || test == "" {
-                    let mut lines = response.lines().peekable();
+        // Check if all desired sections have been found
+        let missing_sections: Vec<_> = section_names
+            .iter()
+            .filter(|&&s| !sections_content.contains_key(s))
+            .collect();
 
-                    let re = regex::Regex::new(r"- \*\*(.*)\*\*").unwrap();
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") || re.is_match(line)
-                        {
-                            let section_title = line[3..]
-                                .trim()
-                                .replace("`", "")
-                                .replace("- **", "")
-                                .replace("*", "")
-                                .replace(":", "");
+        // If some sections are missing, try alternative method
+        if !missing_sections.is_empty() {
+            let mut lines = response.lines().peekable();
+            let re = Regex::new(r"- \*\*(.*)\*\*").unwrap();
+            while let Some(line) = lines.next() {
+                if line.starts_with("## ") || line.starts_with("### ") || re.is_match(line) {
+                    let section_title = line
+                        .trim_start_matches(&['#', ' '][..])
+                        .trim()
+                        .replace("`", "")
+                        .replace("- **", "")
+                        .replace("*", "")
+                        .replace(":", "");
+
+                    // Now check if section_title matches any desired section
+                    for &desired_section in missing_sections.iter() {
+                        if section_title.contains(desired_section) {
+                            // Now extract code block
                             while let Some(line) = lines.next() {
                                 if line.trim().starts_with("```") {
                                     // Capture the code block content
@@ -109,26 +110,40 @@ impl LLMResponse {
                                             code_content.push('\n');
                                         }
                                     }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title.as_str() {
-                                        "Cargo.toml" => {
-                                            cargo_toml = code_content.trim_end().to_string()
-                                        }
-                                        "src/lib.rs" => {
-                                            lib_rs = code_content.trim_end().to_string()
-                                        }
-                                        "Build" => build = code_content.trim_end().to_string(),
-                                        "Test" => test = code_content.trim_end().to_string(),
-                                        _ => (),
-                                    }
-
+                                    sections_content.insert(
+                                        desired_section.to_string(),
+                                        code_content.trim_end().to_string(),
+                                    );
                                     break;
                                 }
                             }
+                            break; // break out of for loop over desired sections
                         }
                     }
                 }
+            }
+        }
+
+        sections_content
+    }
+
+    pub fn parse_llm_response(response: &str, language: Lang) -> Project {
+        match language {
+            Lang::Rust => {
+                let desired_sections = ["Cargo.toml", "src/lib.rs", "Build", "Test"];
+
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
+
+                let cargo_toml = sections_content
+                    .get("Cargo.toml")
+                    .cloned()
+                    .unwrap_or_default();
+                let lib_rs = sections_content
+                    .get("src/lib.rs")
+                    .cloned()
+                    .unwrap_or_default();
+                let build = sections_content.get("Build").cloned().unwrap_or_default();
+                let test = sections_content.get("Test").cloned().unwrap_or_default();
 
                 Project {
                     dependencies: cargo_toml,
@@ -140,88 +155,31 @@ impl LLMResponse {
                 }
             }
             Lang::JavaScript => {
-                let mut pkg_json = String::new();
-                let mut solution = String::new();
-                let mut install_dependency_command = String::new();
-                let mut test = String::new();
-                let mut test_js = String::new();
+                let desired_sections = [
+                    "package.json",
+                    "src/solution.js",
+                    "Install",
+                    "Test",
+                    "src/solution.test.js",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
-
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("package.json") {
-                            pkg_json = content;
-                        } else if section_name.contains("src/solution.js") {
-                            solution = content;
-                        } else if section_name.contains("src/solution.test.js") {
-                            test_js = content;
-                        } else if section_name.contains("Install") {
-                            install_dependency_command = content;
-                        } else if section_name.contains("Test") {
-                            test = content;
-                        }
-                    }
-                }
-
-                if pkg_json == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "package.json" => {
-                                            pkg_json = code_content.trim_end().to_string()
-                                        }
-                                        "src/solution.js" => {
-                                            solution = code_content.trim_end().to_string()
-                                        }
-                                        "src/solution.test.js" => {
-                                            test = code_content.trim_end().to_string()
-                                        }
-                                        "Install" => {
-                                            install_dependency_command =
-                                                code_content.trim_end().to_string()
-                                        }
-                                        "Test" => test = code_content.trim_end().to_string(),
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                let pkg_json = sections_content
+                    .get("package.json")
+                    .cloned()
+                    .unwrap_or_default();
+                let solution = sections_content
+                    .get("src/solution.js")
+                    .cloned()
+                    .unwrap_or_default();
+                let install_dependency_command =
+                    sections_content.get("Install").cloned().unwrap_or_default();
+                let test = sections_content.get("Test").cloned().unwrap_or_default();
+                let test_js = sections_content
+                    .get("src/solution.test.js")
+                    .cloned()
+                    .unwrap_or_default();
 
                 Project {
                     dependencies: pkg_json,
@@ -234,91 +192,27 @@ impl LLMResponse {
                 }
             }
             Lang::Java => {
-                let mut pom_xml = String::new();
-                let mut solution_java = String::new();
-                let mut test_java = String::new();
-                let mut build_command = String::new();
-                let mut test_command = String::new();
+                let desired_sections = [
+                    "pom.xml",
+                    "src/main/java/com/example/solution/Solution.java",
+                    "src/test/java/com/example/solution/SolutionTest.java",
+                    "Compile",
+                    "Test",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
-
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("pom.xml") {
-                            pom_xml = content;
-                        } else if section_name
-                            .contains("src/main/java/com/example/solution/Solution.java")
-                        {
-                            solution_java = content;
-                        } else if section_name
-                            .contains("src/test/java/com/example/solution/SolutionTest.java")
-                        {
-                            test_java = content;
-                        } else if section_name.contains("Compile") {
-                            build_command = content;
-                        } else if section_name.contains("Test") {
-                            test_command = content;
-                        }
-                    }
-                }
-
-                if pom_xml == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "pom.xml" => pom_xml = code_content.trim_end().to_string(),
-                                        "src/main/java/com/example/solution/Solution.java" => {
-                                            solution_java = code_content.trim_end().to_string()
-                                        }
-                                        "src/test/java/com/example/solution/SolutionTest.java" => {
-                                            test_java = code_content.trim_end().to_string()
-                                        }
-                                        "Compile" => {
-                                            build_command = code_content.trim_end().to_string()
-                                        }
-                                        "Test" => {
-                                            test_command = code_content.trim_end().to_string()
-                                        }
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                let pom_xml = sections_content.get("pom.xml").cloned().unwrap_or_default();
+                let solution_java = sections_content
+                    .get("src/main/java/com/example/solution/Solution.java")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_java = sections_content
+                    .get("src/test/java/com/example/solution/SolutionTest.java")
+                    .cloned()
+                    .unwrap_or_default();
+                let build_command = sections_content.get("Compile").cloned().unwrap_or_default();
+                let test_command = sections_content.get("Test").cloned().unwrap_or_default();
 
                 Project {
                     dependencies: pom_xml,
@@ -326,93 +220,36 @@ impl LLMResponse {
                     test_code: test_java,
                     build_command,
                     test_command,
+                    lang: Lang::Java,
                     ..Default::default()
                 }
             }
             Lang::Kotlin => {
-                let mut gradle = String::new();
-                let mut solution_kotlin = String::new();
-                let mut test_kotlin = String::new();
-                let mut build_command = String::new();
-                let mut test_command = String::new();
+                let desired_sections = [
+                    "build.gradle",
+                    "src/main/kotlin/Solution.kt",
+                    "src/test/kotlin/SolutionTest.kt",
+                    "Compile",
+                    "Test",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
+                let gradle = sections_content
+                    .get("build.gradle")
+                    .cloned()
+                    .unwrap_or_default();
+                let solution_kotlin = sections_content
+                    .get("src/main/kotlin/Solution.kt")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_kotlin = sections_content
+                    .get("src/test/kotlin/SolutionTest.kt")
+                    .cloned()
+                    .unwrap_or_default();
+                let build_command = sections_content.get("Compile").cloned().unwrap_or_default();
+                let test_command = sections_content.get("Test").cloned().unwrap_or_default();
 
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("build.gradle") {
-                            gradle = content;
-                        } else if section_name.contains("src/main/kotlin/Solution.kt") {
-                            solution_kotlin = content;
-                        } else if section_name.contains("src/test/kotlin/SolutionTest.kt") {
-                            test_kotlin = content;
-                        } else if section_name.contains("Compile") {
-                            build_command = content;
-                        } else if section_name.contains("Test") {
-                            test_command = content;
-                        }
-                    }
-                }
-
-                if gradle == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "build.gradle" => {
-                                            gradle = code_content.trim_end().to_string()
-                                        }
-                                        "src/main/kotlin/Solution.kt" => {
-                                            solution_kotlin = code_content.trim_end().to_string()
-                                        }
-                                        "src/test/kotlin/SolutionTest.kt" => {
-                                            test_kotlin = code_content.trim_end().to_string()
-                                        }
-                                        "Compile" => {
-                                            build_command = code_content.trim_end().to_string()
-                                        }
-                                        "Test" => {
-                                            test_command = code_content.trim_end().to_string()
-                                        }
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
                 Project {
                     dependencies: gradle,
                     solution_code: solution_kotlin,
@@ -420,94 +257,36 @@ impl LLMResponse {
                     build_command,
                     test_command,
                     lang: Lang::Kotlin,
-
                     ..Default::default()
                 }
             }
             Lang::Php => {
-                let mut composer = String::new();
-                let mut solution_php = String::new();
-                let mut test_php = String::new();
-                let mut install_dependency_command = String::new();
-                let mut test_command = String::new();
+                let desired_sections = [
+                    "composer.json",
+                    "src/Solution.php",
+                    "tests/SolutionTest.php",
+                    "Install",
+                    "Test",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
+                let composer = sections_content
+                    .get("composer.json")
+                    .cloned()
+                    .unwrap_or_default();
+                let solution_php = sections_content
+                    .get("src/Solution.php")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_php = sections_content
+                    .get("tests/SolutionTest.php")
+                    .cloned()
+                    .unwrap_or_default();
+                let install_dependency_command =
+                    sections_content.get("Install").cloned().unwrap_or_default();
+                let test_command = sections_content.get("Test").cloned().unwrap_or_default();
 
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-                        if section_name.contains("composer.json") {
-                            composer = content;
-                        } else if section_name.contains("src/Solution.php") {
-                            solution_php = content;
-                        } else if section_name.contains("tests/SolutionTest.php") {
-                            test_php = content;
-                        } else if section_name.contains("Install") {
-                            install_dependency_command = content;
-                        } else if section_name.contains("Test") {
-                            test_command = content;
-                        }
-                    }
-                }
-
-                if composer == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "composer.json" => {
-                                            composer = code_content.trim_end().to_string()
-                                        }
-                                        "src/Solution.php" => {
-                                            solution_php = code_content.trim_end().to_string()
-                                        }
-                                        "tests/SolutionTest.php" => {
-                                            test_php = code_content.trim_end().to_string()
-                                        }
-                                        "Install" => {
-                                            install_dependency_command =
-                                                code_content.trim_end().to_string()
-                                        }
-                                        "Test" => {
-                                            test_command = code_content.trim_end().to_string()
-                                        }
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
                 Project {
                     install_dependency_command: Some(install_dependency_command),
                     dependencies: composer,
@@ -519,173 +298,67 @@ impl LLMResponse {
                 }
             }
             Lang::Python => {
-                let mut requirements = String::new();
-                let mut solution_py = String::new();
-                let mut test_py = String::new();
-                let mut install_dependency_command = String::new();
-                let mut test = String::new();
+                let desired_sections = [
+                    "requirements.txt",
+                    "solution.py",
+                    "test.py",
+                    "Dependencies",
+                    "Test",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
+                let requirements = sections_content
+                    .get("requirements.txt")
+                    .cloned()
+                    .unwrap_or_default();
+                let solution_py = sections_content
+                    .get("solution.py")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_py = sections_content.get("test.py").cloned().unwrap_or_default();
+                let install_dependency_command = sections_content
+                    .get("Dependencies")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_command = sections_content.get("Test").cloned().unwrap_or_default();
 
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("requirements.txt") {
-                            requirements = content;
-                        } else if section_name.contains("solution.py") {
-                            solution_py = content;
-                        } else if section_name.contains("test.py") {
-                            test_py = content;
-                        } else if section_name.contains("Dependencies") {
-                            install_dependency_command = content;
-                        } else if section_name.contains("Test") {
-                            test = content;
-                        }
-                    }
-                }
-
-                if requirements == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "requirements.txt" => {
-                                            requirements = code_content.trim_end().to_string()
-                                        }
-                                        "solution.py" => {
-                                            solution_py = code_content.trim_end().to_string()
-                                        }
-                                        "test.py" => test_py = code_content.trim_end().to_string(),
-                                        "Dependencies" => {
-                                            install_dependency_command =
-                                                code_content.trim_end().to_string()
-                                        }
-                                        "Test" => test = code_content.trim_end().to_string(),
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
                 Project {
                     dependencies: requirements,
                     solution_code: solution_py,
                     test_code: test_py,
                     install_dependency_command: Some(install_dependency_command),
-                    test_command: test,
+                    test_command,
                     lang: Lang::Python,
                     ..Default::default()
                 }
             }
             Lang::Scala => {
-                let mut sbt = String::new();
-                let mut solution_sc = String::new();
-                let mut test_sc = String::new();
-                let mut build = String::new();
-                let mut test = String::new();
+                let desired_sections = [
+                    "build.sbt",
+                    "src/main/scala/Solution.scala",
+                    "src/test/scala/SolutionTest.scala",
+                    "Compile",
+                    "Test",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                    let section_content = &response[*start..end];
+                let sbt = sections_content
+                    .get("build.sbt")
+                    .cloned()
+                    .unwrap_or_default();
+                let solution_sc = sections_content
+                    .get("src/main/scala/Solution.scala")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_sc = sections_content
+                    .get("src/test/scala/SolutionTest.scala")
+                    .cloned()
+                    .unwrap_or_default();
+                let build = sections_content.get("Compile").cloned().unwrap_or_default();
+                let test = sections_content.get("Test").cloned().unwrap_or_default();
 
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("build.sbt") {
-                            sbt = content;
-                        } else if section_name.contains("src/main/scala/Solution.scala") {
-                            solution_sc = content;
-                        } else if section_name.contains("src/test/scala/SolutionTest.scala") {
-                            test_sc = content;
-                        } else if section_name.contains("Compile") {
-                            build = content;
-                        } else if section_name.contains("Test") {
-                            test = content;
-                        }
-                    }
-                }
-
-                if sbt == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "build.sbt" => sbt = code_content.trim_end().to_string(),
-                                        "src/main/scala/Solution.scala" => {
-                                            solution_sc = code_content.trim_end().to_string()
-                                        }
-                                        "src/test/scala/SolutionTest.scala" => {
-                                            test_sc = code_content.trim_end().to_string()
-                                        }
-                                        "Compile" => build = code_content.trim_end().to_string(),
-                                        "Test" => test = code_content.trim_end().to_string(),
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
                 Project {
                     dependencies: sbt,
                     solution_code: solution_sc,
@@ -697,85 +370,31 @@ impl LLMResponse {
                 }
             }
             Lang::Swift => {
-                let mut package = String::new();
-                let mut solution_sw = String::new();
-                let mut test_sw = String::new();
-                let mut build = String::new();
-                let mut test = String::new();
+                let desired_sections = [
+                    "Package.swift",
+                    "Sources/Solution/main.swift",
+                    "Tests/SolutionTests/SolutionTests.swift",
+                    "Compile",
+                    "Test",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
+                let package = sections_content
+                    .get("Package.swift")
+                    .cloned()
+                    .unwrap_or_default();
+                let solution_sw = sections_content
+                    .get("Sources/Solution/main.swift")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_sw = sections_content
+                    .get("Tests/SolutionTests/SolutionTests.swift")
+                    .cloned()
+                    .unwrap_or_default();
+                let build = sections_content.get("Compile").cloned().unwrap_or_default();
+                let test = sections_content.get("Test").cloned().unwrap_or_default();
 
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("Package.swift") {
-                            package = content;
-                        } else if section_name.contains("Sources/Solution/main.swift") {
-                            solution_sw = content;
-                        } else if section_name.contains("Tests/SolutionTests/SolutionTests.swift") {
-                            test_sw = content;
-                        } else if section_name.contains("Compile") {
-                            build = content;
-                        } else if section_name.contains("Test") {
-                            test = content;
-                        }
-                    }
-                }
-
-                if package == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "Package.swift" => {
-                                            package = code_content.trim_end().to_string()
-                                        }
-                                        "Sources/Solution/main.swift" => {
-                                            solution_sw = code_content.trim_end().to_string()
-                                        }
-                                        "Tests/SolutionTests/SolutionTests.swift" => {
-                                            test_sw = code_content.trim_end().to_string()
-                                        }
-                                        "Compile" => build = code_content.trim_end().to_string(),
-                                        "Test" => test = code_content.trim_end().to_string(),
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
                 Project {
                     dependencies: package,
                     solution_code: solution_sw,
@@ -787,91 +406,36 @@ impl LLMResponse {
                 }
             }
             Lang::TypeScript => {
-                let mut package = String::new();
-                let mut typescript_config = String::new();
-                let mut solution = String::new();
-                let mut test_code = String::new();
-                let mut build = String::new();
-                let mut test = String::new();
+                let desired_sections = [
+                    "package.json",
+                    "tsconfig.json",
+                    "src/solution.ts",
+                    "src/solution.test.ts",
+                    "Install",
+                    "Test",
+                ];
 
-                let positions = LLMResponse::parse_positions(response);
+                let sections_content = LLMResponse::extract_sections(response, &desired_sections);
 
-                for i in 0..positions.len() - 1 {
-                    let (section_name, start) = &positions[i];
-                    let end = positions[i + 1].1;
+                let package = sections_content
+                    .get("package.json")
+                    .cloned()
+                    .unwrap_or_default();
+                let typescript_config = sections_content
+                    .get("tsconfig.json")
+                    .cloned()
+                    .unwrap_or_default();
+                let solution = sections_content
+                    .get("src/solution.ts")
+                    .cloned()
+                    .unwrap_or_default();
+                let test_code = sections_content
+                    .get("src/solution.test.ts")
+                    .cloned()
+                    .unwrap_or_default();
+                let build = sections_content.get("Install").cloned().unwrap_or_default();
+                let test = sections_content.get("Test").cloned().unwrap_or_default();
 
-                    let section_content = &response[*start..end];
-
-                    // Регулярное выражение для извлечения блоков кода (с учетом многострочных текстов)
-                    let re_code_block = Regex::new(r"(?s)```.*?\n(.*?)```").unwrap();
-
-                    if let Some(cap) = re_code_block.captures(section_content) {
-                        let content = cap.get(1).unwrap().as_str().to_string();
-
-                        if section_name.contains("package.json") {
-                            package = content;
-                        } else if section_name.contains("src/solution.ts") {
-                            solution = content;
-                        } else if section_name.contains("tsconfig.json") {
-                            typescript_config = content;
-                        } else if section_name.contains("src/solution.test.ts") {
-                            test_code = content;
-                        } else if section_name.contains("Install") {
-                            build = content;
-                        } else if section_name.contains("Test") {
-                            test = content;
-                        }
-                    }
-                }
-
-                if package == "" {
-                    let mut lines = response.lines().peekable();
-
-                    while let Some(line) = lines.next() {
-                        if line.starts_with("## ") || line.starts_with("### ") {
-                            let section_title = line[3..].trim();
-
-                            // Skip lines until the start of the code block
-                            while let Some(line) = lines.next() {
-                                if line.starts_with("```") {
-                                    // Capture the code block content
-                                    let mut code_content = String::new();
-                                    while let Some(line) = lines.next() {
-                                        if line.starts_with("```") {
-                                            // End of code block
-                                            break;
-                                        } else {
-                                            code_content.push_str(line);
-                                            code_content.push('\n');
-                                        }
-                                    }
-
-                                    // Assign the captured content to the appropriate field
-                                    match section_title {
-                                        "package.json" => {
-                                            package = code_content.trim_end().to_string()
-                                        }
-                                        "src/solution.ts" => {
-                                            solution = code_content.trim_end().to_string()
-                                        }
-                                        "src/solution.test.ts" => {
-                                            test_code = code_content.trim_end().to_string()
-                                        }
-                                        "tsconfig.json" => {
-                                            typescript_config = code_content.trim_end().to_string()
-                                        }
-                                        "Install" => build = code_content.trim_end().to_string(),
-                                        "Test" => test = code_content.trim_end().to_string(),
-                                        _ => (),
-                                    }
-
-                                    // Break out of the inner loop to process the next section
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
                 Project {
                     dependencies: package,
                     solution_code: solution,
