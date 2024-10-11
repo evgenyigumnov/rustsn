@@ -34,24 +34,24 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - **If you choose Ollama**: Required for LLM interactions. Install from [Ollama's official site](https://ollama.ai/).
   - Download Ollam models  
    ```bash
-   ollama pull gemma2:9b  # if your need "generate" command functionality
-   ollama pull bge-large  # if your need "ask"  command functionality for existed project code
+   ollama pull gemma2:9b  
+   ollama pull bge-large  # if your need "ask" command functionality for existed project code
    ```
 - **If you choose OpenAI API Key**: Create file "token.txt" in the root folder and put your OpenAI API key there.
 
-### Clone the Repository
+### Install CLI Tool via Cargo
 
 ```bash
-git clone https://github.com/evgenyigumnov/rustsn.git
-cd rustsn
+cargo install rustsn
 ```
-
+This command will download the package source from crates.io, build it, and install the binary into the standard Cargo binaries directory ($HOME/.cargo/bin on Unix-like systems, or %USERPROFILE%\.cargo\bin on Windows).
+If PATH variable is correctly configured, you can run the tool from any directory.
 ## Usage - Generate Function
 
 1. **Start the Program**
 
    ```bash
-   cargo run -- generate function --lang=rust
+   rustsn generate function --lang=rust 
    ```
 
 2. **Provide an Explanation**
@@ -117,7 +117,7 @@ Finished
 1. **Start the Program**
 
    ```bash
-   cargo run -- --lang=rust ask /path/to/your/project
+   rustsn ask /path/to/your/project --lang=rust
    ```
 
 2. **Provide an Explanation**

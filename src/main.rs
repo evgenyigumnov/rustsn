@@ -143,6 +143,40 @@ Usage:
     }
 
     let mut cache = cache::Cache::new();
+
+    let prompt_file_path = format!("prompt/{}.txt", lang);
+    if !std::path::Path::new(&prompt_file_path).exists() {
+        println!(
+            "Warning: Cant find \"{}\". Downloading it from https://github.com/evgenyigumnov/rustsn/raw/HEAD/{}",
+            prompt_file_path, prompt_file_path
+        );
+
+        let url = format!(
+            "https://github.com/evgenyigumnov/rustsn/raw/HEAD/{}",
+            prompt_file_path
+        );
+        match reqwest::blocking::get(&url) {
+            Ok(response) => {
+                if response.status().is_success() {
+                    let content = response.text().unwrap();
+                    // Create directories if they don't exist
+                    if let Some(parent) = std::path::Path::new(&prompt_file_path).parent() {
+                        std::fs::create_dir_all(parent).unwrap();
+                    }
+                    // Write the content to the prompt file
+                    std::fs::write(&prompt_file_path, content).unwrap();
+                } else {
+                    eprintln!("Failed to download the prompt file: HTTP {}", response.status());
+                    std::process::exit(1);
+                }
+            }
+            Err(err) => {
+                eprintln!("Error downloading the prompt file: {}", err);
+                std::process::exit(1);
+            }
+        }
+    }
+
     let prompt = llm_prompt::Prompt::new(format!("prompt/{}.txt", lang).as_str());
     // if file token.txt exists
     let llm = if std::path::Path::new("token.txt").exists() {
