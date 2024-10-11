@@ -224,7 +224,6 @@ Usage:
                         let llm_question =
                             llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
 
-
                         let emb = llm.emb(&content, &mut cache, &llm_question);
                         // println!("{:#?}", emb);
                         vectors.insert(file.clone(), emb);
