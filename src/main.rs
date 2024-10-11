@@ -81,7 +81,7 @@ Usage:
                 .long("ollmod")
                 .value_name("OLLAMA-MODEL")
                 .help("Set desired ollama model")
-                .default_value("llama3.2:1b")
+                .default_value("gemma2:9b")
                 .global(true),
         )
         .arg(
@@ -89,7 +89,7 @@ Usage:
                 .long("ollemb")
                 .value_name("OLLAMA-EMBEDIDING")
                 .help("Set desired ollama embedding")
-                .default_value("nomic-embed-text")
+                .default_value("bge-large")
                 .global(true),
         )
         .subcommand(
