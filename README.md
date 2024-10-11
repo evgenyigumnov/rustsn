@@ -1,42 +1,24 @@
-# rustsn - Code snippets generator via LLMs and compiler/tester via build tools
+# rustsn - This Rust-based tool generates, compiles, and tests code using LLMs, resolves dependencies, and provides explanations of existing code through embeddings.
 
-A Rust-based tool that automates the generation, compilation, and testing 
-of code using Large Language Models (LLMs). It interacts with LLMs to generate 
-code based on user-provided explanations, compiles the code, resolves dependencies, 
-and runs tests to ensure functionality.
+## Features
 
-## Supported languages
-- Rust
-- Python
-- JavaScript
-- TypeScript
-- Java
-- Kotlin
-- Swift
-- PHP
-- Scala
+1. **generate function** command is used to generate code snippets based on user-provided explanations.
+2. TODO: **generate application** command is used to generate seed project code based on user-provided explanations.
+3. **ask** command is used to get explanation by existing codes of your project based on user-provided question.
 
-## How it works
+## Supported languages by feature
+| language | generate function | generate application | ask |
+| --- | --- |----------------------|-----|
+| Rust | + | -                    | +   |
+| Python | + | -                    | -   |
+| JavaScript | + | -                    | -   |
+| TypeScript | + | -                    | -   |
+| Java | + | -                    | -   |
+| Kotlin | + | -                    | -   |
+| Swift | + | -                    | -   |
+| PHP | + | -                    | -   |
+| Scala | + | -                    | -   |
 
-```mermaid
-stateDiagram
-[*] --> GenerateCode
-GenerateCode --> CompileCode
-CompileCode --> GenerateTests : Compilation successful
-CompileCode --> CheckDependencies : Compilation failed
-CheckDependencies --> GenerateDependencies : Dependencies required
-GenerateDependencies --> CompileCode
-CheckDependencies --> RewriteCode : No dependencies required
-RewriteCode --> CompileCode
-GenerateTests --> RunTests
-RunTests --> TestsPass : Tests passed
-RunTests --> DecideFix : Tests failed
-DecideFix --> RewriteCode : Error in code
-DecideFix --> RewriteTests : Error in tests
-RewriteCode --> CompileCode
-RewriteTests --> RunTests
-TestsPass --> [*]
-```
 
 ## Project name explanation
 
@@ -50,12 +32,11 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - **Rust**: Ensure you have Rust installed. You can install it from [here](https://www.rust-lang.org/tools/install).
 - **Make a decision**: Use Ollama (free and launched on your machine) or the OpenAI API (paid and launched on OpenAI servers).
 - **If you choose Ollama**: Required for LLM interactions. Install from [Ollama's official site](https://ollama.ai/).
-  - Download Ollam model  
+  - Download Ollam models  
    ```bash
-   ollama run qwen2.5-coder:1.5b
+   ollama pull gemma2:9b  # if your need "generate" command functionality
+   ollama pull bge-large  # if your need "ask"  command functionality for existed project code
    ```
-   After downloading the model, you can say "hello" to the model to check if it is working correctly. 
-   After that, you can use type "Ctrl+D" to exit the model.
 - **If you choose OpenAI API Key**: Create file "token.txt" in the root folder and put your OpenAI API key there.
 
 ### Clone the Repository
@@ -65,7 +46,7 @@ git clone https://github.com/evgenyigumnov/rustsn.git
 cd rustsn
 ```
 
-## Usage
+## Usage - Generate Function
 
 1. **Start the Program**
 
@@ -85,18 +66,7 @@ cd rustsn
    ```
    parse json string and return struct User (age, name)
    ```
- 3. **Automatic Processing**
-
-   The tool will:
-
-- Generate the function code using an LLM.
-- Attempt to compile the code.
-- If compilation fails, it will check for missing dependencies and attempt to resolve them.
-- Generate tests for the function.
-- Run the tests and iteratively fix any errors.
-
-
-4. **Completion**
+3. **Completion**
 
    Once the code compiles and all tests pass, the final code and tests will be displayed and result of work will be saved in `sandbox` folder.
 
@@ -142,14 +112,66 @@ mod tests {
 Finished
 ```
 
+## Usage - Ask
 
-## Examples of queries for code generation
+1. **Start the Program**
 
-1. ```take 2 params and multiply and return result```
+   ```bash
+   cargo run -- --lang=rust ask /path/to/your/project
+   ```
 
-2. ```take 1 parameter multiply by random number and return tuple with  result and random number```
+2. **Provide an Explanation**
 
-3. ```parse json string and return struct User (age, name)```
+   The program will prompt:
+
+   ```
+   Enter the question about your project sources:
+   ```
+   
+   Enter a question about your project sources.
+   ```
+   How work parse function for PDF files?
+   ```
+3. **Completion**
+
+   The program will return the explanation based on the existing code of your project.
+```
+Find closest files:
+File: ../shiva/lib\src\pdf.rs
+...
+
+Answer: The `parse` function for PDF files in the provided Rust code is implemented as part of the `Transformer` struct in the `pdf.rs` file. This function is responsible for converting a PDF document into a `Document` object composed of various `Element` types. Here's a detailed breakdown of how it works:
+
+1. **Load the PDF Document**:
+   - The function takes a reference to a `Bytes` object, which contains the PDF data.
+   - It uses the `lopdf` library to load the PDF document from memory using `PdfDocument::load_mem`.
+
+2. **Iterate Through Pages**:
+   - The function retrieves the pages of the PDF using `pdf_document.get_pages()`.
+   - It iterates over each page to process its contents.
+
+3. **Process Page Contents**:
+   - For each page, it retrieves the contents using `pdf_document.get_page_contents(page_id)`.
+   - It iterates over each content object in the page and calls the `parse_object` function to process it.
+
+4. **Parse Individual Objects**:
+   - The `parse_object` function is responsible for interpreting the contents of each object in the PDF.
+   - It decodes text using the `PdfDocument::decode_text` method, manages element types like `List`, `Paragraph`, and `Text`, and handles operations associated with text positioning and font changes (e.g., "Tm", "Tf", "Tj", "TJ", "ET").
+
+5. **Text Collection**:
+   - The function `collect_text` is used to gather and decode text from PDF objects, considering encoding and operand types.
+   - It adds decoded text to a string and determines when new elements like lists or paragraphs should be started based on the content.
+
+6. **Construct Document Elements**:
+   - The function constructs `Element` types such as `Text`, `Paragraph`, and `List`, and adds them to a vector of elements.
+   - These elements are used to build the final `Document` object, representing the structure and content of the PDF.
+
+7. **Return the Document**:
+   - After processing all pages and objects, the function returns a `Document` instance containing all the parsed elements.
+
+In summary, the `parse` function for PDF files reads the PDF data, iterates through its pages and content objects, decodes text, and constructs a structured `Document` composed of various elements, which can then be used for further processing or transformation.
+```
+
 
 ## Contributing
 
@@ -175,6 +197,9 @@ dual licensed as above, without any additional terms or conditions.
 
 
 ## Versions
+### 0.17.0 - "Ask" command 11 October 2024
+- Add "ask" command to get explanation by existing codes of your project based on user-provided question
+
 ### 0.16.0 - MIT or Apache-2.0 26 September 2024
 - Add MIT or Apache-2.0 license
 
