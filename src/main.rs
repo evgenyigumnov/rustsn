@@ -31,6 +31,11 @@ const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
 const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
 
 fn main() {
+
+    std::env::set_var("OLLAMA_NUM_PARALLEL", "2");
+
+
+
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
         .author("Evgeny Igumnov <igumnovnsk@gmail.com>")
@@ -76,7 +81,7 @@ Usage:
                 .long("ollmod")
                 .value_name("OLLAMA-MODEL")
                 .help("Set desired ollama model")
-                .default_value("qwen2.5-coder:1.5b")
+                .default_value("llama3.2:1b")
                 .global(true),
         )
         .arg(
@@ -84,7 +89,7 @@ Usage:
                 .long("ollemb")
                 .value_name("OLLAMA-EMBEDIDING")
                 .help("Set desired ollama embedding")
-                .default_value("bge-large")
+                .default_value("nomic-embed-text")
                 .global(true),
         )
         .subcommand(
@@ -231,7 +236,29 @@ Usage:
                     let question: String = ask();
                     let target_emb = llm.emb(&question, &mut cache, &question);
                     let result = vector_utils::find_closest(&target_emb, &vectors);
-                    println!("Closest file: {:#?}", result);
+                    let limited_result = result.iter().take(3).collect::<Vec<_>>();
+                    println!("Find closest files:");
+                    for (k, _v) in &limited_result {
+                        println!("File: {}", k);
+                    }
+                    let files_content_vec = limited_result.iter().map(|(k, _)| {
+                        let content = std::fs::read_to_string(k).unwrap();
+                        format!("== {} ==\r\n{}", k, content)
+                    }).collect::<Vec<_>>();
+                    let files_content = files_content_vec.join("\r\n");
+
+
+                    let prompt_template = format!("{}\r\n{}\r\n{}", files_content, "Use functions from code above to give answer for this question: ", question);
+                    if *VERBOSE.lock().unwrap() {
+                        println!("Request: {}", prompt_template);
+                    }
+                    let answer = llm.request(&prompt_template,
+                                                   &Vec::new(),
+                                                   &mut cache,
+                                                   &prompt);
+                    println!("++++++++ Answer ++++++++++++");
+
+                    println!("Answer: {}", answer);
                 }
 
                 _ => {

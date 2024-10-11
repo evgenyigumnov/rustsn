@@ -82,7 +82,7 @@ impl LLMApi {
                         response.response
                     }
                     Some(result) => {
-                        println!("Request already cached");
+                        println!("LLM Request already cached");
                         result.to_string()
                     }
                 };
@@ -107,7 +107,6 @@ impl LLMApi {
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();
-                println!("Request to LLM in progress");
                 if *VERBOSE.lock().unwrap() {
                     println!("Request: {}", prompt);
                 }
@@ -115,6 +114,7 @@ impl LLMApi {
                 let response_opt = cache.get(&request_str);
                 let response = match response_opt {
                     None => {
+                        println!("Request to LLM in progress");
                         let client = Client::builder()
                             .timeout(Duration::from_secs(60 * 5))
                             .build()
@@ -141,7 +141,7 @@ impl LLMApi {
                         openai_response
                     }
                     Some(result) => {
-                        println!("Request already cached");
+                        println!("LLM Request already cached");
                         result.to_string()
                     }
                 };
@@ -170,13 +170,24 @@ impl LLMApi {
                             .timeout(Duration::from_secs(60 * 10))
                             .build()
                             .unwrap();
-                        let response = client
+                        // let response = client
+                        //     .post(OLLAMA_EMB)
+                        //     .json(&request)
+                        //     .send()
+                        //     .unwrap()
+                        //     .json::<OllamaEmbResponse>()
+                        //     .unwrap();
+                        //
+                        let response_str = client
                             .post(OLLAMA_EMB)
                             .json(&request)
                             .send()
                             .unwrap()
-                            .json::<OllamaEmbResponse>()
+                            .text()
                             .unwrap();
+                        // println!("Response: {}", response_str);
+                        let response: OllamaEmbResponse = serde_json::from_str(&response_str).unwrap();
+
                         cache.set(
                             request_str.clone(),
                             serde_json::to_string(&response.embedding).unwrap(),
@@ -184,7 +195,7 @@ impl LLMApi {
                         response.embedding
                     }
                     Some(result) => {
-                        println!("Request already cached");
+                        println!("Embedding Request already cached");
                         serde_json::from_str(&result).unwrap()
                     },
                 };
@@ -238,7 +249,7 @@ impl LLMApi {
                         api_response.data[0].embedding.clone()
                     }
                     Some(result) => {
-                        println!("Request already cached");
+                        println!("Embedding Request already cached");
                         serde_json::from_str(&result).unwrap()
                     }
                 };
