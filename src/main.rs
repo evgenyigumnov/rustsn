@@ -227,6 +227,13 @@ Usage:
             state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
             println!("++++++++ Finished ++++++++++++");
         }
+        Some("generate application") => {
+            println!("Explain what the application should do:");
+            let question: String = ask();
+
+            state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
+            println!("++++++++ Finished ++++++++++++");
+        }
         Some("ask") => {
             let path: &String = matches
                 .subcommand_matches("ask")
