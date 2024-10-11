@@ -150,7 +150,7 @@ impl LLMApi {
             }
         }
     }
-    pub fn emb(&self, content: &str, cache: &mut Cache) -> Vec<f32> {
+    pub fn emb(&self, content: &str, cache: &mut Cache, full_content: &str) -> Vec<f32> {
         match &self.model_type {
             ModelType::Ollama { emb, .. } => {
                 let request = OllamaEmbRequest {
@@ -190,7 +190,7 @@ impl LLMApi {
             ModelType::OpenAI { api_key } => {
                 let request = OpenAIEmbRequest {
                     model: "text-embedding-ada-002".to_string(),
-                    input: content.to_string(),
+                    input: full_content.to_string(),
                 };
 
                 let request_str = serde_json::to_string(&request).unwrap();

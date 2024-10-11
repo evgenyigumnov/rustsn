@@ -4,6 +4,8 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 use std::sync::Mutex;
+use crate::cache::Cache;
+use crate::llm_prompt::Prompt;
 
 mod build_tool;
 mod cache;
@@ -215,14 +217,21 @@ Usage:
                         println!("File: {:?}", file);
                         let content_file = std::fs::read_to_string(file).unwrap();
                         let content = format!("== {} ==\r\n{}", file, content_file);
-                        let emb = llm.emb(&content, &mut cache);
+
+                        let prompt_template = format!("{}\r\n{}", content, "Explain how this code works and what it do:");
+                        let llm_question = llm.request(&prompt_template,
+                                                       &Vec::new(),
+                                                       &mut cache,
+                                                       &prompt);
+
+                        let emb = llm.emb(&content, &mut cache, &llm_question);
                         // println!("{:#?}", emb);
                         vectors.insert(file.clone(), emb);
                     }
 
                     println!("Enter the question about your project sources:");
                     let question: String = ask();
-                    let target_emb = llm.emb(&question, &mut cache);
+                    let target_emb = llm.emb(&question, &mut cache, &question);
                     let result = vector_utils::find_closest(&target_emb, &vectors);
                     println!("Closest file: {:#?}", result);
                 }
