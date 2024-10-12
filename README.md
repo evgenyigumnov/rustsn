@@ -37,7 +37,8 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
    ollama pull gemma2:9b  
    ollama pull bge-large  # if your need "ask" command functionality for existed project code
    ```
-- **If you choose OpenAI API Key**: Create file "token.txt" in the root folder and put your OpenAI API key there.
+  - Set environment variable OLLAMA_NUM_PARALLEL_REQUESTS=2 if you plan launch gemma2:9b and bge-large models in parallel for "ask" command (do not forger to restart your PC)
+- **If you choose OpenAI API**: Create file "token.txt" in the root folder and put your OpenAI API key there.
 
 ### Install CLI Tool via Cargo
 
