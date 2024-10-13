@@ -75,9 +75,10 @@ impl LLMApi {
                             .post(OLLAMA_API)
                             .json(&request)
                             .send()
-                            .unwrap()
-                            .json::<OllamaResponse>()
                             .unwrap();
+                        let response_text = response.text().unwrap();
+                        // println!("Response: {:?}", response_text);
+                        let response = serde_json::from_str::<OllamaResponse>(&response_text).unwrap();
                         cache.set(request_str.clone(), response.response.clone());
                         response.response
                     }
