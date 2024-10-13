@@ -68,7 +68,7 @@ Usage:
                 .long("ollmod")
                 .value_name("OLLAMA-MODEL")
                 .help("Set desired ollama model")
-                .default_value("gemma2:9b")
+                .default_value("qwen2.5-coder:7b")
                 .global(true),
         )
         .arg(

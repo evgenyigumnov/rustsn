@@ -1,0 +1,57 @@
+## Cargo.toml
+
+```toml
+[package]
+name = "sum_two_numbers"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+## src/lib.rs
+
+```rust
+fn solution(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_solution() {
+        assert_eq!(solution(1, 2), 3);
+        assert_eq!(solution(-1, 1), 0);
+        assert_eq!(solution(0, 0), 0);
+    }
+}
+
+```
+
+## Build
+
+```bash
+cargo build --tests
+```
+
+## Test
+
+```bash
+cargo test
+```
+
+
+
+**Explanation:**
+
+* **Cargo.toml:**  This file defines the project metadata like name, version, and dependencies. In this case, we have a simple project without external dependencies.
+
+* **src/lib.rs:** This file contains our code:
+    * `solution` function: Takes two integers (`a` and `b`) and returns their sum.
+    * `tests` module (using the `#[cfg(test)]` attribute):  This module is only compiled when running tests. It contains the `test_solution` function that uses assertions (`assert_eq!`) to verify if the `solution` function returns the expected values for different inputs.
+
+* **Build:** The `cargo build --tests` command compiles both the main code and the test code.  The `--tests` flag ensures that tests are built alongside the regular project.
+
+* **Test:** The `cargo test` command executes all the tests defined in the `tests` module. You'll see output indicating whether each test passed or failed.
+

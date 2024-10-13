@@ -34,7 +34,7 @@ Project name "rustsn" is a combination of "Rust" and "Snippet" words. Code snipp
 - **If you choose Ollama**: Required for LLM interactions. Install from [Ollama's official site](https://ollama.ai/).
   - Download Ollam models  
    ```bash
-   ollama pull gemma2:9b  
+   ollama pull qwen2.5-coder:7b  
    ollama pull bge-large  # if your need "ask" command functionality for existed project code
    ```
   - Set environment variable OLLAMA_NUM_PARALLEL_REQUESTS=2 if you plan launch gemma2:9b and bge-large models in parallel for "ask" command (do not forger to restart your PC)
