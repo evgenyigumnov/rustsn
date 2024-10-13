@@ -20,7 +20,7 @@ Contents of Cargo.toml file
 
 **src/lib.rs**
 ```rust
-Contents of src/lib.rs file
+Contents of src/lib.rs file with codes and tests
 ```
 
 **Build**
@@ -84,7 +84,7 @@ Contents of Cargo.toml file
 
 **src/lib.rs**
 ```rust
-Contents of src/lib.rs file
+Contents of src/lib.rs file with codes and tests
 ```
 
 **Build**
