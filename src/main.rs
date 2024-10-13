@@ -61,6 +61,7 @@ Usage:
                     "swift",
                     "php",
                     "python",
+                    "cs",
                 ]),
         )
         .arg(
@@ -290,6 +291,62 @@ Usage:
 
                     println!("Answer: {}", answer);
                 }
+                Lang::CSharp => {
+                    let files = file_explorer::explore_files(
+                        &path,
+                        &vec![String::from("cs")], // C# files have .cs extension
+                        &vec![String::from("bin"), String::from("obj")], // Exclude build directories
+                    );
+                    let mut vectors: HashMap<String, Vec<f32>> = HashMap::new();
+                    for file in &files {
+                        println!("File: {:?}", file);
+                        let content_file = std::fs::read_to_string(file).unwrap();
+                        let content = format!("== {} ==\r\n{}", file, content_file);
+
+                        let prompt_template = format!(
+                            "{}\r\n{}",
+                            content, "Explain how this code works and what it does:"
+                        );
+                        let llm_question =
+                            llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
+
+                        let emb = llm.emb(&content, &mut cache, &llm_question);
+                        vectors.insert(file.clone(), emb);
+                    }
+
+                    println!("Enter the question about your project sources:");
+                    let question: String = ask();
+                    let target_emb = llm.emb(&question, &mut cache, &question);
+                    let result = vector_utils::find_closest(&target_emb, &vectors);
+                    let limited_result = result.iter().take(3).collect::<Vec<_>>();
+                    println!("Find closest files:");
+                    for (k, _v) in &limited_result {
+                        println!("File: {}", k);
+                    }
+                    let files_content_vec = limited_result
+                        .iter()
+                        .map(|(k, _)| {
+                            let content = std::fs::read_to_string(k).unwrap();
+                            format!("== {} ==\r\n{}", k, content)
+                        })
+                        .collect::<Vec<_>>();
+                    let files_content = files_content_vec.join("\r\n");
+
+                    let prompt_template = format!(
+                        "{}\r\n{}\r\n{}",
+                        files_content,
+                        "Use the code above to answer the following question: ",
+                        question
+                    );
+                    if *VERBOSE.lock().unwrap() {
+                        println!("Request: {}", prompt_template);
+                    }
+                    let answer = llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
+
+                    println!("++++++++ Answer ++++++++++++");
+
+                    println!("Answer: {}", answer);
+                }
 
                 _ => {
                     println!("Unsupported language: {:?}", lang);
@@ -364,6 +421,7 @@ enum Lang {
     Kotlin,
     Php,
     Swift,
+    CSharp,
     Unknown,
 }
 
@@ -403,6 +461,7 @@ impl FromStr for Lang {
             "cpp" => Ok(Lang::Cpp),
             "kotlin" => Ok(Lang::Kotlin),
             "php" => Ok(Lang::Php),
+            "cs" => Ok(Lang::CSharp),
             "swift" => Ok(Lang::Swift),
             _ => Err(format!("Unsupported language: {}", s)),
         }
