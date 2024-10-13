@@ -306,11 +306,11 @@ fn handle_ask_command(
         let content_file = std::fs::read_to_string(file).unwrap();
         let content = format!("# {}\r\n{}", file, content_file);
 
-        let prompt_template = format!("{}\r\n{}", content, _explain_prompt);
-        let llm_code_explanation = llm.request(&prompt_template, &Vec::new(), cache, prompt);
-        let full_content = format!("{}\r\n{}", content, llm_code_explanation);
-        let emb = llm.emb(&content, cache, &full_content);
-        // let emb = llm.emb(&content, cache, &content);
+        // let prompt_template = format!("{}\r\n{}", content, _explain_prompt);
+        // let llm_code_explanation = llm.request(&prompt_template, &Vec::new(), cache, prompt);
+        // let full_content = format!("{}\r\n{}", content, llm_code_explanation);
+        // let emb = llm.emb(&content, cache, &full_content);
+        let emb = llm.emb(&content, cache, &content);
         vectors.insert(file.clone(), emb);
     }
 
