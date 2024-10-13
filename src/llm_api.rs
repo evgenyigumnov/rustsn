@@ -163,10 +163,10 @@ impl LLMApi {
             ModelType::Ollama { emb, .. } => {
                 let request = OllamaEmbRequest {
                     model: emb.to_string(),
-                    prompt: content.to_string(),
+                    prompt: full_content.to_string(),
                 };
 
-                let request_str = serde_json::to_string(&request).unwrap();
+                let request_str = serde_json::to_string(&content).unwrap();
                 let response_opt = cache.get(&request_str);
                 let response = match response_opt {
                     None => {
@@ -214,7 +214,7 @@ impl LLMApi {
 
                 let request_str = serde_json::to_string(&request).unwrap();
 
-                let response_opt = cache.get(&request_str);
+                let response_opt = cache.get(&content);
 
                 let response = match response_opt {
                     None => {
