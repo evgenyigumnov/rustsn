@@ -235,119 +235,31 @@ Usage:
             println!("Path: {:?}", path);
             match lang {
                 Lang::Rust => {
-                    let files = file_explorer::explore_files(
-                        &path,
-                        &vec![String::from("rs"), String::from("toml")],
-                        &vec![String::from("target")],
+                    handle_ask_command(
+                        path,
+                        &lang,
+                        &llm,
+                        &mut cache,
+                        &prompt,
+                        vec![String::from("rs"), String::from("toml")],
+                        vec![String::from("target")],
+                        "Explain how this code works and what it do:",
+                        "Use functions from code above to give answer for this question:",
                     );
-                    let mut vectors: HashMap<String, Vec<f32>> = HashMap::new();
-                    for file in &files {
-                        println!("File: {:?}", file);
-                        let content_file = std::fs::read_to_string(file).unwrap();
-                        let content = format!("== {} ==\r\n{}", file, content_file);
-
-                        let prompt_template = format!(
-                            "{}\r\n{}",
-                            content, "Explain how this code works and what it do:"
-                        );
-                        let llm_question =
-                            llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
-
-                        let emb = llm.emb(&content, &mut cache, &llm_question);
-                        // println!("{:#?}", emb);
-                        vectors.insert(file.clone(), emb);
-                    }
-
-                    println!("Enter the question about your project sources:");
-                    let question: String = ask();
-                    let target_emb = llm.emb(&question, &mut cache, &question);
-                    let result = vector_utils::find_closest(&target_emb, &vectors);
-                    let limited_result = result.iter().take(3).collect::<Vec<_>>();
-                    println!("Find closest files:");
-                    for (k, _v) in &limited_result {
-                        println!("File: {}", k);
-                    }
-                    let files_content_vec = limited_result
-                        .iter()
-                        .map(|(k, _)| {
-                            let content = std::fs::read_to_string(k).unwrap();
-                            format!("== {} ==\r\n{}", k, content)
-                        })
-                        .collect::<Vec<_>>();
-                    let files_content = files_content_vec.join("\r\n");
-
-                    let prompt_template = format!(
-                        "{}\r\n{}\r\n{}",
-                        files_content,
-                        "Use functions from code above to give answer for this question: ",
-                        question
-                    );
-                    if *VERBOSE.lock().unwrap() {
-                        println!("Request: {}", prompt_template);
-                    }
-                    let answer = llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
-
-                    println!("++++++++ Answer ++++++++++++");
-
-                    println!("Answer: {}", answer);
                 }
                 Lang::CSharp => {
-                    let files = file_explorer::explore_files(
-                        &path,
-                        &vec![String::from("cs")], // C# files have .cs extension
-                        &vec![String::from("bin"), String::from("obj")], // Exclude build directories
+                    handle_ask_command(
+                        path,
+                        &lang,
+                        &llm,
+                        &mut cache,
+                        &prompt,
+                        vec![String::from("cs")],
+                        vec![String::from("bin"), String::from("obj")],
+                        "Explain how this code works and what it does:",
+                        "Use the code above to answer the following question:",
                     );
-                    let mut vectors: HashMap<String, Vec<f32>> = HashMap::new();
-                    for file in &files {
-                        println!("File: {:?}", file);
-                        let content_file = std::fs::read_to_string(file).unwrap();
-                        let content = format!("== {} ==\r\n{}", file, content_file);
-
-                        let prompt_template = format!(
-                            "{}\r\n{}",
-                            content, "Explain how this code works and what it does:"
-                        );
-                        let llm_question =
-                            llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
-
-                        let emb = llm.emb(&content, &mut cache, &llm_question);
-                        vectors.insert(file.clone(), emb);
-                    }
-
-                    println!("Enter the question about your project sources:");
-                    let question: String = ask();
-                    let target_emb = llm.emb(&question, &mut cache, &question);
-                    let result = vector_utils::find_closest(&target_emb, &vectors);
-                    let limited_result = result.iter().take(3).collect::<Vec<_>>();
-                    println!("Find closest files:");
-                    for (k, _v) in &limited_result {
-                        println!("File: {}", k);
-                    }
-                    let files_content_vec = limited_result
-                        .iter()
-                        .map(|(k, _)| {
-                            let content = std::fs::read_to_string(k).unwrap();
-                            format!("== {} ==\r\n{}", k, content)
-                        })
-                        .collect::<Vec<_>>();
-                    let files_content = files_content_vec.join("\r\n");
-
-                    let prompt_template = format!(
-                        "{}\r\n{}\r\n{}",
-                        files_content,
-                        "Use the code above to answer the following question: ",
-                        question
-                    );
-                    if *VERBOSE.lock().unwrap() {
-                        println!("Request: {}", prompt_template);
-                    }
-                    let answer = llm.request(&prompt_template, &Vec::new(), &mut cache, &prompt);
-
-                    println!("++++++++ Answer ++++++++++++");
-
-                    println!("Answer: {}", answer);
                 }
-
                 _ => {
                     println!("Unsupported language: {:?}", lang);
                     std::process::exit(1);
@@ -361,6 +273,65 @@ Usage:
             std::process::exit(1);
         }
     }
+}
+
+fn handle_ask_command(
+    path: &String,
+    _lang: &Lang,
+    llm: &llm_api::LLMApi,
+    cache: &mut cache::Cache,
+    prompt: &llm_prompt::Prompt,
+    extensions: Vec<String>,
+    exclude_dirs: Vec<String>,
+    explain_prompt: &str,
+    answer_prompt: &str,
+) {
+    let files = file_explorer::explore_files(&path, &extensions, &exclude_dirs);
+    let mut vectors: HashMap<String, Vec<f32>> = HashMap::new();
+    for file in &files {
+        println!("File: {:?}", file);
+        let content_file = std::fs::read_to_string(file).unwrap();
+        let content = format!("== {} ==\r\n{}", file, content_file);
+
+        let prompt_template = format!("{}\r\n{}", content, explain_prompt);
+        let llm_question = llm.request(&prompt_template, &Vec::new(), cache, prompt);
+
+        let emb = llm.emb(&content, cache, &llm_question);
+        vectors.insert(file.clone(), emb);
+    }
+
+    println!("Enter the question about your project sources:");
+    let question: String = ask();
+    let target_emb = llm.emb(&question, cache, &question);
+    let result = vector_utils::find_closest(&target_emb, &vectors);
+    let limited_result = result.iter().take(3).collect::<Vec<_>>();
+    println!("Find closest files:");
+    for (k, _v) in &limited_result {
+        println!("File: {}", k);
+    }
+    let files_content_vec = limited_result
+        .iter()
+        .map(|(k, _)| {
+            let content = std::fs::read_to_string(k).unwrap();
+            format!("== {} ==\r\n{}", k, content)
+        })
+        .collect::<Vec<_>>();
+    let files_content = files_content_vec.join("\r\n");
+
+    let prompt_template = format!(
+        "{}\r\n{}\r\n{}",
+        files_content,
+        answer_prompt,
+        question
+    );
+    if *VERBOSE.lock().unwrap() {
+        println!("Request: {}", prompt_template);
+    }
+    let answer = llm.request(&prompt_template, &Vec::new(), cache, prompt);
+
+    println!("++++++++ Answer ++++++++++++");
+
+    println!("Answer: {}", answer);
 }
 
 fn ask() -> String {
