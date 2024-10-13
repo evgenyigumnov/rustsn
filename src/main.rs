@@ -128,6 +128,7 @@ Usage:
         Lang::Kotlin => println!("Selected language: Kotlin"),
         Lang::Swift => println!("Selected language: Swift"),
         Lang::TypeScript => println!("Selected language: TypeScript"),
+        Lang::CSharp => println!("Selected language: C#"),
         _ => {
             println!("Unimplemented language: {:?}", lang);
             std::process::exit(1);
