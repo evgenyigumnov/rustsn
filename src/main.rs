@@ -439,6 +439,7 @@ impl Display for Lang {
             Lang::Kotlin => write!(f, "kotlin"),
             Lang::Php => write!(f, "php"),
             Lang::Swift => write!(f, "swift"),
+            Lang::CSharp => write!(f, "cs"),
             _ => {
                 return Ok(());
             }
