@@ -296,7 +296,7 @@ fn handle_ask_command(
     prompt: &llm_prompt::Prompt,
     extensions: Vec<String>,
     exclude_dirs: Vec<String>,
-    explain_prompt: &str,
+    _explain_prompt: &str,
     answer_prompt: &str,
 ) {
     let files = file_explorer::explore_files(&path, &extensions, &exclude_dirs);
@@ -304,12 +304,13 @@ fn handle_ask_command(
     for file in &files {
         println!("File: {:?}", file);
         let content_file = std::fs::read_to_string(file).unwrap();
-        let content = format!("== {} ==\r\n{}", file, content_file);
+        let content = format!("# {}\r\n{}", file, content_file);
 
-        let prompt_template = format!("{}\r\n{}", content, explain_prompt);
-        let llm_question = llm.request(&prompt_template, &Vec::new(), cache, prompt);
-
-        let emb = llm.emb(&content, cache, &llm_question);
+        let prompt_template = format!("{}\r\n{}", content, _explain_prompt);
+        let llm_code_explanation = llm.request(&prompt_template, &Vec::new(), cache, prompt);
+        let full_content = format!("{}\r\n{}", content, llm_code_explanation);
+        let emb = llm.emb(&content, cache, &full_content);
+        // let emb = llm.emb(&content, cache, &content);
         vectors.insert(file.clone(), emb);
     }
 
@@ -326,7 +327,7 @@ fn handle_ask_command(
         .iter()
         .map(|(k, _)| {
             let content = std::fs::read_to_string(k).unwrap();
-            format!("== {} ==\r\n{}", k, content)
+            format!("# {} \r\n{}", k, content)
         })
         .collect::<Vec<_>>();
     let files_content = files_content_vec.join("\r\n");
