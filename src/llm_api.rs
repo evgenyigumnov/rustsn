@@ -76,9 +76,13 @@ impl LLMApi {
                             .json(&request)
                             .send()
                             .unwrap();
+                        if !response.status().is_success(){
+                            let response_text = response.text().unwrap();
+                            println!("Response: {:?}", response_text);
+                            panic!("Failed to get response from LLM");
+                        }
                         let response_text = response.text().unwrap();
-                        // println!("Response: {:?}", response_text);
-                        let response = serde_json::from_str::<OllamaResponse>(&response_text).unwrap();
+a                         let response = serde_json::from_str::<OllamaResponse>(&response_text).unwrap();
                         cache.set(request_str.clone(), response.response.clone());
                         response.response
                     }
