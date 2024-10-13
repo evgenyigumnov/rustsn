@@ -7,17 +7,18 @@
 3. **ask** command is used to get explanation by existing codes of your project based on user-provided question.
 
 ## Supported languages by feature
-| language | generate function | generate application | ask |
-| --- | --- |----------------------|-----|
-| Rust | + | -                    | +   |
-| Python | + | -                    | -   |
-| JavaScript | + | -                    | -   |
-| TypeScript | + | -                    | -   |
-| Java | + | -                    | -   |
-| Kotlin | + | -                    | -   |
-| Swift | + | -                    | -   |
-| PHP | + | -                    | -   |
-| Scala | + | -                    | -   |
+| language   | generate function | generate application | ask |
+|------------|-------------------|----------------------|-----|
+| Rust       | +                 | -                    | +   |
+| JavaScript | +                 | -                    | +   |
+| C#         | -                 | -                    | +   |
+| Python     | +                 | -                    | -   |
+| TypeScript | +                 | -                    | -   |
+| Java       | +                 | -                    | -   |
+| Kotlin     | +                 | -                    | -   |
+| Swift      | +                 | -                    | -   |
+| PHP        | +                 | -                    | -   |
+| Scala      | +                 | -                    | -   |
 
 
 ## Project name explanation
@@ -198,6 +199,9 @@ dual licensed as above, without any additional terms or conditions.
 
 
 ## Versions
+### 0.22.0 - "Ask" command for C# and JavaScript 11 October 2024
+- Add "ask" command for C# and JavaScript languages
+
 ### 0.17.0 - "Ask" command 11 October 2024
 - Add "ask" command to get explanation by existing codes of your project based on user-provided question
 

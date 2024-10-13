@@ -260,6 +260,19 @@ Usage:
                         "Use the code above to answer the following question:",
                     );
                 }
+                Lang::JavaScript => {
+                    handle_ask_command(
+                        path,
+                        &lang,
+                        &llm,
+                        &mut cache,
+                        &prompt,
+                        vec![String::from("js")],
+                        vec![String::from("node_modules")],
+                        "Explain how this JavaScript code works and what it does:",
+                        "Use the code above to answer the following question:",
+                    );
+                }
                 _ => {
                     println!("Unsupported language: {:?}", lang);
                     std::process::exit(1);
