@@ -15,7 +15,7 @@ Thumbs.db
 cargo.log
 Cargo.lock
 
-token.txt
+token.*
 
 cache.bin
 sandbox
