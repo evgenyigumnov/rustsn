@@ -885,7 +885,6 @@ impl LLMResponse {
     }
 }
 
-
 mod tests {
     #[test]
     fn test_parse_llm_response_java() {

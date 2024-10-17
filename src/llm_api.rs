@@ -71,18 +71,15 @@ impl LLMApi {
                             .unwrap();
                         println!("Request to LLM in progress");
 
-                        let response = client
-                            .post(OLLAMA_API)
-                            .json(&request)
-                            .send()
-                            .unwrap();
-                        if !response.status().is_success(){
+                        let response = client.post(OLLAMA_API).json(&request).send().unwrap();
+                        if !response.status().is_success() {
                             let response_text = response.text().unwrap();
                             println!("Response: {:?}", response_text);
                             panic!("Failed to get response from LLM");
                         }
                         let response_text = response.text().unwrap();
-                        let response = serde_json::from_str::<OllamaResponse>(&response_text).unwrap();
+                        let response =
+                            serde_json::from_str::<OllamaResponse>(&response_text).unwrap();
                         cache.set(request_str.clone(), response.response.clone());
                         response.response
                     }

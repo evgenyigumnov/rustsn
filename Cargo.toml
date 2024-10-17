@@ -1,6 +1,6 @@
 [package]
 name = "rustsn"
-version = "0.24.0"
+version = "0.25.0"
 edition = "2021"
 authors = ["Evgeny Igumnov <igumnovnsk@gmail.com>"]
 repository = "https://github.com/evgenyigumnov/rustsn"
@@ -21,3 +21,6 @@ clap = { version = "4.5.18", features = ["derive"] }
 regex = "1.10.6"
 bincode = { version = "2.0.0-rc.3" }
 once_cell = "1.20.2"
+
+[profile.release]
+lto = true

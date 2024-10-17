@@ -333,12 +333,7 @@ fn handle_ask_command(
         .collect::<Vec<_>>();
     let files_content = files_content_vec.join("\r\n");
 
-    let prompt_template = format!(
-        "{}\r\n{}\r\n{}",
-        files_content,
-        answer_prompt,
-        question
-    );
+    let prompt_template = format!("{}\r\n{}\r\n{}", files_content, answer_prompt, question);
     if *VERBOSE.lock().unwrap() {
         println!("Request: {}", prompt_template);
     }
