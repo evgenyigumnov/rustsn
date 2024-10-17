@@ -242,7 +242,7 @@ Usage:
                         &llm,
                         &mut cache,
                         &prompt,
-                        vec![String::from("rs"), String::from("toml")],
+                        vec![String::from("txt"), String::from("toml")],
                         vec![String::from("target")],
                         "Explain how this code works and what it do:",
                         "Use functions from code above to give answer for this question:",
@@ -314,39 +314,43 @@ fn handle_ask_command(
         let emb = llm.emb(&content, cache, &content);
         vectors.insert(file.clone(), emb);
     }
+    let mut target_vectors: HashMap<String, Vec<f32>> = HashMap::new();
 
-    println!("Enter the question about your project sources:");
-    let question: String = ask();
-    let target_emb = llm.emb(&question, cache, &question);
-    let result = vector_utils::find_closest(&target_emb, &vectors);
-    let limited_result = result.iter().take(3).collect::<Vec<_>>();
-    println!("Find closest files:");
-    for (k, _v) in &limited_result {
-        println!("File: {}", k);
-    }
-    let files_content_vec = limited_result
-        .iter()
-        .map(|(k, _)| {
-            let content = std::fs::read_to_string(k).unwrap();
-            format!("# {} \r\n{}", k, content)
-        })
-        .collect::<Vec<_>>();
-    let files_content = files_content_vec.join("\r\n");
+    let medical = "The patient, a 45-year-old male, presents with a three-month history of intermittent chest pain, primarily occurring during physical exertion. The pain is described as a pressure-like sensation, radiating to the left arm and jaw, and is relieved with rest. The patient has a history of hypertension and is currently on medication for high blood pressure. No prior history of heart disease or recent infections is reported. He denies any shortness of breath, palpitations, or dizziness. A family history of cardiovascular disease is noted, with both parents having a history of myocardial infarction. The patient is a non-smoker and denies alcohol or drug use.";
+    let invoice = "Please be advised that the total amount due for the services rendered on [insert date] is [insert amount]. This includes [brief description of services or products provided]. Kindly remit payment by [insert due date] to the following account details: [insert payment details]. Should you have any questions regarding this invoice, feel free to contact us at [insert contact information]. Thank you for your prompt attention to this matter.";
+    let will = "I, [Full Name], of [City, State], being of sound mind and body, do hereby declare this to be my last will and testament. I revoke any and all previous wills and codicils made by me. I direct that all my just debts, funeral expenses, and the expenses of my last illness be paid as soon as practicable after my death. I leave all my personal property, including but not limited to [list specific items if desired], to my [relationship, e.g., spouse, children], [Full Name(s)], in equal shares. Should any of my beneficiaries predecease me, their share shall be distributed to their heirs or next of kin, as provided by law.";
+    let diary = "Today was a mix of everything. I woke up feeling excited, but by lunchtime, everything started to annoy me. School was the same, but my friends made it better. We talked about random stuff and laughed a lot, which helped me forget about all the little things that were bothering me. I spent most of the afternoon in my room, listening to music and thinking about life. Sometimes, it feels like no one really understands what’s going on in my head, but that’s okay. I guess it’s just part of growing up.";
+    let license = "This software is provided 'as-is', without any express or implied warranties, including but not limited to the implied warranties of merchantability and fitness for a particular purpose. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software. Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, subject to the following conditions...";
+    let srs = "To develop an Android application, several key requirements must be considered. First, a solid understanding of the Android SDK and Java or Kotlin programming languages is essential, as these are the primary tools for building Android apps. The application must be compatible with a wide range of Android devices, ensuring it adapts to various screen sizes and resolutions. It is also crucial to follow Android's material design guidelines for the user interface to create a consistent and intuitive user experience. The app should be optimized for performance, including efficient memory management and responsiveness, while handling device-specific constraints such as battery life and network conditions. Additionally, ensuring proper integration with Android services like notifications, background processing, and storage is critical for delivering a seamless experience. Lastly, the app must comply with Android’s security standards, protecting user data and ensuring secure communication with any external servers or APIs.";
+    let v1 = llm.emb(medical, cache, medical);
+    let v2 = llm.emb(invoice, cache, invoice);
+    let v3 = llm.emb(will, cache, will);
+    let v4 = llm.emb(diary, cache, diary);
+    let v5 = llm.emb(license, cache, license);
+    let v6 = llm.emb(license, cache, srs);
+    // println!("Medical: {:?}", v1);
+    // println!("Invoice: {:?}", v2);
+    // println!("Other: {:?}", v3);
+    target_vectors.insert("Medical".to_string(), v1);
+    target_vectors.insert("Invoice".to_string(), v2);
+    target_vectors.insert("Will".to_string(), v3);
+    target_vectors.insert("Diary".to_string(), v4);
+    target_vectors.insert("License".to_string(), v5);
+    target_vectors.insert("SRS".to_string(), v6);
 
-    let prompt_template = format!(
-        "{}\r\n{}\r\n{}",
-        files_content,
-        answer_prompt,
-        question
-    );
-    if *VERBOSE.lock().unwrap() {
-        println!("Request: {}", prompt_template);
-    }
-    let answer = llm.request(&prompt_template, &Vec::new(), cache, prompt);
 
-    println!("++++++++ Answer ++++++++++++");
+    for vector in vectors {
+        let result = vector_utils::find_closest(&vector.1, &target_vectors);
+        let limited_result = result.iter().take(1).collect::<Vec<_>>();
+        for r in &limited_result {
+            if (r.1 < 17.0) {
+                println!("{} - {}: {}",vector.0, r.0, r.1);
+            } else {
+                println!("{} - {}: {}",vector.0, "Other", r.1);
+            }
+        }
+   }
 
-    println!("Answer: {}", answer);
 }
 
 fn ask() -> String {
