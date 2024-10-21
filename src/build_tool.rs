@@ -21,8 +21,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -72,8 +72,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -120,8 +120,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -163,8 +163,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -210,8 +210,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -254,8 +254,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -301,8 +301,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -348,8 +348,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .output()
                         .unwrap();
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
@@ -397,8 +397,8 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         .unwrap();
 
                     let exit_code = output.status.code().unwrap();
-                    // let std_out = String::from_utf8(output.stdout).unwrap();
-                    let std_err = String::from_utf8(output.stderr).unwrap();
+                    // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
+                    let std_err = String::from_utf8_lossy(&output.stderr).to_string();
                     let tuple: (i32, String) = (exit_code, std_err);
                     let json_str = serde_json::to_string(&tuple).unwrap();
                     cache.set(key, json_str.clone());
