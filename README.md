@@ -1,5 +1,7 @@
 # rustsn - This Rust-based tool generates, compiles, and tests code using LLMs, resolves dependencies, and provides explanations of existing code through embeddings.
 
+![rustsn](https://github.com/evgenyigumnov/rustsn/raw/HEAD/logo.png)
+
 ## Features
 
 1. **generate function** command is used to generate code snippets based on user-provided explanations.
