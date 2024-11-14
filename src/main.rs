@@ -12,6 +12,7 @@ mod llm_api;
 mod llm_prompt;
 mod llm_response;
 mod state_machine;
+mod state_machine_app;
 mod utils;
 mod vector_utils;
 
@@ -225,6 +226,13 @@ Usage:
             let question: String = ask();
 
             state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
+            println!("++++++++ Finished ++++++++++++");
+        }
+        Some("generate application") => {
+            println!("Explain what the application should do:");
+            let question: String = ask();
+
+            state_machine_app::run_state_machine_app(&lang, &question, &prompt, &mut cache, &llm);
             println!("++++++++ Finished ++++++++++++");
         }
         Some("ask") => {
